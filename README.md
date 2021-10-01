@@ -1,4 +1,4 @@
-# frontend
+# A labeling tool (HRM dataset)
 
 ## Project setup
 ```
