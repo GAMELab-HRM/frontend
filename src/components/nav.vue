@@ -28,6 +28,12 @@
                         <el-dropdown-item command="Dr. Ray & Dr. Liang">Dr. Ray & Dr. Liang</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
+                <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>
+                <span><h2>切換身分為 : {{ login_status }}</h2></span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="dialogVisible = false">關閉</el-button>
+                </span>
+                </el-dialog>
             </div>
         </el-col> 
     </el-row>
@@ -60,6 +66,7 @@ export default {
             },
             activeIndex: 0,
             act_text_color: 'red',
+            dialogVisible: false,
         }
     },
 
@@ -71,14 +78,15 @@ export default {
         login: function(val, event) {
             console.log(event);
             this.login_status = val
+            this.dialogVisible = true
             this.login_btn.borderColor = 'lightgreen'
         },
 
         nav_bar_active(idx, event) {
             console.log(idx)
             console.log(event)
-
         },
+
     }
 
 
