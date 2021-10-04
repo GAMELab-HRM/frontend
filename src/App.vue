@@ -10,9 +10,6 @@
 			<el-main style="text-align: center;">
 				<main_table/>	
 			</el-main>
-			<el-footer>
-				Footer
-			</el-footer>
 		</el-container>
     
 
