@@ -1,11 +1,15 @@
 <template>
     <div id=main_table_container>
-        <el-table :data="main_table_data" height="700" border style="width: 100%">
+        <el-table :data="main_table_data" height="720" border style="width: 100%">
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="cc_result" label="MMS CC result" :width="table_item_width" :filters="cc_filter" :filter-method="cc_filter_method">
+            <el-table-column prop="mms_cc_result" label="MMS CC result" :width="table_item_width" :filters="cc_filter" :filter-method="mms_cc_filter_method">
+            </el-table-column>
+            <el-table-column prop="ray_cc_result" label="Dr. Ray CC result" :width="table_item_width" :filters="cc_filter" :filter-method="ray_cc_filter_method">
+            </el-table-column>
+            <el-table-column prop="liang_cc_result" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="liang_cc_filter_method">
             </el-table-column>
             <el-table-column prop="source" label="資料來源" :width="table_item_width">
             </el-table-column>
@@ -34,96 +38,126 @@ export default {
         return {
             main_table_data: [{
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'Fragmented',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'Absent',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'Absent',
+                mms_cc_result: 'IRP',
+                ray_cc_result: 'Absent',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'IRP',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
-                cc_result: 'normal',
+                mms_cc_result: 'normal',
+                ray_cc_result: 'normal',
+                liang_cc_result: 'normal',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }],
-            table_item_width: 210,
+            table_item_width: 180,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IRP', value: 'IRP'},
@@ -140,8 +174,18 @@ export default {
         idx_method: function(index) {
             return index
         },
-        cc_filter_method: function(value, row) {
-            return row.cc_result === value;
+        mms_cc_filter_method: function(value, row) {
+            return row.mms_cc_result === value;
+        },
+        ray_cc_filter_method: function(value, row) {
+            return row.ray_cc_result === value;
+        },
+        liang_cc_filter_method: function(value, row) {
+            return row.liang_cc_result === value;
+        },
+        handleDelete: function(index, row) {
+            console.log(index)
+            console.log(row)
         }
     }
 }
@@ -152,10 +196,10 @@ export default {
 <style scoped>
 
 #main_table_container {
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-left: 10%;
+    margin-right: 10%;
     margin-top: 40px;
-    width: 70%
+    width: 80%
 }
 
 
