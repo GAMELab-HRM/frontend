@@ -7,8 +7,12 @@
 			<el-header style="background: #606A78; height: 80px; padding:10px; margin:0%; ">
 				<nav_bar proj_name="HRM_project"/>
 			</el-header>
-		<el-main>Main</el-main>
-		<el-footer>Footer</el-footer>
+			<el-main style="text-align: center;">
+				<main_table/>	
+			</el-main>
+			<el-footer>
+				Footer
+			</el-footer>
 		</el-container>
     
 
@@ -19,14 +23,15 @@
 
 <script>
 import nav_bar from './components/nav.vue'
-
+import main_table from './components/home_table.vue'
 
 
 
 export default {
 	name: 'App',
 	components: {
-		nav_bar
+		nav_bar,
+		main_table,
 	}
 }
 </script>
