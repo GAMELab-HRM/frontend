@@ -1,10 +1,6 @@
 <template>
     <div id=main_table_container>
-<<<<<<< HEAD
         <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#4C8ED2', color: 'white'}">
-=======
-        <el-table :data="main_table_data" height="720" border style="width: 100%" >
->>>>>>> d4d6de7db6f30f09a2c853b5e4f5cf92b74dd556
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
