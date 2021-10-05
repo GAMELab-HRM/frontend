@@ -16,12 +16,27 @@
                     <el-button type="primary" @click="dialogVisible = false">{{ dialog_btn_label }}</el-button>
                 </span>
             </el-dialog>
-		
+			<h2 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h2>
+			<div id=GT_table_container>
+				<add_table/>
+			</div>
+			<h2 style="text-align:left; color: white; padding-top: 50px">MMS Result</h2>
 			<div id=MMS_table_container>
 				<add_table/>
 			</div>
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; "> 送出 </el-button>
+			</div>
+			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
+                <span><h2> 確認送出? </h2></span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="send_dialogVisible = false"> 確認 </el-button>
+					<el-button type="danger" @click="send_dialogVisible = false"> 返回 </el-button>
+                </span>
+            </el-dialog>
 		</div>
 	</div>
+	
 </template>
 
 
@@ -46,6 +61,7 @@ export default {
 			edit_btn_style: 'display: none',
 			dialog_text : '',
 			dialog_btn_label: '',
+			send_dialogVisible: false,
 		}
 	},
 	methods: {
@@ -65,6 +81,9 @@ export default {
 			this.check_btn_style = '',
 			this.dialog_text = "修改病患身分證字號"
 			this.dialog_btn_label = '關閉'
+		},
+		send: function() {
+			this.send_dialogVisible = true
 		}
 	}
 }
@@ -87,11 +106,6 @@ export default {
 
 
 
-#MMS_table_container {
-	margin-top: 30px;
-    
-    
-}
 
 
 
