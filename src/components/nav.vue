@@ -10,10 +10,10 @@
         </el-col>
         <el-col :xs="6" :sm="8" :md="10" :lg="12" :xl="14">
             <div id=nav_btn_container>
-                <el-menu class="el-menu-demo" mode="horizontal" :active_idx='activeIndex' :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" default-active=1>
-                    <el-menu-item index="1" v-bind:style="nav_btn">Home Page</el-menu-item>
-                    <el-menu-item index="2" v-bind:style="nav_btn">Add</el-menu-item>
-                    <el-menu-item index="3" v-bind:style="nav_btn">Review</el-menu-item>
+                <el-menu class="el-menu-demo" mode="horizontal"  :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" :default-active="activeIndex">
+                    <el-menu-item index="1" v-bind:style="nav_btn" @click="$router.push('/')">Home Page</el-menu-item>
+                    <el-menu-item index="2" v-bind:style="nav_btn" @click="$router.push('add')">Add</el-menu-item>
+                    <el-menu-item index="3" v-bind:style="nav_btn" @click="$router.push('review')">Review</el-menu-item>
             
                 </el-menu>
             </div>
@@ -64,14 +64,15 @@ export default {
                 backgroundColor: '#606A78',
                 marginRight: '30px',
             },
-            activeIndex: 0,
+            activeIndex: this.select_index,
             act_text_color: 'red',
             dialogVisible: false,
         }
     },
 
     props: {
-        proj_name: String
+        proj_name: String,
+        select_index: Number
     },
 
     methods: {

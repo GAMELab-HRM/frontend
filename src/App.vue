@@ -1,34 +1,24 @@
 <template>
 	<div id="app">
-    <!--<img alt="Vue logo" src="./assets/logo.png">-->
-    <!--<HelloWorld msg="Welytftycome to Your Vue.js App"/>-->
-    
+		<!-- nva bat寫一次就好 -->
 		<el-container style="margin:0%">
 			<el-header style="background: #606A78; height: 80px; padding:10px; margin:0%; ">
-				<nav_bar proj_name="HRM_project"/>
+				<nav_bar proj_name="HRM_project" :select_index="1"/>
 			</el-header>
-			<el-main style="text-align: center;">
-				<main_table/>	
-			</el-main>
-		</el-container>
-    
+		</el-container>	
 
-
-
+		<!-- router view -->
+		<router-view/>
 	</div>
 </template>
 
 <script>
 import nav_bar from './components/nav.vue'
-import main_table from './components/home_table.vue'
-
-
-
 export default {
 	name: 'App',
 	components: {
 		nav_bar,
-		main_table,
+		
 	}
 }
 </script>
