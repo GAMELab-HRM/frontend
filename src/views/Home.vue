@@ -1,6 +1,6 @@
 <template>
 	<div class="home">
-		<el-container style="margin:0%">
+		<el-container style="margin:0%" >
 			<el-main style="text-align: center;">
 				<home_table/>	
 			</el-main>

@@ -1,14 +1,15 @@
 <template>
 	<div id="app">
-		<!-- nva bat寫一次就好 -->
+		<!-- nva bar寫一次就好 -->
 		<el-container style="margin:0%">
 			<el-header style="background: #606A78; height: 80px; padding:10px; margin:0%; ">
-				<nav_bar proj_name="HRM_project" :select_index="1"/>
+				<nav_bar  :select_index="1"/>
 			</el-header>
 		</el-container>	
-
+	
 		<!-- router view -->
 		<router-view/>
+
 	</div>
 </template>
 
@@ -19,6 +20,9 @@ export default {
 	components: {
 		nav_bar,
 		
+	},
+	methods:{
+
 	}
 }
 </script>

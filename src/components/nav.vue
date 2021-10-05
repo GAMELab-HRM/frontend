@@ -11,9 +11,9 @@
         <el-col :xs="6" :sm="8" :md="10" :lg="12" :xl="14">
             <div id=nav_btn_container>
                 <el-menu class="el-menu-demo" mode="horizontal"  :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" :default-active="activeIndex">
-                    <el-menu-item index="1" v-bind:style="nav_btn" @click="$router.push('/')">Home Page</el-menu-item>
-                    <el-menu-item index="2" v-bind:style="nav_btn" @click="$router.push('add')">Add</el-menu-item>
-                    <el-menu-item index="3" v-bind:style="nav_btn" @click="$router.push('review')">Review</el-menu-item>
+                    <el-menu-item index="1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Home Page</el-menu-item>
+                    <el-menu-item index="2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                    <el-menu-item index="3" v-bind:style="nav_btn" @click="$router.push('review')" :disabled="check_login">Review</el-menu-item>
             
                 </el-menu>
             </div>
@@ -21,7 +21,7 @@
         <el-col :xs="9" :sm="8" :md="7" :lg="6" :xl="5">
             <div id="dr_login_container">
                 <el-dropdown @command="login">
-                <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round=True v-bind:style="login_btn"> {{ login_status }} </el-button>
+                <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item command="Dr. Ray" >Dr. Ray</el-dropdown-item>
                         <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
@@ -64,21 +64,26 @@ export default {
                 backgroundColor: '#606A78',
                 marginRight: '30px',
             },
-            activeIndex: this.select_index,
+            activeIndex: '1',
             act_text_color: 'red',
             dialogVisible: false,
         }
     },
 
     props: {
-        proj_name: String,
         select_index: Number
     },
-
+    computed:{
+        check_login:function(){
+            return !(this.$store.state.auth_app.login_status)
+        }
+    },
     methods: {
-        login: function(val, event) {
-            console.log(event);
-            this.login_status = val
+        login: function(name) {
+            
+            this.$store.dispatch("auth_app/UpdateLoginStatus")
+            this.$store.dispatch("auth_app/UpdateLoginName", name)
+            this.login_status = name
             this.dialogVisible = true
             this.login_btn.borderColor = 'lightgreen'
         },
