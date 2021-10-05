@@ -2,7 +2,7 @@
 	<div class="home">
 		<el-container style="margin:0%" >
 			<el-main style="text-align: center;">
-				<main_table/>	
+				<home_table/>	
 			</el-main>
 		</el-container>	
 	</div>
@@ -10,12 +10,12 @@
 
 <script>
 
-import main_table from '../components/home_table.vue'
+import home_table from '../components/home_table.vue'
 
 export default {
 	name: 'Home',
 	components: {
-		main_table,
+		home_table,
 	}
 }
 </script>

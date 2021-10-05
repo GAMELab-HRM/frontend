@@ -1,6 +1,6 @@
 <template>
     <div id=main_table_container>
-        <el-table :data="main_table_data" height="720" border style="width: 100%" >
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#4C8ED2', color: 'white'}">
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
@@ -33,7 +33,6 @@
 
 <script>
 export default {
-    name: 'main_table',
     data() {
         return {
             main_table_data: [{
@@ -190,6 +189,13 @@ export default {
         handleDelete: function(index, row) {
             console.log(index)
             console.log(row)
+        },
+        tableRowClassName: function(row, rowIndex) {
+            if (rowIndex === 1) {
+                return 'column_name';
+            } 
+            console.log(row)
+            return '';
         }
     }
 }
@@ -199,6 +205,7 @@ export default {
 
 <style scoped>
 
+
 #main_table_container {
     margin-left: 10%;
     margin-right: 10%;
@@ -206,7 +213,8 @@ export default {
     width: 80%
 }
 
-
-
+.el-table .column_name {
+    background: gray;
+}
 
 </style>
