@@ -1,6 +1,6 @@
 <template>
     <div id=main_table_container>
-        <el-table :data="main_table_data" height="720" border style="width: 100%">
+        <el-table :data="main_table_data" height="720" border style="width: 100%" >
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
@@ -19,8 +19,8 @@
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="table_item_width">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">編輯</el-button>
-                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">刪除</el-button>
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">編輯</el-button>
+                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -169,7 +169,11 @@ export default {
     props: {
         
     },
-
+    computed:{
+        check_login:function(){
+            return !(this.$store.state.auth_app.login_status)
+        }
+    },
     methods: {
         idx_method: function(index) {
             return index
