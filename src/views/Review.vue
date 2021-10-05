@@ -1,21 +1,18 @@
 <template>
-	<div class="home">
-		<el-container style="margin:0%">
-			<el-main style="text-align: center;">
-				<main_table/>	
-			</el-main>
-		</el-container>	
+	<div class="about">
+        <h1>this is review page </h1>
 	</div>
 </template>
 
+
 <script>
 
-import main_table from '../components/home_table.vue'
+
 
 export default {
 	name: 'Home',
 	components: {
-		main_table,
+		
 	}
 }
 </script>

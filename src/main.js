@@ -6,12 +6,6 @@ import router from './router'
 
 Vue.use(ElementUI);
 
-new Vue({
-  el: '#app',
-  router,
-  render: h => h(App)
-});
-
 
 
 
@@ -19,5 +13,6 @@ new Vue({
 Vue.config.productionTip = false
 
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app')
