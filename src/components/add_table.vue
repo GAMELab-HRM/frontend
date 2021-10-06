@@ -3,13 +3,11 @@
         <el-table :data="MMS_table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            
-            <template >
-                <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :key="index">
-                    <!-- <el-input v-model='MMS_table_data.data[index]' @change="handleEdit(scope.$index, scope.row)"></el-input><span>{{ MMS_table_data.data[index] }}</span> -->
-                    {{ MMS_table_data[index].data[index] }}
-                </el-table-column>
-            </template>
+            <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
+                <template slot-scope="scope">
+                    <el-input v-model="MMS_table_data[scope.$index]['sw'+index]"></el-input>
+                </template>
+            </el-table-column>
         </el-table>
     </div>
 </template>
@@ -19,76 +17,67 @@
 export default {
     data() {
         return {
+            text:'',
             MMS_table_data: [{
                 metrics: 'Contraction Vigor',
-                data: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                ]
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
             }, {
                 metrics: 'Contraction Pattern',
-                data: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                ]
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
             }, {
                 metrics: 'IRP4 s',
-                data: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                ]
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
             }, {
                 metrics: 'DCI',
-                data: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                ]
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
             }, {
                 metrics: 'Distal Latency',
-                data: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                ]
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
             }],
         }
     },
