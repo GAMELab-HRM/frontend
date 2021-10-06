@@ -4,7 +4,9 @@
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
-                <el-input v-model="swallow_data"></el-input>
+                <template slot-scope="scope">
+                    <el-input v-model="MMS_table_data[scope.$index]['sw'+index]"></el-input>
+                </template>
             </el-table-column>
         </el-table>
     </div>
@@ -15,6 +17,7 @@
 export default {
     data() {
         return {
+            text:'',
             MMS_table_data: [{
                 metrics: 'Contraction Vigor',
                 sw1: '',
