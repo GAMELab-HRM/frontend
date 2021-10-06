@@ -1,11 +1,11 @@
 <template>
     <div>
-        <el-table :data="MMS_table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
+        <el-table :data="table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
-                    <el-input v-model="MMS_table_data[scope.$index]['sw'+index]"></el-input>
+                    <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
                 </template>
             </el-table-column>
         </el-table>
@@ -18,7 +18,7 @@ export default {
     data() {
         return {
             text:'',
-            MMS_table_data: [{
+            table_data: [{
                 metrics: 'Contraction Vigor',
                 sw1: '',
                 sw2: '',
@@ -79,6 +79,7 @@ export default {
                 sw9: '',
                 sw10: '',
             }],
+            send_disable: true
         }
     },
     props: {
@@ -98,14 +99,24 @@ export default {
         liang_cc_filter_method: function(value, row) {
             return row.liang_cc_result === value;
         },
-        handleDelete: function(index, row) {
-            console.log(index)
-            console.log(row)
-        },
-        handleEdit: function(index, row) {
-            console.log(index)
-            console.log(row)
+        check_table: function() {
+            for (var i = 0; i < 5; i++) {
+                var val_lst = Object.values(this.table_data[i])
+                val_lst.shift()
+                for (var k = 0; k < val_lst.length; k++){
+                    if (val_lst[k] == '') {
+                        this.send_disable = true
+                        this.$emit('update_send', this.send_disable)
+                        return 0
+                    }
+                }
+            }
+            this.send_disable = false
+            this.$emit('update_send', this.send_disable)
+
+            
         }
+
     }
 }
 </script>

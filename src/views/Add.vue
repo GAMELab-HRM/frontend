@@ -20,18 +20,18 @@
             </el-dialog>
 
 			
-			<h2 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h2>
+			<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h1>
 			<div id=GT_table_container>
-				<add_table :patient_id="patient_id"/>
+				<add_table :patient_id="patient_id" @update_send="GT_update_send"/>
 			</div>
 
-			<h2 style="text-align:left; color: white; padding-top: 50px">MMS Result</h2>
+			<h1 style="text-align:left; color: white; padding-top: 50px">MMS Result</h1>
 			<div id=MMS_table_container>
-				<add_table :patient_id="patient_id"/>
+				<add_table :patient_id="patient_id" @update_send="MMS_update_send"/>
 			</div>
 
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; "> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px;" :disabled="send_disable"> 送出 </el-button>
 			</div>
 
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
@@ -70,6 +70,10 @@ export default {
 			dialog_text : '',
 			dialog_btn_label: '',
 			send_dialogVisible: false,
+			send_btn_style: 'margin-top: 30px; ',
+			GT_send_disable: true,
+			MMS_send_disable: true,
+			send_disable: true,
 		}
 	},
 	methods: {
@@ -92,6 +96,21 @@ export default {
 		},
 		send: function() {
 			this.send_dialogVisible = true
+		},
+		GT_update_send: function(val) {
+			this.GT_send_disable = val
+			this.update_send_btn(this.MMS_send_disable, val)
+			console.log(val)
+		},
+		MMS_update_send: function(val) {
+			console.log(val)
+			this.MMS_send_disable = val
+			this.update_send_btn(this.GT_send_disable, val)
+		},
+		update_send_btn: function(val1, val2) {
+			if(val1 == false && val2 == false) {
+				this.send_disable = false
+			}
 		}
 	}
 }
