@@ -22,22 +22,22 @@
 			
 			<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h1>
 			<div id=GT_table_container>
-				<add_table :patient_id="patient_id" @update_send="GT_update_send"/>
+				<add_table :patient_id="patient_id" @update_send="GT_update_send" @send_object="get_GT_object"/>
 			</div>
 
 			<h1 style="text-align:left; color: white; padding-top: 50px">MMS Result</h1>
 			<div id=MMS_table_container>
-				<add_table :patient_id="patient_id" @update_send="MMS_update_send"/>
+				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
 			</div>
 
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px;" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 			</div>
 
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
                 <span><h2> 確認送出? </h2></span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="send_dialogVisible = false"> 確認 </el-button>
+                    <el-button type="primary" @click="send_backend"> 確認 </el-button>
 					<el-button type="danger" @click="send_dialogVisible = false"> 返回 </el-button>
                 </span>
             </el-dialog>
@@ -74,6 +74,9 @@ export default {
 			GT_send_disable: true,
 			MMS_send_disable: true,
 			send_disable: true,
+			GT_object: '', 
+			MMS_object: '',
+			all_object:[],
 		}
 	},
 	methods: {
@@ -111,7 +114,30 @@ export default {
 			if(val1 == false && val2 == false) {
 				this.send_disable = false
 			}
-		}
+		},
+		get_GT_object: function(table) {
+			this.GT_object = table
+		},
+		get_MMS_object: function(table) {
+			this.MMS_object = table
+		},
+		preprocess_data: function(object) {
+			// var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci']
+			var dic = {}
+			dic['id'] = this.patient_id
+			for (var i = 0; i < object.length; i++) {
+				var temp = Object.values(object[i])
+				var key = temp.shift()
+				dic[key] = temp
+			}
+			return dic
+		},
+		send_backend: function() {
+			this.send_dialogVisible = false
+			this.all_object.push(this.preprocess_data(this.GT_object))
+			this.all_object.push(this.preprocess_data(this.MMS_object))
+			console.log(this.all_object)
+		},
 	}
 }
 </script>
