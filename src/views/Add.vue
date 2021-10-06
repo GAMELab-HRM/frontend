@@ -76,7 +76,7 @@ export default {
 			send_disable: true,
 			GT_object: '', 
 			MMS_object: '',
-			all_object:[],
+			all_object: [],
 		}
 	},
 	methods: {
@@ -113,6 +113,9 @@ export default {
 		update_send_btn: function(val1, val2) {
 			if(val1 == false && val2 == false) {
 				this.send_disable = false
+			}
+			else {
+				this.send_disable = true
 			}
 		},
 		get_GT_object: function(table) {
