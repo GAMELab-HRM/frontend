@@ -112,11 +112,10 @@ export default {
             return row.liang_cc_result === value;
         },
         check_table: function() {
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
                 val_lst.shift()
-                // for (var k = 0; k < val_lst.length; k++){
-                for (var k = 0; k < 1; k++){
+                for (var k = 0; k < val_lst.length; k++){
                     if (val_lst[k] == '') {
                         this.send_disable = true
                         this.$emit('update_send', this.send_disable)

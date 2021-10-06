@@ -122,13 +122,13 @@ export default {
 			this.MMS_object = table
 		},
 		preprocess_data: function(object) {
-			// var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci']
+			var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci', 'dl']
 			var dic = {}
-			dic['id'] = this.patient_id
+			dic[all_object_col[0]] = this.patient_id
 			for (var i = 0; i < object.length; i++) {
 				var temp = Object.values(object[i])
-				var key = temp.shift()
-				dic[key] = temp
+				temp.shift()
+				dic[all_object_col[i+1]] = temp
 			}
 			return dic
 		},
