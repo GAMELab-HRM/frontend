@@ -1,11 +1,15 @@
 <template>
     <div>
-        <el-table :data="MMS_table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }">
+        <el-table :data="MMS_table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
-                <el-input v-model="swallow_data"></el-input>
-            </el-table-column>
+            
+            <template >
+                <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :key="index">
+                    <!-- <el-input v-model='MMS_table_data.data[index]' @change="handleEdit(scope.$index, scope.row)"></el-input><span>{{ MMS_table_data.data[index] }}</span> -->
+                    {{ MMS_table_data[index].data[index] }}
+                </el-table-column>
+            </template>
         </el-table>
     </div>
 </template>
@@ -17,72 +21,79 @@ export default {
         return {
             MMS_table_data: [{
                 metrics: 'Contraction Vigor',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
+                data: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]
             }, {
                 metrics: 'Contraction Pattern',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
+                data: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]
             }, {
                 metrics: 'IRP4 s',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
+                data: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]
             }, {
                 metrics: 'DCI',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
+                data: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]
             }, {
                 metrics: 'Distal Latency',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
+                data: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                ]
             }],
-            swallow_data: [
-                
-            ]
         }
     },
     props: {
-        patient_id: String
+        patient_id: [String]
     },
 
     methods: {
@@ -99,6 +110,10 @@ export default {
             return row.liang_cc_result === value;
         },
         handleDelete: function(index, row) {
+            console.log(index)
+            console.log(row)
+        },
+        handleEdit: function(index, row) {
             console.log(index)
             console.log(row)
         }

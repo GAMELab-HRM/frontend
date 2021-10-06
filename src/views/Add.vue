@@ -18,11 +18,11 @@
             </el-dialog>
 			<h2 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h2>
 			<div id=GT_table_container>
-				<add_table/>
+				<add_table :patient_id="patient_id"/>
 			</div>
 			<h2 style="text-align:left; color: white; padding-top: 50px">MMS Result</h2>
 			<div id=MMS_table_container>
-				<add_table/>
+				<add_table :patient_id="patient_id"/>
 			</div>
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; "> 送出 </el-button>
