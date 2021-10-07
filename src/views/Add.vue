@@ -20,24 +20,24 @@
             </el-dialog>
 
 			
-			<h2 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h2>
+			<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h1>
 			<div id=GT_table_container>
-				<add_table/>
+				<add_table :patient_id="patient_id" @update_send="GT_update_send" @send_object="get_GT_object"/>
 			</div>
 
-			<h2 style="text-align:left; color: white; padding-top: 50px">MMS Result</h2>
+			<h1 style="text-align:left; color: white; padding-top: 50px">MMS Result</h1>
 			<div id=MMS_table_container>
-				<add_table/>
+				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
 			</div>
 
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; "> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 			</div>
 
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
                 <span><h2> 確認送出? </h2></span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="send_dialogVisible = false"> 確認 </el-button>
+                    <el-button type="primary" @click="send_backend"> 確認 </el-button>
 					<el-button type="danger" @click="send_dialogVisible = false"> 返回 </el-button>
                 </span>
             </el-dialog>
@@ -70,6 +70,13 @@ export default {
 			dialog_text : '',
 			dialog_btn_label: '',
 			send_dialogVisible: false,
+			send_btn_style: 'margin-top: 30px; ',
+			GT_send_disable: true,
+			MMS_send_disable: true,
+			send_disable: true,
+			GT_object: '', 
+			MMS_object: '',
+			all_object: [],
 		}
 	},
 	methods: {
@@ -92,7 +99,48 @@ export default {
 		},
 		send: function() {
 			this.send_dialogVisible = true
-		}
+		},
+		GT_update_send: function(val) {
+			this.GT_send_disable = val
+			this.update_send_btn(this.MMS_send_disable, val)
+			console.log(val)
+		},
+		MMS_update_send: function(val) {
+			console.log(val)
+			this.MMS_send_disable = val
+			this.update_send_btn(this.GT_send_disable, val)
+		},
+		update_send_btn: function(val1, val2) {
+			if(val1 == false && val2 == false) {
+				this.send_disable = false
+			}
+			else {
+				this.send_disable = true
+			}
+		},
+		get_GT_object: function(table) {
+			this.GT_object = table
+		},
+		get_MMS_object: function(table) {
+			this.MMS_object = table
+		},
+		preprocess_data: function(object) {
+			var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci', 'dl']
+			var dic = {}
+			dic[all_object_col[0]] = this.patient_id
+			for (var i = 0; i < object.length; i++) {
+				var temp = Object.values(object[i])
+				temp.shift()
+				dic[all_object_col[i+1]] = temp
+			}
+			return dic
+		},
+		send_backend: function() {
+			this.send_dialogVisible = false
+			this.all_object.push(this.preprocess_data(this.GT_object))
+			this.all_object.push(this.preprocess_data(this.MMS_object))
+			console.log(this.all_object)
+		},
 	}
 }
 </script>

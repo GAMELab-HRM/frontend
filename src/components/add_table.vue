@@ -1,11 +1,11 @@
 <template>
     <div>
-        <el-table :data="MMS_table_data" height="400" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }">
+        <el-table :data="table_data" height="470" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
-                    <el-input v-model="MMS_table_data[scope.$index]['sw'+index]"></el-input>
+                    <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
                 </template>
             </el-table-column>
         </el-table>
@@ -18,7 +18,7 @@ export default {
     data() {
         return {
             text:'',
-            MMS_table_data: [{
+            table_data: [{
                 metrics: 'Contraction Vigor',
                 sw1: '',
                 sw2: '',
@@ -43,7 +43,19 @@ export default {
                 sw9: '',
                 sw10: '',
             }, {
-                metrics: 'IRP4 s',
+                metrics: 'Swallow Type',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'IRP 4s',
                 sw1: '',
                 sw2: '',
                 sw3: '',
@@ -79,13 +91,11 @@ export default {
                 sw9: '',
                 sw10: '',
             }],
-            swallow_data: [
-                
-            ]
+            send_disable: true
         }
     },
     props: {
-        patient_id: String
+        patient_id: [String]
     },
 
     methods: {
@@ -101,10 +111,29 @@ export default {
         liang_cc_filter_method: function(value, row) {
             return row.liang_cc_result === value;
         },
-        handleDelete: function(index, row) {
-            console.log(index)
-            console.log(row)
+        check_table: function() {
+            // for (var i = 0; i < this.table_data.length; i++) {
+            for (var i = 0; i < 1; i++) {
+                var val_lst = Object.values(this.table_data[i])
+                val_lst.shift()
+                // for (var k = 0; k < val_lst.length; k++){
+                for (var k = 0; k < 1; k++){
+                    if (val_lst[k].length === 0) {
+                        this.send_disable = true
+                        this.$emit('update_send', this.send_disable)
+                        return 0
+                    }
+                }
+            }
+            this.send_disable = false
+            this.$emit('update_send', this.send_disable)
+            this.$emit('send_object', this.table_data)
+
+
+
+            
         }
+
     }
 }
 </script>

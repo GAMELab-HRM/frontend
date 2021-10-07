@@ -19,11 +19,19 @@
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="table_item_width">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">編輯</el-button>
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入診斷</el-button>
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪除</el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
+            <add_table :patient_id="current_patient_id" @update_send="update_send" @send_object="get_object"/> 
+
+            <div style="text-align:right; ">
+				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+			</div>
+        </el-dialog>
     </div>
 </template>
 
@@ -32,30 +40,36 @@
 
 
 <script>
+
+import add_table from "../components/add_table.vue"
+
 export default {
+    components: {
+		add_table,
+	},
     data() {
         return {
             main_table_data: [{
                 patient_id: 'A123456789',
                 mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
+                ray_cc_result: '-',
+                liang_cc_result: '-',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
-                patient_id: 'A123456789',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'Absent',
-                liang_cc_result: 'normal',
+                patient_id: 'B12738912703',
+                mms_cc_result: 'Absent',
+                ray_cc_result: '-',
+                liang_cc_result: '-',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
-                patient_id: 'A123456789',
-                mms_cc_result: 'IRP',
-                ray_cc_result: 'Absent',
-                liang_cc_result: 'normal',
+                patient_id: 'C1837901283',
+                mms_cc_result: 'IEM',
+                ray_cc_result: '-',
+                liang_cc_result: '-',
                 source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
@@ -162,7 +176,84 @@ export default {
                 {text: 'IRP', value: 'IRP'},
                 {text: 'Absent', value: 'Absent'},
                 {text: 'Fragmented', value: 'Fragmented'}
-            ]
+            ],
+            current_patient_id: '',
+            dialogVisible: false,
+            table_data: [{
+                metrics: 'Contraction Vigor',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'Contraction Pattern',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'Swallow Type',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'IRP 4s',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'DCI',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }, {
+                metrics: 'Distal Latency',
+                sw1: '',
+                sw2: '',
+                sw3: '',
+                sw4: '',
+                sw5: '',
+                sw6: '',
+                sw7: '',
+                sw8: '',
+                sw9: '',
+                sw10: '',
+            }],
+            send_disable: true,
+            object: '',
         }  
     },
     props: {
@@ -186,6 +277,12 @@ export default {
         liang_cc_filter_method: function(value, row) {
             return row.liang_cc_result === value;
         },
+        handleEdit: function(index, row) {
+            this.current_patient_id = this.main_table_data[index].patient_id
+            this.dialogVisible = true;
+            console.log(this.current_patient_id)
+            console.log(row)
+        },
         handleDelete: function(index, row) {
             console.log(index)
             console.log(row)
@@ -196,6 +293,44 @@ export default {
             } 
             console.log(row)
             return '';
+        },
+        handleClose(done) {
+            this.$confirm('確認關閉?').then(_ => {
+                done();
+                console.log(_)
+            }).catch(_ => {
+                console.log(_)
+            });
+            
+        
+        },
+        update_send(val) {
+            console.log(val)
+            if(val == false) {
+                this.send_disable = false
+            }
+            else {
+                this.send_disable = true
+            }
+        },
+        get_object(object) {
+            this.object = object
+        },
+        send_backend() {
+            var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci', 'dl']
+			var dic = {}
+			dic[all_object_col[0]] = this.current_patient_id
+			for (var i = 0; i < this.object.length; i++) {
+				var temp = Object.values(this.object[i])
+				temp.shift()
+				dic[all_object_col[i+1]] = temp
+			}
+			this.$alert('成功 !', '信息', { confirmButtonText: '确定',  callback: action => {
+                this.dialogVisible = false
+                console.log(action)
+            }
+        });
+            console.log(dic)
         }
     }
 }
