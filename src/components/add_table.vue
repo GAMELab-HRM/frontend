@@ -5,9 +5,17 @@
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
-                    <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
+                    <div v-if="toggle_selector(scope, scope.$index)">
+                        <el-select :v-model="value[idx]" placeholder="請選擇">
+                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div v-else>
+                        <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
+                    </div>
                 </template>
-            </el-table-column>
+            </el-table-column> 
         </el-table>
     </div>
 </template>
@@ -91,11 +99,29 @@ export default {
                 sw9: '',
                 sw10: '',
             }],
-            send_disable: true
+            send_disable: true,
+            options: [{
+                value: '0',
+                label: 'Normal'
+            }, {
+                value: '选项2',
+                label: '双皮奶'
+            }, {
+                value: '选项3',
+                label: '蚵仔煎'
+            }, {
+                value: '选项4',
+                label: '龙须面'
+            }, {
+                value: '选项5',
+                label: '北京烤鸭'
+            }],
+            value: [0] * 10,
+            idx: 0,
         }
     },
     props: {
-        patient_id: [String]
+        patient_id: [String],
     },
 
     methods: {
@@ -128,10 +154,21 @@ export default {
             this.send_disable = false
             this.$emit('update_send', this.send_disable)
             this.$emit('send_object', this.table_data)
-
-
-
-            
+        },
+        change_if_selector: function() {
+            this.if_selector = !this.if_selector
+        },
+        toggle_selector: function(scope, idx) {
+            console.log(scope)
+            this.idx = parseInt(scope.column.property.slice(2), 10)
+            console.log(this.idx)
+            console.log(this.vigor_value)
+            if (idx == 1) {
+                return true
+            }
+            else {
+                return false
+            }
         }
 
     }

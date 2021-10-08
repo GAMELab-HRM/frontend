@@ -26,7 +26,6 @@
         </el-table>
         <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
             <add_table :patient_id="current_patient_id" @update_send="update_send" @send_object="get_object"/> 
-
             <div style="text-align:right; ">
 				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
                 <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
