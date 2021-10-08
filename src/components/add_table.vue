@@ -5,9 +5,9 @@
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
-                    <div v-if="toggle_selector(scope, scope.$index)">
-                        <el-select :v-model="value[idx]" placeholder="請選擇">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                    <div v-if="scope.$index < 3">
+                        <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
+                            <el-option v-for="item in options(scope.$index)" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </div>
@@ -100,24 +100,45 @@ export default {
                 sw10: '',
             }],
             send_disable: true,
-            options: [{
+            vigor_options: [{
                 value: '0',
+                label: 'Failed'
+            }, {
+                value: '1',
+                label: 'Weak'
+            }, {
+                value: '2',
                 label: 'Normal'
             }, {
-                value: '选项2',
-                label: '双皮奶'
-            }, {
-                value: '选项3',
-                label: '蚵仔煎'
-            }, {
-                value: '选项4',
-                label: '龙须面'
-            }, {
-                value: '选项5',
-                label: '北京烤鸭'
+                value: '3',
+                label: 'Hypercontractile'
             }],
-            value: [0] * 10,
-            idx: 0,
+            pattern_options: [{
+                value: '0',
+                label: 'Failed'
+            }, {
+                value: '1',
+                label: 'Premature'
+            }, {
+                value: '2',
+                label: 'Fragmented'
+            }, {
+                value: '3',
+                label: 'Intact'
+            }],
+            type_options: [{
+                value: '0',
+                label: 'Absent'
+            }, {
+                value: '1',
+                label: 'IEM'
+            }, {
+                value: '2',
+                label: 'Fragmented'
+            }, {
+                value: '3',
+                label: 'Normal'
+            }],
         }
     },
     props: {
@@ -141,6 +162,7 @@ export default {
             // for (var i = 0; i < this.table_data.length; i++) {
             for (var i = 0; i < 1; i++) {
                 var val_lst = Object.values(this.table_data[i])
+                console.log(val_lst)
                 val_lst.shift()
                 // for (var k = 0; k < val_lst.length; k++){
                 for (var k = 0; k < 1; k++){
@@ -158,19 +180,10 @@ export default {
         change_if_selector: function() {
             this.if_selector = !this.if_selector
         },
-        toggle_selector: function(scope, idx) {
-            console.log(scope)
-            this.idx = parseInt(scope.column.property.slice(2), 10)
-            console.log(this.idx)
-            console.log(this.vigor_value)
-            if (idx == 1) {
-                return true
-            }
-            else {
-                return false
-            }
+        options: function(idx) {
+            var options_lst = [this.vigor_options, this.pattern_options, this.type_options]
+            return options_lst[idx]
         }
-
     }
 }
 </script>
