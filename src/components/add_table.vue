@@ -3,7 +3,7 @@
         <el-table :data="table_data" height="470" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
+            <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
                     <div v-if="scope.$index < 3">
                         <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
@@ -101,43 +101,49 @@ export default {
             }],
             send_disable: true,
             vigor_options: [{
-                value: '0',
+                value: 'Failed',
                 label: 'Failed'
             }, {
-                value: '1',
+                value: 'Weak',
                 label: 'Weak'
             }, {
-                value: '2',
+                value: 'Normal',
                 label: 'Normal'
             }, {
-                value: '3',
+                value: 'Hypercontractile',
                 label: 'Hypercontractile'
             }],
             pattern_options: [{
-                value: '0',
+                value: 'Failed',
                 label: 'Failed'
             }, {
-                value: '1',
+                value: 'Premature',
                 label: 'Premature'
             }, {
-                value: '2',
+                value: 'Fragmented',
                 label: 'Fragmented'
             }, {
-                value: '3',
+                value: 'Intact',
                 label: 'Intact'
             }],
             type_options: [{
-                value: '0',
-                label: 'Absent'
-            }, {
-                value: '1',
-                label: 'IEM'
-            }, {
-                value: '2',
-                label: 'Fragmented'
-            }, {
-                value: '3',
+                value: 'Normal',
                 label: 'Normal'
+            }, {
+                value: 'Weak',
+                label: 'Weak'
+            }, {
+                value: 'Failed contraction',
+                label: 'Failed contraction'
+            }, {
+                value: 'Premature',
+                label: 'Premature'
+            }, {
+                value: 'Hyper',
+                label: 'Hyper'
+            }, {
+                value: 'Fragmented',
+                label: 'Fragmented'
             }],
         }
     },

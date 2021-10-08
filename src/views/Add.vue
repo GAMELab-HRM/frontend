@@ -1,7 +1,6 @@
 <template>
 	<div id="add">
 		<div id="main_container">
-		
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
@@ -18,14 +17,29 @@
                     <el-button type="primary" @click="dialogVisible = false">{{ dialog_btn_label }}</el-button>
                 </span>
             </el-dialog>
-
-			
-			<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth</h1>
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth
+						<el-select v-model="GT_cc_result" placeholder="CC Result" style="margin-top: 15px" @change="GT_selected_update">
+							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
 			<div id=GT_table_container>
 				<add_table :patient_id="patient_id" @update_send="GT_update_send" @send_object="get_GT_object"/>
 			</div>
-
-			<h1 style="text-align:left; color: white; padding-top: 50px">MMS Result</h1>
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MMS Result
+						<el-select v-model="MMS_cc_result" placeholder="CC Result" style="margin-top: 15px" @change="MMS_selected_update">
+							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
 			<div id=MMS_table_container>
 				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
 			</div>
@@ -61,7 +75,7 @@ export default {
 	},
 	data() {
 		return {
-			patient_id: "",
+			patient_id: '',
 			patient_id_exist: false,
 			patient_id_style: '',
 			dialogVisible: false,
@@ -76,7 +90,24 @@ export default {
 			send_disable: true,
 			GT_object: '', 
 			MMS_object: '',
-			all_object: [],
+			all_object: {},
+			GT_cc_result: '',
+			MMS_cc_result: '', 
+			cc_options:[{
+                value: 'Absent',
+                label: 'Absent'
+            }, {
+                value: 'IEM',
+                label: 'IEM'
+            }, {
+                value: 'Fragmented',
+                label: 'Fragmented'
+            }, {
+                value: 'Normal',
+                label: 'Normal'
+            }],
+			GT_selected: false,
+			MMS_selected: false,
 		}
 	},
 	methods: {
@@ -87,6 +118,7 @@ export default {
 			this.check_btn_style = 'display: none'
 			this.dialog_text = 'Patient ID : ' + this.patient_id
 			this.dialog_btn_label = '確認'
+			this.update_send_btn()
 			// this.patient_id_style = 'background: "red"'
 		},
 		edit_patient_id: function() {
@@ -96,22 +128,32 @@ export default {
 			this.check_btn_style = '',
 			this.dialog_text = "修改病患身分證字號"
 			this.dialog_btn_label = '關閉'
+			this.patient_id = ''
+			this.update_send_btn()
 		},
 		send: function() {
 			this.send_dialogVisible = true
 		},
 		GT_update_send: function(val) {
-			this.GT_send_disable = val
-			this.update_send_btn(this.MMS_send_disable, val)
 			console.log(val)
+			this.GT_send_disable = val
+			this.update_send_btn()
 		},
 		MMS_update_send: function(val) {
 			console.log(val)
 			this.MMS_send_disable = val
-			this.update_send_btn(this.GT_send_disable, val)
+			this.update_send_btn()
 		},
-		update_send_btn: function(val1, val2) {
-			if(val1 == false && val2 == false) {
+		GT_selected_update: function() {
+			this.GT_selected = true
+			this.update_send_btn()
+		},
+		MMS_selected_update: function() {
+			this.MMS_selected = true
+			this.update_send_btn()
+		},
+		update_send_btn: function() {
+			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '') {
 				this.send_disable = false
 			}
 			else {
@@ -124,8 +166,9 @@ export default {
 		get_MMS_object: function(table) {
 			this.MMS_object = table
 		},
-		preprocess_data: function(object) {
-			var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci', 'dl']
+		preprocess_table_data: function(object) {
+			// 處理來自GT table & MMS table 的資料
+			var all_object_col = ['ID', 'V', 'P', 'swallow_type', 'IRP40', 'DCI', 'DL']
 			var dic = {}
 			dic[all_object_col[0]] = this.patient_id
 			for (var i = 0; i < object.length; i++) {
@@ -135,10 +178,19 @@ export default {
 			}
 			return dic
 		},
+		preprocessing_data: function(object) {
+			// 處理CC result 與 doctor
+			object['GT']['cc_result'] = this.GT_cc_result
+			object['MMS']['cc_result'] = this.MMS_cc_result
+
+			return object
+		},
 		send_backend: function() {
 			this.send_dialogVisible = false
-			this.all_object.push(this.preprocess_data(this.GT_object))
-			this.all_object.push(this.preprocess_data(this.MMS_object))
+			this.all_object['GT'] = this.preprocess_table_data(this.GT_object)
+			this.all_object['MMS'] = this.preprocess_table_data(this.MMS_object)
+			this.all_object = this.preprocessing_data(this.all_object)
+
 			console.log(this.all_object)
 		},
 	}
@@ -155,9 +207,9 @@ export default {
 
 #main_container {
 	margin-top: 40px;
-	margin-left: 10%;
-    margin-right: 10%;
-	width: 80%
+	margin-left: 11%;
+    margin-right: 5%;
+	width: 84%
 }
 
 
