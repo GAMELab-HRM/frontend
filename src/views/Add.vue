@@ -1,6 +1,10 @@
 <template>
 	<div id="add">
 		<div id="main_container">
+<<<<<<< HEAD
+			
+=======
+>>>>>>> team/main
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
