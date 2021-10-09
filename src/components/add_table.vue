@@ -3,11 +3,19 @@
         <el-table :data="table_data" height="470" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"wet swallow "+index' :prop='"sw"+index' :key="index">
+            <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
-                    <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
+                    <div v-if="scope.$index < 3">
+                        <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
+                            <el-option v-for="item in options(scope.$index)" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div v-else>
+                        <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>
+                    </div>
                 </template>
-            </el-table-column>
+            </el-table-column> 
         </el-table>
     </div>
 </template>
@@ -91,11 +99,56 @@ export default {
                 sw9: '',
                 sw10: '',
             }],
-            send_disable: true
+            send_disable: true,
+            vigor_options: [{
+                value: 'Failed',
+                label: 'Failed'
+            }, {
+                value: 'Weak',
+                label: 'Weak'
+            }, {
+                value: 'Normal',
+                label: 'Normal'
+            }, {
+                value: 'Hypercontractile',
+                label: 'Hypercontractile'
+            }],
+            pattern_options: [{
+                value: 'Failed',
+                label: 'Failed'
+            }, {
+                value: 'Premature',
+                label: 'Premature'
+            }, {
+                value: 'Fragmented',
+                label: 'Fragmented'
+            }, {
+                value: 'Intact',
+                label: 'Intact'
+            }],
+            type_options: [{
+                value: 'Normal',
+                label: 'Normal'
+            }, {
+                value: 'Weak',
+                label: 'Weak'
+            }, {
+                value: 'Failed contraction',
+                label: 'Failed contraction'
+            }, {
+                value: 'Premature',
+                label: 'Premature'
+            }, {
+                value: 'Hyper',
+                label: 'Hyper'
+            }, {
+                value: 'Fragmented',
+                label: 'Fragmented'
+            }],
         }
     },
     props: {
-        patient_id: [String]
+        patient_id: [String],
     },
 
     methods: {
@@ -115,6 +168,7 @@ export default {
             // for (var i = 0; i < this.table_data.length; i++) {
             for (var i = 0; i < 1; i++) {
                 var val_lst = Object.values(this.table_data[i])
+                console.log(val_lst)
                 val_lst.shift()
                 // for (var k = 0; k < val_lst.length; k++){
                 for (var k = 0; k < 1; k++){
@@ -128,12 +182,14 @@ export default {
             this.send_disable = false
             this.$emit('update_send', this.send_disable)
             this.$emit('send_object', this.table_data)
-
-
-
-            
+        },
+        change_if_selector: function() {
+            this.if_selector = !this.if_selector
+        },
+        options: function(idx) {
+            var options_lst = [this.vigor_options, this.pattern_options, this.type_options]
+            return options_lst[idx]
         }
-
     }
 }
 </script>

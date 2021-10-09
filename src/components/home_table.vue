@@ -1,5 +1,6 @@
 <template>
     <div id=main_table_container>
+        <!-- main table start -->
         <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#4C8ED2', color: 'white'}">
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
@@ -11,27 +12,38 @@
             </el-table-column>
             <el-table-column prop="liang_cc_result" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="liang_cc_filter_method">
             </el-table-column>
-            <el-table-column prop="source" label="資料來源" :width="table_item_width">
-            </el-table-column>
             <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width">
             </el-table-column>
             <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width">
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="table_item_width">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入診斷</el-button>
+                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入診斷</el-button>
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪除</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
-            <add_table :patient_id="current_patient_id" @update_send="update_send" @send_object="get_object"/> 
+        <!-- main table end -->
 
+        <!-- 輸入診斷 table start-->
+        <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="85%"  destroy-on-close :before-close="handleClose">
+            <add_table :patient_id="current_patient_id" @update_send="update_send" @send_object="get_object"/> 
             <div style="text-align:right; ">
 				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
                 <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 			</div>
         </el-dialog>
+        <!-- 輸入診斷 table end -->
+
+        <!-- 刪除 dialog start -->
+        <el-dialog :visible.sync="delete_dialogVisible" width="30%" cneter> 
+            <span><h2> 是否刪除 {{ current_patient_id }} 所有資料?</h2></span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delete_dialogVisible = false">返回</el-button>
+                    <el-button type="danger" @click="delete_dialogVisible = false"> 確認刪除 </el-button>
+                </span>
+        </el-dialog>
+        <!-- 刪除 dialog end -->
     </div>
 </template>
 
@@ -54,7 +66,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -62,7 +73,6 @@ export default {
                 mms_cc_result: 'Absent',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -70,7 +80,6 @@ export default {
                 mms_cc_result: 'IEM',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -78,7 +87,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -86,7 +94,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -94,7 +101,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -102,7 +108,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -110,7 +115,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -118,7 +122,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -126,7 +129,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -134,7 +136,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -142,7 +143,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -150,7 +150,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -158,7 +157,6 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }, {
@@ -166,11 +164,10 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
-                source: 'google drive',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }],
-            table_item_width: 180,
+            table_item_width: 200,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IRP', value: 'IRP'},
@@ -254,6 +251,7 @@ export default {
             }],
             send_disable: true,
             object: '',
+            delete_dialogVisible: false,
         }  
     },
     props: {
@@ -284,6 +282,8 @@ export default {
             console.log(row)
         },
         handleDelete: function(index, row) {
+            this.delete_dialogVisible = true;
+            this.current_patient_id = this.main_table_data[index].patient_id
             console.log(index)
             console.log(row)
         },
