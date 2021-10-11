@@ -1,10 +1,6 @@
 <template>
 	<div id="add">
 		<div id="main_container">
-<<<<<<< HEAD
-			
-=======
->>>>>>> team/main
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
@@ -14,7 +10,6 @@
 					<el-button type="danger" icon="el-icon-refresh" @click="edit_patient_id" :style="edit_btn_style"> 修改 </el-button>
 				</el-col>
 			</el-row>
-
 			<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>
                 <span><h2> {{ dialog_text }}</h2></span>
                 <span slot="footer" class="dialog-footer">
