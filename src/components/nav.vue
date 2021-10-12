@@ -10,11 +10,27 @@
         </el-col>
         <el-col :xs="6" :sm="8" :md="10" :lg="12" :xl="14">
             <div id=nav_btn_container>
-                <el-menu class="el-menu-demo" mode="horizontal"  :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" :default-active="activeIndex">
-                    <el-menu-item index="1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Home Page</el-menu-item>
-                    <el-menu-item index="2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
-                    <el-menu-item index="3" v-bind:style="nav_btn" @click="$router.push('review')" :disabled="check_login">Review</el-menu-item>
-            
+                <el-menu class="el-menu-demo" mode="horizontal"  :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" :default-active="activeIndex" background-color='#606A78' text-color='white'>
+                    <el-submenu index="1" :disabled="check_login">
+                        <template slot="title">Wet swallow 10</template>
+                        <el-menu-item index="1-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
+                        <el-menu-item index="1-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2" :disabled="check_login">
+                        <template slot="title">MRS</template>
+                        <el-menu-item index="2-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
+                        <el-menu-item index="2-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3" :disabled="check_login">
+                        <template slot="title">RDC</template>
+                        <el-menu-item index="3-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
+                        <el-menu-item index="3-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="4" :disabled="check_login">
+                        <template slot="title">hiatal hernia</template>
+                        <el-menu-item index="4-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
+                        <el-menu-item index="4-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                    </el-submenu>
                 </el-menu>
             </div>
         </el-col>
@@ -62,9 +78,12 @@ export default {
             nav_btn: {
                 fontSize: '20px',
                 backgroundColor: '#606A78',
-                marginRight: '30px',
+                // marginRight: '30px',
             },
-            activeIndex: '1',
+            nav_menu_style: {
+                fontSize: '20px',
+            },
+            activeIndex: '1-1',
             act_text_color: 'red',
             dialogVisible: false,
         }
@@ -92,6 +111,9 @@ export default {
             console.log(idx)
             console.log(event)
         },
+        nav_bar_submenu_hover() {
+            console.log(123)
+        }
 
     }
 
@@ -128,6 +150,8 @@ el-header{
     margin: 0%;
     background: #606A78;
 }
-
+::v-deep .el-submenu .el-submenu__title{
+    font-size: 20px
+}
 
 </style>
