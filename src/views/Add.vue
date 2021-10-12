@@ -196,6 +196,7 @@ export default {
 			// 	console.log("成功")
 			// 	console.log(res)
 			// })
+			console.log(this.all_object)
 		}
 	}
 }

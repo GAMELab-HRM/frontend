@@ -359,6 +359,7 @@ export default {
                 }
             });
             console.log(dic)
+            this.cc_result = ''
         },
         cc_selected_update() {
             this.cc_result_selected = true
