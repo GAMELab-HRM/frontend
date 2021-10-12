@@ -66,7 +66,6 @@
 
 import add_table from "../components/add_table.vue"
 
-
 export default {
 	name: 'Add',
 	components: {
@@ -189,9 +188,15 @@ export default {
 			this.all_object['GT'] = this.preprocess_table_data(this.GT_object)
 			this.all_object['MMS'] = this.preprocess_table_data(this.MMS_object)
 			this.all_object = this.preprocessing_data(this.all_object)
-
-			console.log(this.all_object)
-		},
+			//加入doctor id 到all_object
+			this.all_object['GT']["doctor"] = this.$store.state.auth_app.login_name //拿到doctor id的方法
+			this.all_object["MMS"]["doctor"] = "MMS"
+			// console.log(this.all_object)
+			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
+			// 	console.log("成功")
+			// 	console.log(res)
+			// })
+		}
 	}
 }
 </script>

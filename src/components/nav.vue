@@ -65,6 +65,10 @@ export default {
     name: 'nav_bar',
     data() {
         return {
+            login_map:{
+                "Dr. Ray":"0",
+                "Dr. Liang":"1"
+            },
             login_status: "登入",
             login_btn: {
                 borderColor: 'red',
@@ -101,7 +105,7 @@ export default {
         login: function(name) {
             
             this.$store.dispatch("auth_app/UpdateLoginStatus")
-            this.$store.dispatch("auth_app/UpdateLoginName", name)
+            this.$store.dispatch("auth_app/UpdateLoginName", this.login_map[name])
             this.login_status = name
             this.dialogVisible = true
             this.login_btn.borderColor = 'lightgreen'
