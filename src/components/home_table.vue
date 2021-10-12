@@ -37,7 +37,7 @@
 
         <!-- 刪除 dialog start -->
         <el-dialog :visible.sync="delete_dialogVisible" width="30%" cneter> 
-            <span><h2> 是否刪除 {{ current_patient_id }} 所有資料?</h2></span>
+            <span><h2> 是否刪除 {{ current_patient_id }} 資料?</h2></span>
                 <span slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="delete_dialogVisible = false">返回</el-button>
                     <el-button type="danger" @click="delete_dialogVisible = false"> 確認刪除 </el-button>
