@@ -27,7 +27,11 @@
 
         <!-- 輸入診斷 table start-->
         <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="85%"  destroy-on-close :before-close="handleClose">
-            <add_table :patient_id="current_patient_id" @update_send="update_send" @send_object="get_object"/> 
+            <el-select v-model="cc_result" placeholder="CC Result" style="margin-bottom: 15px;" @change="cc_selected_update">
+				<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+				</el-option>
+			</el-select>
+            <add_table :patient_id="current_patient_id" @update_send="update_table_send" @send_object="get_object"/> 
             <div style="text-align:right; ">
 				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
                 <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
@@ -252,6 +256,22 @@ export default {
             send_disable: true,
             object: '',
             delete_dialogVisible: false,
+            cc_options:[{
+                value: 'Absent',
+                label: 'Absent'
+            }, {
+                value: 'IEM',
+                label: 'IEM'
+            }, {
+                value: 'Fragmented',
+                label: 'Fragmented'
+            }, {
+                value: 'Normal',
+                label: 'Normal'
+            }],
+            cc_result: '',
+            cc_result_selected: false,
+            table_send: false,
         }  
     },
     props: {
@@ -304,9 +324,15 @@ export default {
             
         
         },
-        update_send(val) {
-            console.log(val)
-            if(val == false) {
+        update_table_send(val) {
+            // 因為val是send_disable
+            this.table_send = !val
+            this.update_send()
+        },
+        update_send() {
+            console.log(this.table_send)
+            console.log(this.cc_result_selected)
+            if(this.table_send && this.cc_result_selected) {
                 this.send_disable = false
             }
             else {
@@ -325,12 +351,18 @@ export default {
 				temp.shift()
 				dic[all_object_col[i+1]] = temp
 			}
+            dic['cc_result'] = this.cc_result
+
 			this.$alert('成功 !', '信息', { confirmButtonText: '确定',  callback: action => {
-                this.dialogVisible = false
-                console.log(action)
-            }
-        });
+                    this.dialogVisible = false
+                    console.log(action)
+                }
+            });
             console.log(dic)
+        },
+        cc_selected_update() {
+            this.cc_result_selected = true
+            this.update_send()
         }
     }
 }
