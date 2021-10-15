@@ -3,10 +3,9 @@
 		<!-- nva bar寫一次就好 -->
 		<el-container style="margin:0%">
 			<el-header style="background: #606A78; height: 80px; padding:10px; margin:0%; ">
-				<nav_bar  :select_index="1"/>
+				<nav_bar :select_index="1"/>
 			</el-header>
 		</el-container>	
-	
 		<!-- router view -->
 		<router-view/>
 
@@ -15,6 +14,7 @@
 
 <script>
 import nav_bar from './components/nav.vue'
+
 export default {
 	name: 'App',
 	components: {

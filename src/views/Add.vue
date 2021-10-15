@@ -25,6 +25,12 @@
 						</el-select>
 					</h1>
 				</el-col>
+				<el-col :span="4" offset="16"  style="margin-top: 70px">
+					<el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
+						<el-button slot="trigger"  type="primary">選取文件</el-button>
+						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
+					</el-upload>
+				</el-col>
 			</el-row>
 			<div id=GT_table_container>
 				<add_table :patient_id="patient_id" @update_send="GT_update_send" @send_object="get_GT_object"/>
@@ -106,6 +112,7 @@ export default {
             }],
 			GT_selected: false,
 			MMS_selected: false,
+			raw_data_upload: false,
 		}
 	},
 	methods: {
@@ -151,8 +158,8 @@ export default {
 			this.update_send_btn()
 		},
 		update_send_btn: function() {
-			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '') {
-				this.send_disable = false
+			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '' && this.raw_data_upload == true) {
+				this.send_disable = false                                                                                                                           
 			}
 			else {
 				this.send_disable = true
@@ -197,6 +204,22 @@ export default {
 			// 	console.log(res)
 			// })
 			console.log(this.all_object)
+		},
+		submitUpload() {
+			this.$refs.upload.submit();
+		},
+		handleRemove(file, fileList) {
+			console.log(file, fileList);
+			this.raw_data_upload = false
+			this.update_send_btn()
+		},
+		handlePreview(file) {
+			console.log(file);
+		},
+		upload_success(response, file, fileList) {
+			this.raw_data_upload = true
+			this.update_send_btn()
+			console.log(response, file, fileList)
 		}
 	}
 }
@@ -217,6 +240,19 @@ export default {
 	width: 84%
 }
 
+/* .el-upload-list__item-name {
+	width: 30%;
+} */
+
+.upload-demo {
+	text-align:right;
+}
+
+.el-upload-list__item {
+	color: black;
+	font-weight: bold;
+	background-color:white;
+}
 
 
 

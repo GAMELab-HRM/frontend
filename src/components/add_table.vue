@@ -23,6 +23,7 @@
 
 <script>
 export default {
+    name: 'add_table',
     data() {
         return {
             text:'',

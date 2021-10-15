@@ -6,6 +6,8 @@
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
             </el-table-column>
+            <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
+            </el-table-column>
             <el-table-column prop="mms_cc_result" label="MMS CC result" :width="table_item_width" :filters="cc_filter" :filter-method="mms_cc_filter_method">
             </el-table-column>
             <el-table-column prop="ray_cc_result" label="Dr. Ray CC result" :width="table_item_width" :filters="cc_filter" :filter-method="ray_cc_filter_method">
@@ -42,9 +44,9 @@
         <!-- 刪除 dialog start -->
         <el-dialog :visible.sync="delete_dialogVisible" width="30%" cneter> 
             <span><h2> 是否刪除 {{ current_patient_id }} 資料?</h2></span>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="delete_dialogVisible = false">返回</el-button>
-                    <el-button type="danger" @click="delete_dialogVisible = false"> 確認刪除 </el-button>
+                <span>
+                    <el-button type="danger" @click="delete_one" style="margin-top: 30px; margin-right: 20px"> 刪除我的診斷 </el-button>
+                    <el-button type="danger" @click="delete_all"> 刪除兩位醫師的診斷</el-button>
                 </span>
         </el-dialog>
         <!-- 刪除 dialog end -->
@@ -60,6 +62,7 @@
 import add_table from "../components/add_table.vue"
 
 export default {
+    name: 'home_table',
     components: {
 		add_table,
 	},
@@ -67,6 +70,7 @@ export default {
         return {
             main_table_data: [{
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
@@ -74,6 +78,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'B12738912703',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'Absent',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
@@ -81,6 +86,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'C1837901283',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'IEM',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
@@ -88,6 +94,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -95,6 +102,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -102,6 +110,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -109,6 +118,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -116,6 +126,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -123,6 +134,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -130,6 +142,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -137,6 +150,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -144,6 +158,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -151,6 +166,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -158,6 +174,7 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
@@ -165,13 +182,14 @@ export default {
                 last_review_liang: '2021/10/5',
             }, {
                 patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
                 mms_cc_result: 'normal',
                 ray_cc_result: 'normal',
                 liang_cc_result: 'normal',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
             }],
-            table_item_width: 200,
+            table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IRP', value: 'IRP'},
@@ -364,6 +382,13 @@ export default {
         cc_selected_update() {
             this.cc_result_selected = true
             this.update_send()
+        },
+        delete_one() {
+            console.log(this.$store.state.auth_app.login_name)
+            this.delete_dialogVisible = false
+        },
+        delete_all() {
+            this.delete_dialogVisible = false
         }
     }
 }
