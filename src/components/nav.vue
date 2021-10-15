@@ -38,10 +38,9 @@
             <div id="dr_login_container">
                 <el-dropdown @command="login">
                 <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="Dr. Ray" >Dr. Ray</el-dropdown-item>
-                        <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
-                        <el-dropdown-item command="Dr. Ray & Dr. Liang">Dr. Ray & Dr. Liang</el-dropdown-item>
+                    <el-dropdown-menu slot="dropdown" style="background: #606A78">
+                        <el-dropdown-item command="Dr. Ray" style='font-size: 20px; color: white'>Dr. Ray</el-dropdown-item>
+                        <el-dropdown-item command="Dr. Liang" style='font-size: 20px; color: white'>Dr. Liang</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>
@@ -148,6 +147,9 @@ export default {
     margin-left: 30px;
 }
 
+#dr_login_btn {
+    font-size: 20px;
+}
 
 el-header{
     padding: 0%;
@@ -155,6 +157,10 @@ el-header{
     background: #606A78;
 }
 ::v-deep .el-submenu .el-submenu__title{
+    font-size: 20px
+}
+
+::v-deep .el-dropdown-menu .el-dropdown-menu__item{
     font-size: 20px
 }
 
