@@ -26,7 +26,7 @@
 					</h1>
 				</el-col>
 				<el-col :span="4" offset="16"  style="margin-top: 70px">
-					<el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
+					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
 						<el-button slot="trigger"  type="primary">選取文件</el-button>
 						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
 					</el-upload>
@@ -69,9 +69,8 @@
 
 <script>
 
-
 import add_table from "../components/add_table.vue"
-
+import {uploadFile} from "@/apis/file.js"
 export default {
 	name: 'Add',
 	components: {
@@ -220,6 +219,18 @@ export default {
 			this.raw_data_upload = true
 			this.update_send_btn()
 			console.log(response, file, fileList)
+		},
+		customUpload(item){
+			const file = item.file 
+			//const size = file.size / 1024 / 1024
+			this.forms = new FormData()
+			this.forms.append("files", file)
+
+			uploadFile(this.forms).then((res)=>{
+				console.log("response")
+				console.log(res)
+			})
+			
 		}
 	}
 }
