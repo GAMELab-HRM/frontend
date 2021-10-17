@@ -1,7 +1,7 @@
 <template>
 	<div id="add">
 		<div id="main_container">
-
+			<paint :x_size="x_size" :y_size="y_size" :raw_data="raw_data"></paint>
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
@@ -69,13 +69,14 @@
 
 
 <script>
-
+import paint from "../components/paint.vue"
 import add_table from "../components/add_table.vue"
 import {uploadFile} from "@/apis/file.js"
 export default {
 	name: 'Add',
 	components: {
 		add_table,
+		paint
 	},
 	data() {
 		return {
@@ -113,6 +114,9 @@ export default {
 			GT_selected: false,
 			MMS_selected: false,
 			raw_data_upload: false,
+			x_size:0,
+			y_size:0,
+			raw_data:0
 		}
 	},
 	methods: {
@@ -231,14 +235,12 @@ export default {
 				console.log("response")
 				console.log(res)
 				let raw_data = JSON.parse(res['data']['raw'])
-				for(let i =0; i<10; i++){
-					console.log(raw_data[i])
-					console.log(raw_data[i].length)
-				}
-				// let filename = res['data']['filename']
-				// let raw_data = res['data']['raw']
-				// let swallow_index = res['data']['index']
 
+				this.y_size = raw_data.length 
+				this.x_size = raw_data[0].length
+				this.raw_data = raw_data
+				console.log(this.x_size, this.y_size)
+				
 
 			})
 			
