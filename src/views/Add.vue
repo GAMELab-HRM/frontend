@@ -1,6 +1,7 @@
 <template>
 	<div id="add">
 		<div id="main_container">
+
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
@@ -229,6 +230,11 @@ export default {
 			uploadFile(this.forms).then((res)=>{
 				console.log("response")
 				console.log(res)
+				// let filename = res['data']['filename']
+				// let raw_data = res['data']['raw']
+				// let swallow_index = res['data']['index']
+
+
 			})
 			
 		}
