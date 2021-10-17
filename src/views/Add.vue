@@ -230,6 +230,11 @@ export default {
 			uploadFile(this.forms).then((res)=>{
 				console.log("response")
 				console.log(res)
+				let raw_data = JSON.parse(res['data']['raw'])
+				for(let i =0; i<10; i++){
+					console.log(raw_data[i])
+					console.log(raw_data[i].length)
+				}
 				// let filename = res['data']['filename']
 				// let raw_data = res['data']['raw']
 				// let swallow_index = res['data']['index']
