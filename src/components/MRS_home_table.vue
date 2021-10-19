@@ -8,9 +8,9 @@
             </el-table-column>
             <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="rdc_result_ray" label="Dr. Ray RDC result" :width="table_item_width" :filters="rdc_filter" :filter-method="rdc_filter_method_ray">
+            <el-table-column prop="mrs_result_ray" label="Dr. Ray MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method_ray">
             </el-table-column>
-            <el-table-column prop="rdc_result_liang" label="Dr. Liang RDC result" :width="table_item_width" :filters="rdc_filter" :filter-method="rdc_filter_method_liang">
+            <el-table-column prop="mrs_result_liang" label="Dr. Liang MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method_liang">
             </el-table-column>
             <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable>
             </el-table-column>
@@ -73,7 +73,7 @@
 // import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
-    name: 'RDC_home_table',
+    name: 'MRS_home_table',
     components: {
 		// add_table,
         // ws_10_draw,
@@ -82,38 +82,38 @@ export default {
         var main_table_data = [{
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            rdc_result_ray: 'EGJOO',
-            rdc_result_liang: 'Not EGJOO',
+            mrs_result_ray: 'Contractile Reserve',
+            mrs_result_liang: 'Not Contractile Reserve',
             last_review_ray: '2021/10/3',
             last_review_liang: '-',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            rdc_result_ray: 'Not EGJOO',
-            rdc_result_liang: 'Not EGJOO',
+            mrs_result_ray: 'Not Contractile Reserve',
+            mrs_result_liang: 'Not Contractile Reserve',
             last_review_ray: '-',
             last_review_liang: '2021/10/9',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            rdc_result_ray: 'EGJOO',
-            rdc_result_liang: 'EGJOO',
+            mrs_result_ray: 'Contractile Reserve',
+            mrs_result_liang: 'Contractile Reserve',
             last_review_ray: '2021/10/1',
             last_review_liang: '-',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            rdc_result_ray: 'Not EGJOO',
-            rdc_result_liang: 'Not EGJOO',
+            mrs_result_ray: 'Not Contractile Reserve',
+            mrs_result_liang: 'Not Contractile Reserve',
             last_review_ray: '2021/10/3',
             last_review_liang: '2021/10/7',
         }]
         return {
             main_table_data: main_table_data,
             table_item_width: 200,
-            rdc_filter: [
-                {text: 'EGJOO', value: 'EGJOO'},
-                {text: 'Not EGJOO', value: 'not_EGJOO'},
+            mrs_filter: [
+                {text: 'Contractile Reserve', value: 'CR'},
+                {text: 'Not Contractile Reserve', value: 'not_CR'},
             ],
             current_patient_id: '',
             dialogVisible: false,
@@ -227,11 +227,11 @@ export default {
         idx_method: function(index) {
             return index
         },
-        rdc_filter_method_ray: function(value, row) {
-            return row.rdc_result_ray === value;
+        mrs_filter_method_ray: function(value, row) {
+            return row.mrs_result_ray === value;
         },
-        rdc_filter_method_liang: function(value, row) {
-            return row.rdc_result_liang === value;
+        mrs_filter_method_liang: function(value, row) {
+            return row.mrs_result_liang === value;
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
