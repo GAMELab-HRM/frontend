@@ -9,7 +9,6 @@
 		<!-- router view -->
 		<router-view/>
 		<!-- <WS_10></WS_10> -->
-
 	</div>
 </template>
 
