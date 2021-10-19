@@ -68,7 +68,7 @@
 <script>
 
 
-import add_table from "../components/add_table.vue"
+import add_table from "../components/WS_10_add_table.vue"
 
 export default {
 	name: 'WS_10_add',

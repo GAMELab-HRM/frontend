@@ -2,17 +2,15 @@
     <div id=main_table_container>
         <!-- main table start -->
         <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
-            <el-table-column type="index" :index="idx_method">
+            <el-table-column type="index">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
             </el-table-column>
             <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="mms_cc_result" label="MMS CC result" :width="table_item_width" :filters="cc_filter" :filter-method="mms_cc_filter_method">
+            <el-table-column prop="rdc_result_ray" label="Dr. Ray RDC result" :width="table_item_width" :filters="rdc_filter" :filter-method="rdc_filter_method_ray">
             </el-table-column>
-            <el-table-column prop="ray_cc_result" label="Dr. Ray CC result" :width="table_item_width" :filters="cc_filter" :filter-method="ray_cc_filter_method">
-            </el-table-column>
-            <el-table-column prop="liang_cc_result" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="liang_cc_filter_method">
+            <el-table-column prop="rdc_result_liang" label="Dr. Liang RDC result" :width="table_item_width" :filters="rdc_filter" :filter-method="rdc_filter_method_liang">
             </el-table-column>
             <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable>
             </el-table-column>
@@ -52,8 +50,6 @@
         </el-dialog>
         <!-- 刪除 dialog end -->
 
-        <el-button @click="t">默认按钮</el-button>
-
         <!-- 繪圖 dialog start-->
         <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="80%">
             <span>訊息</span>
@@ -72,57 +68,51 @@
 
 <script>
 
-import add_table from "../components/add_table.vue"
+// import add_table from "../components/WS_10_add_table.vue"
 // import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
-    name: 'home_table',
+    name: 'WS_10_home_table',
     components: {
-		add_table,
+		// add_table,
         // ws_10_draw,
 	},
     data() {
         var main_table_data = [{
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            mms_cc_result: 'normal',
-            ray_cc_result: '-',
-            liang_cc_result: '-',
+            rdc_result_ray: 'EGJOO',
+            rdc_result_liang: 'Not EGJOO',
             last_review_ray: '2021/10/3',
             last_review_liang: '-',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            mms_cc_result: 'normal',
-            ray_cc_result: '-',
-            liang_cc_result: '-',
+            rdc_result_ray: 'Not EGJOO',
+            rdc_result_liang: 'Not EGJOO',
             last_review_ray: '-',
             last_review_liang: '2021/10/9',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            mms_cc_result: 'normal',
-            ray_cc_result: '-',
-            liang_cc_result: '-',
+            rdc_result_ray: 'EGJOO',
+            rdc_result_liang: 'EGJOO',
             last_review_ray: '2021/10/1',
             last_review_liang: '-',
         }, {
             patient_id: 'A123456789',
             raw_data: '1234-nromal.csv',
-            mms_cc_result: 'IEM',
-            ray_cc_result: '-',
-            liang_cc_result: '-',
+            rdc_result_ray: 'Not EGJOO',
+            rdc_result_liang: 'Not EGJOO',
             last_review_ray: '2021/10/3',
             last_review_liang: '2021/10/7',
         }]
         return {
             main_table_data: main_table_data,
-            table_item_width: 170,
-            cc_filter: [
-                {text: 'normal', value: 'normal'},
-                {text: 'IRP', value: 'IRP'},
-                {text: 'Absent', value: 'Absent'},
-                {text: 'Fragmented', value: 'Fragmented'}
+            table_item_width: 200,
+            rdc_filter: [
+                {text: 'EGJOO', value: 'EGJOO'},
+                {text: 'Not EGJOO', value: 'not_EGJOO'},
             ],
             current_patient_id: '',
             dialogVisible: false,
@@ -236,14 +226,11 @@ export default {
         idx_method: function(index) {
             return index
         },
-        mms_cc_filter_method: function(value, row) {
-            return row.mms_cc_result === value;
+        rdc_filter_method_ray: function(value, row) {
+            return row.rdc_result_ray === value;
         },
-        ray_cc_filter_method: function(value, row) {
-            return row.ray_cc_result === value;
-        },
-        liang_cc_filter_method: function(value, row) {
-            return row.liang_cc_result === value;
+        rdc_filter_method_liang: function(value, row) {
+            return row.rdc_result_liang === value;
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
@@ -335,7 +322,6 @@ export default {
             var sort_type = column.order
             var time_stamp = 0
             var t = ''
-            console.log('active sort date')
 
             for(var i = 0 ; i<this.main_table_data.length ; i++) {
                 if(this.main_table_data[i][col_key] == '-'){
@@ -344,7 +330,6 @@ export default {
                 else{
                     time_stamp = Date.parse(this.main_table_data[i][col_key])
                 }
-                console.log(time_stamp)
                 this.main_table_data[i][col_key] = time_stamp
             }
 
@@ -372,20 +357,8 @@ export default {
             }
 
         },
-        t() {
-            this.test+=1
-        }
     },
-    watch: {
-        '$store.state.auth_app.login_name': function() {
-            // var col_key = Object.keys(this.main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
-            // var sort_type = 'ascending'
-            // this.sort_date({prop: col_key, order: sort_type})
-            // console.log({prop: col_key, order: sort_type})
-            this.$forceUpdate()
-        }
-        
-    }
+    
 }
 </script>
 

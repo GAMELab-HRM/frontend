@@ -10,7 +10,7 @@
 
 <script>
 
-import home_table from '../components/home_table.vue'
+import home_table from '../components/WS_10_home_table.vue'
 
 export default {
 	name: 'WS_10',
