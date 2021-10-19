@@ -23,8 +23,9 @@ export default {
 		// WS_10
 	},
 	methods:{
-
-	}
+		
+	},
+	emit: []
 }
 </script>
 
