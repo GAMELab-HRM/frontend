@@ -39,9 +39,8 @@
                 <el-dropdown @command="login">
                     <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
                     <el-dropdown-menu slot="dropdown" style="background: #606A78">
-                        <el-dropdown-item command="Dr. Ray" >Dr. Ray</el-dropdown-item>
-                        <!-- :style='doctor_login_style' -->
-                        <el-dropdown-item command="Dr. Liang" >Dr. Liang</el-dropdown-item>
+                        <el-dropdown-item command="Dr. Ray">Dr. Ray</el-dropdown-item>
+                        <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>

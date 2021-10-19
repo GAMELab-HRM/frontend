@@ -1,7 +1,7 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black'}" @sort-change='sort_date'>
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black'}" @sort-change='sort_date' :default-sort="default_sort_param">
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
@@ -14,15 +14,15 @@
             </el-table-column>
             <el-table-column prop="liang_cc_result" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="liang_cc_filter_method">
             </el-table-column>
-            <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable="'custom'">
+            <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable>
             </el-table-column>
-            <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width" sortable="'custom'">
+            <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width" sortable>
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="220">
                 <template slot-scope="scope" style="display: flex-box">
-                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入</el-button>
-                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪除</el-button>
-                    <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪圖</el-button>
+                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸 入</el-button>
+                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪 除</el-button>
+                    <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪 圖</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -37,7 +37,7 @@
             <add_table :patient_id="current_patient_id" @update_send="update_table_send" @send_object="get_object"/> 
             <div style="text-align:right; ">
 				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
-                <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+                <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送 出</el-button>
 			</div>
         </el-dialog>
         <!-- 輸入 table end -->
@@ -51,6 +51,8 @@
                 </span>
         </el-dialog>
         <!-- 刪除 dialog end -->
+
+        <el-button @click="t">默认按钮</el-button>
 
         <!-- 繪圖 dialog start-->
         <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="80%">
@@ -80,32 +82,41 @@ export default {
         // ws_10_draw,
 	},
     data() {
+        var main_table_data = [{
+            patient_id: 'A123456789',
+            raw_data: '1234-nromal.csv',
+            mms_cc_result: 'normal',
+            ray_cc_result: '-',
+            liang_cc_result: '-',
+            last_review_ray: '2021/10/4',
+            last_review_liang: '2021/10/5',
+        }, {
+            patient_id: 'A123456789',
+            raw_data: '1234-nromal.csv',
+            mms_cc_result: 'normal',
+            ray_cc_result: '-',
+            liang_cc_result: '-',
+            last_review_ray: '2021/10/3',
+            last_review_liang: '2021/10/7',
+        }, {
+            patient_id: 'A123456789',
+            raw_data: '1234-nromal.csv',
+            mms_cc_result: 'normal',
+            ray_cc_result: '-',
+            liang_cc_result: '-',
+            last_review_ray: '-',
+            last_review_liang: '-',
+        }, {
+            patient_id: 'A123456789',
+            raw_data: '1234-nromal.csv',
+            mms_cc_result: 'normal',
+            ray_cc_result: '-',
+            liang_cc_result: '-',
+            last_review_ray: '2021/10/3',
+            last_review_liang: '-',
+        }]
         return {
-            main_table_data: [{
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: '-',
-                liang_cc_result: '-',
-                last_review_ray: '2021/10/4 10:00:00',
-                last_review_liang: '2021/10/7',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: '-',
-                liang_cc_result: '-',
-                last_review_ray: '2021/10/3',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: '-',
-                liang_cc_result: '-',
-                last_review_ray: '-',
-                last_review_liang: '-',
-            }],
+            main_table_data: main_table_data,
             table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
@@ -208,11 +219,13 @@ export default {
             cc_result_selected: false,
             table_send: false,
             draw_dialog_visible: false,
-        }  
+            default_sort_param: {
+                prop: Object.keys(main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
+                , order: 'ascending'
+            }
+        }
     },
-    props: {
-        
-    },
+    props: [],
     computed:{
         check_login:function(){
             return !(this.$store.state.auth_app.login_status)
@@ -319,6 +332,7 @@ export default {
         sort_date(column) {
             var col_key = column.prop
             var sort_type = column.order
+            console.log('active sort date')
 
             for(var i = 0 ; i<this.main_table_data.length ; i++) {
                 var time_stamp = Date.parse(this.main_table_data[i][col_key])
@@ -329,6 +343,7 @@ export default {
                 this.main_table_data = this.main_table_data.sort(function(a, b) {
                     return b[col_key] - a[col_key]
                 });
+                console.log('descending')
             }
             else {
                 this.main_table_data = this.main_table_data.sort(function(a, b) {
@@ -342,6 +357,9 @@ export default {
                 this.main_table_data[j][col_key] = t
             }
 
+        },
+        t() {
+            console.log(this.default_sort_param)
         }
     }
 }
