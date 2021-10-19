@@ -66,14 +66,12 @@
 	</div>
 	
 </template>
-
-
 <script>
 import paint from "../components/paint.vue"
 import add_table from "../components/add_table.vue"
 import {uploadFile} from "@/apis/file.js"
 export default {
-	name: 'Add',
+	name: 'WS_10_add',
 	components: {
 		add_table,
 		paint
@@ -216,9 +214,6 @@ export default {
 			console.log(file, fileList);
 			this.raw_data_upload = false
 			this.update_send_btn()
-		},
-		handlePreview(file) {
-			console.log(file);
 		},
 		upload_success(response, file, fileList) {
 			this.raw_data_upload = true

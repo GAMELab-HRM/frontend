@@ -13,7 +13,7 @@
 import home_table from '../components/home_table.vue'
 
 export default {
-	name: 'Home',
+	name: 'WS_10',
 	components: {
 		home_table,
 	}
