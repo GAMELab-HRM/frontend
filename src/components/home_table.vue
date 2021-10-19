@@ -18,16 +18,17 @@
             </el-table-column>
             <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="action" label="操作" :width="table_item_width">
-                <template slot-scope="scope">
-                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入診斷</el-button>
+            <el-table-column prop="action" label="操作" :width="220">
+                <template slot-scope="scope" style="display: flex-box">
+                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸入</el-button>
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪除</el-button>
+                    <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪圖</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <!-- main table end -->
 
-        <!-- 輸入診斷 table start-->
+        <!-- 輸入 table start-->
         <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="85%"  destroy-on-close :before-close="handleClose">
             <el-select v-model="cc_result" placeholder="CC Result" style="margin-bottom: 15px;" @change="cc_selected_update">
 				<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
@@ -39,7 +40,7 @@
                 <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 			</div>
         </el-dialog>
-        <!-- 輸入診斷 table end -->
+        <!-- 輸入 table end -->
 
         <!-- 刪除 dialog start -->
         <el-dialog :visible.sync="delete_dialogVisible" width="30%" cneter> 
@@ -50,6 +51,16 @@
                 </span>
         </el-dialog>
         <!-- 刪除 dialog end -->
+
+        <!-- 繪圖 dialog start-->
+        <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="80%">
+            <span>訊息</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="draw_handle_close" type='danger'>關閉</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 繪圖 dialog end -->
     </div>
 </template>
 
@@ -60,11 +71,13 @@
 <script>
 
 import add_table from "../components/add_table.vue"
+// import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
     name: 'home_table',
     components: {
 		add_table,
+        // ws_10_draw,
 	},
     data() {
         return {
@@ -76,119 +89,7 @@ export default {
                 liang_cc_result: '-',
                 last_review_ray: '2021/10/4',
                 last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'B12738912703',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'Absent',
-                ray_cc_result: '-',
-                liang_cc_result: '-',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'C1837901283',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'IEM',
-                ray_cc_result: '-',
-                liang_cc_result: '-',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }, {
-                patient_id: 'A123456789',
-                raw_data: '1234-nromal.csv',
-                mms_cc_result: 'normal',
-                ray_cc_result: 'normal',
-                liang_cc_result: 'normal',
-                last_review_ray: '2021/10/4',
-                last_review_liang: '2021/10/5',
-            }],
+            }, ],
             table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
@@ -290,6 +191,7 @@ export default {
             cc_result: '',
             cc_result_selected: false,
             table_send: false,
+            draw_dialog_visible: false,
         }  
     },
     props: {
@@ -389,6 +291,14 @@ export default {
         },
         delete_all() {
             this.delete_dialogVisible = false
+        },
+        handleDraw(index, row) {
+            this.current_patient_id = this.main_table_data[index].patient_id
+            this.draw_dialog_visible = true
+            console.log(index, row)
+        },
+        draw_handle_close() {
+            this.draw_dialog_visible = false
         }
     }
 }
