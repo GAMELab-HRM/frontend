@@ -1,8 +1,9 @@
 <template>
     <div id="painting">
+        <h2>按shift multi selected box </h2>
         <el-button @click="draw">draw hrm</el-button>
-        <el-button @click="force_update">add rect</el-button>
-        <Plotly :key="componentKey" @selected="toogle" :data="data" :layout="layout" :display-mode-bar="true" :scrollZoom="true" :modeBarButtons="btn_list"></Plotly>
+        <!-- <el-button @click="force_update">add rect</el-button> -->
+        <Plotly :key="componentKey" @deselect="deselected_box"   @selected="select_event" @click="click_event" :data="data" :layout="layout" :display-mode-bar="true" :scrollZoom="true" :modeBarButtons="btn_list"></Plotly>
     </div>
 </template>
 
@@ -98,11 +99,26 @@ export default {
         toogle(d){
             console.log(d)
         },
+        select_event(data){
+            console.log("select toogle")
+            console.log(data)
+        },
+        click_event(data){
+            console.log("click toogle")
+            console.log(data['points'][0]['x'])
+            console.log(data['points'][0]['y'])
+            
+        },
         force_update(){
             this.layout['shapes'][0]['y1']-=1
             this.layout['title'] = "HRM"
             this.componentKey+=1
-        }
+        },
+        deselected_box(d){
+            console.log("deselected toogle!")
+            console.log(d)
+        },
+
 
     }
 }
