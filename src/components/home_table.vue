@@ -1,7 +1,7 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#4C8ED2', color: 'white'}">
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black'}" @sort-change='sort_date'>
             <el-table-column type="index" :index="idx_method">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
@@ -14,9 +14,9 @@
             </el-table-column>
             <el-table-column prop="liang_cc_result" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="liang_cc_filter_method">
             </el-table-column>
-            <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width">
+            <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable="'custom'">
             </el-table-column>
-            <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width">
+            <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width" sortable="'custom'">
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="220">
                 <template slot-scope="scope" style="display: flex-box">
@@ -87,9 +87,25 @@ export default {
                 mms_cc_result: 'normal',
                 ray_cc_result: '-',
                 liang_cc_result: '-',
-                last_review_ray: '2021/10/4',
+                last_review_ray: '2021/10/4 10:00:00',
+                last_review_liang: '2021/10/7',
+            }, {
+                patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
+                mms_cc_result: 'normal',
+                ray_cc_result: '-',
+                liang_cc_result: '-',
+                last_review_ray: '2021/10/3',
                 last_review_liang: '2021/10/5',
-            }, ],
+            }, {
+                patient_id: 'A123456789',
+                raw_data: '1234-nromal.csv',
+                mms_cc_result: 'normal',
+                ray_cc_result: '-',
+                liang_cc_result: '-',
+                last_review_ray: '-',
+                last_review_liang: '-',
+            }],
             table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
@@ -299,6 +315,33 @@ export default {
         },
         draw_handle_close() {
             this.draw_dialog_visible = false
+        },
+        sort_date(column) {
+            var col_key = column.prop
+            var sort_type = column.order
+
+            for(var i = 0 ; i<this.main_table_data.length ; i++) {
+                var time_stamp = Date.parse(this.main_table_data[i][col_key])
+                this.main_table_data[i][col_key] = time_stamp
+            }
+
+            if(sort_type == 'descending') {
+                this.main_table_data = this.main_table_data.sort(function(a, b) {
+                    return b[col_key] - a[col_key]
+                });
+            }
+            else {
+                this.main_table_data = this.main_table_data.sort(function(a, b) {
+                    return a[col_key] - b[col_key]
+                });
+            }
+
+            for(var j = 0 ; j<this.main_table_data.length ; j++) {
+                var date = new Date(this.main_table_data[j][col_key])
+                var t = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+                this.main_table_data[j][col_key] = t
+            }
+
         }
     }
 }
