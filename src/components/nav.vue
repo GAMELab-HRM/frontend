@@ -27,7 +27,7 @@
                         <el-menu-item index="3-2" v-bind:style="nav_btn" @click="$router.push('/RDC/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
                     <el-submenu index="4" :disabled="check_login">
-                        <template slot="title">hiatal hernia</template>
+                        <template slot="title">Hiatal hernia</template>
                         <el-menu-item index="4-1" v-bind:style="nav_btn" @click="$router.push('/Hiatal_hernia')" :disabled="check_login">所有資料</el-menu-item>
                         <el-menu-item index="4-2" v-bind:style="nav_btn" @click="$router.push('/Hiatal_hernia/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
