@@ -1,7 +1,6 @@
 <template>
     <div id="painting">
-        <h2>按shift multi selected box </h2>
-        <el-button @click="draw">draw hrm</el-button>
+        <!-- 按shift multi selected box -->
         <!-- <el-button @click="force_update">add rect</el-button> -->
         <Plotly :key="componentKey" @deselect="deselected_box"   @selected="select_event" @click="click_event" :data="data" :layout="layout" :display-mode-bar="true" :scrollZoom="true" :modeBarButtons="btn_list"></Plotly>
     </div>
@@ -22,6 +21,8 @@ export default {
             btn_list:[['zoom2d'],['zoomIn2d'],['zoomOut2d'],['select2d'],['autoScale2d'],['pan2d'],['toggleSpikelines']],
             data:[
                 {
+                    temp_x:this.x_size,
+                    temp_y:this.y_size,
                     z: [],
                     x: [],
                     y: [],
@@ -58,17 +59,17 @@ export default {
                     
                 },
                 deep:true,
-                shapes:[
-                    {
-                        type:'rect',
-                        x0:0,
-                        y0:0,
-                        x1:1000,
-                        y1:10
-                    }
+                // shapes:[
+                //     {
+                //         type:'rect',
+                //         x0:0,
+                //         y0:0,
+                //         x1:1000,
+                //         y1:10
+                //     }
                     
                     
-                ]
+                // ]
             },
             
         }
@@ -82,20 +83,6 @@ export default {
         }
     },
     methods:{
-        draw(){
-            console.log(this.x_size)
-            console.log(this.y_size)
-            this.data[0]['x'] = []
-            this.data[0]['y'] = []
-            this.data[0]['z'] = []
-            for(let i = 0;i<this.x_size;i++){
-                this.data[0]['x'].push(i)
-            }
-            for(let i = 0;i<this.y_size;i++){
-                this.data[0]['y'].push(i)
-            }
-            this.data[0]['z'] = this.raw_data
-        },
         toogle(d){
             console.log(d)
         },
@@ -120,6 +107,18 @@ export default {
         },
 
 
+    },
+    created(){
+        this.data[0]['x'] = []
+        this.data[0]['y'] = []
+        this.data[0]['z'] = []
+        for(let i = 0;i<this.x_size;i++){
+            this.data[0]['x'].push(i)
+        }
+        for(let i = 0;i<this.y_size;i++){
+            this.data[0]['y'].push(i)
+        }
+        this.data[0]['z'] = this.raw_data
     }
 }
 </script>

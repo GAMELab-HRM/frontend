@@ -54,8 +54,8 @@
         <!-- 刪除 dialog end -->
 
         <!-- 繪圖 dialog start-->
-        <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="80%">
-            <span>訊息</span>
+        <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="95%" :close-on-click-modal="false" @close="draw_handle_close">
+            <paint v-if="draw_status" :x_size="x_size" :y_size="y_size" :raw_data="raw_data"></paint>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="draw_handle_close" type='danger'>關閉</el-button>
             </span>
@@ -71,17 +71,20 @@
 <script>
 
 import add_table from "../components/WS_10_add_table.vue"
+import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
+import paint from "@/components/paint.vue"
 
-// import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
     name: 'WS_10_home_table',
     components: {
 		add_table,
-        // ws_10_draw,
+        paint,
+        
 	},
     data() {
         return {
+            draw_status:false,
             x_size:0,
 			y_size:0,
 			raw_data:0,
@@ -224,10 +227,36 @@ export default {
         handleDraw(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
             this.draw_dialog_visible = true
+            console.log("index | row")
             console.log(index, row)
+            if(index==0){
+                CallDemoAPI().then((res)=>{
+                    console.log(res)
+                    let raw_data = JSON.parse(res['data']['raw'])
+                    this.y_size = raw_data.length 
+                    this.x_size = raw_data[0].length
+                    this.raw_data = raw_data
+                    this.draw_status = true
+                    console.log("set draw status")
+                })
+            }
+            else{
+                CallDemo2API().then((res)=>{
+                    console.log(res)
+                    let raw_data = JSON.parse(res['data']['raw'])
+                    this.y_size = raw_data.length 
+                    this.x_size = raw_data[0].length
+                    this.raw_data = raw_data
+                    this.draw_status = true
+                    console.log("set draw status")
+                })
+            }
+
         },
         draw_handle_close() {
+            console.log("draw dialog close")
             this.draw_dialog_visible = false
+            this.draw_status = false
         },
         sort_date(column) {
             var col_key = column.prop
