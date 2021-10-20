@@ -37,7 +37,8 @@
             <add_table :patient_id="current_patient_id" @update_send="update_table_send" @send_object="get_object"/> 
             <div style="text-align:right; ">
 				<el-button type="danger" icon="el-icon-close" @click="dialogVisible = false">關 閉</el-button>
-                <el-button type="primary" icon="el-icon-check" @click="send_backend" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送 出</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="send_backend(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送 出</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="send_backend(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送出兩位醫師的診斷</el-button>
 			</div>
         </el-dialog>
         <!-- 輸入 table end -->
@@ -183,7 +184,7 @@ export default {
         get_object(object) {
             this.object = object
         },
-        send_backend() {
+        send_backend(doctor_num) {
             var all_object_col = ['id', 'vigor', 'pattern', 'swallow_type', 'irp', 'dci', 'dl']
 			var dic = {}
 			dic[all_object_col[0]] = this.current_patient_id
@@ -201,6 +202,13 @@ export default {
             });
             console.log(dic)
             this.cc_result = ''
+            if(doctor_num==1) {
+                console.log("send 1 doctor's data")
+            }
+            else {
+                console.log("send 2 doctor's data")
+            }
+
         },
         cc_selected_update() {
             this.cc_result_selected = true

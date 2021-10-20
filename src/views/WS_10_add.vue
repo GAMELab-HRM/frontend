@@ -50,13 +50,14 @@
 			</div>
 
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
 
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
                 <span><h2> 確認送出? </h2></span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="send_backend"> 確認 </el-button>
+                    <el-button type="primary" @click="send_backend()"> 確認 </el-button>
 					<el-button type="danger" @click="send_dialogVisible = false"> 返回 </el-button>
                 </span>
             </el-dialog>
@@ -113,7 +114,8 @@ export default {
 			raw_data_upload: false,
 			x_size:0,
 			y_size:0,
-			raw_data:0
+			raw_data:0,
+			send_doctor_num: 0,
 		}
 	},
 	methods: {
@@ -137,8 +139,9 @@ export default {
 			this.patient_id = ''
 			this.update_send_btn()
 		},
-		send: function() {
+		send: function(doctor_num) {
 			this.send_dialogVisible = true
+			this.send_doctor_num = doctor_num
 		},
 		GT_update_send: function(val) {
 			console.log(val)
@@ -158,8 +161,9 @@ export default {
 			this.MMS_selected = true
 			this.update_send_btn()
 		},
+		// &&  this.raw_data_upload == true
 		update_send_btn: function() {
-			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '' && this.raw_data_upload == true) {
+			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '') {
 				this.send_disable = false                                                                                                                           
 			}
 			else {
@@ -205,6 +209,13 @@ export default {
 			// 	console.log(res)
 			// })
 			console.log(this.all_object)
+			if(this.send_doctor_num==1) {
+				console.log("send 1 doctor's data")
+			}
+			else {
+				console.log("send 2 doctor's data")
+			}
+
 		},
 		submitUpload() {
 			this.$refs.upload.submit();
