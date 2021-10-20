@@ -1,7 +1,6 @@
 <template>
 	<div id="add">
 		<div id="main_container">
-			<paint :x_size="x_size" :y_size="y_size" :raw_data="raw_data"></paint>
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
@@ -26,8 +25,8 @@
 						</el-select>
 					</h1>
 				</el-col>
-				<el-col :span="4" offset="16"  style="margin-top: 70px">
-					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
+				<el-col :span="4" :offset="16"  style="margin-top: 70px">
+					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/"  :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
 						<el-button slot="trigger"  type="primary">選取文件</el-button>
 						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
 					</el-upload>
@@ -67,17 +66,17 @@
 	
 </template>
 <script>
-import paint from "../components/paint.vue"
-import add_table from "../components/add_table.vue"
+import add_table from "../components/WS_10_add_table.vue"
 import {uploadFile} from "@/apis/file.js"
 export default {
 	name: 'WS_10_add',
 	components: {
 		add_table,
-		paint
+		
 	},
 	data() {
 		return {
+			fileList:[],
 			patient_id: '',
 			patient_id_exist: false,
 			patient_id_style: '',
