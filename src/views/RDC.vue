@@ -2,7 +2,7 @@
     <div>
 		<el-container style="margin:0%" >
 			<el-main style="text-align: center;">
-				<home_table :key="rerender"/>	
+				<home_table :key="rerender" :main_table_data="rdc_main_table_data"/>	
 			</el-main>
 		</el-container>	
 	</div>
@@ -10,7 +10,7 @@
 
 <script>
 import home_table from '.././components/RDC_home_table'
-
+import {rdc_main_table_data} from "@/utils/fakedata.js"
 
 export default {
     name: 'RDC',
@@ -19,7 +19,8 @@ export default {
     },
     data() {
 		return {
-			rerender:0
+			rerender:0,
+			rdc_main_table_data:0
 		}
 	},
 	watch: {
@@ -27,7 +28,10 @@ export default {
 			this.rerender+=1
         }
         
-    }
+    },
+	created(){
+		this.rdc_main_table_data = rdc_main_table_data
+	}
 }
 </script>
 

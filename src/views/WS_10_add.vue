@@ -25,8 +25,8 @@
 						</el-select>
 					</h1>
 				</el-col>
-				<el-col :span="4" offset="16"  style="margin-top: 70px">
-					<el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
+				<el-col :span="4" :offset="16"  style="margin-top: 70px">
+					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/"  :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
 						<el-button slot="trigger"  type="primary">選取文件</el-button>
 						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
 					</el-upload>
@@ -66,17 +66,17 @@
 	
 </template>
 <script>
-
-
 import add_table from "../components/WS_10_add_table.vue"
-
+import {uploadFile} from "@/apis/file.js"
 export default {
 	name: 'WS_10_add',
 	components: {
 		add_table,
+		
 	},
 	data() {
 		return {
+			fileList:[],
 			patient_id: '',
 			patient_id_exist: false,
 			patient_id_style: '',
@@ -111,6 +111,9 @@ export default {
 			GT_selected: false,
 			MMS_selected: false,
 			raw_data_upload: false,
+			x_size:0,
+			y_size:0,
+			raw_data:0
 		}
 	},
 	methods: {
@@ -215,6 +218,26 @@ export default {
 			this.raw_data_upload = true
 			this.update_send_btn()
 			console.log(response, file, fileList)
+		},
+		customUpload(item){
+			const file = item.file 
+			//const size = file.size / 1024 / 1024
+			this.forms = new FormData()
+			this.forms.append("files", file)
+
+			uploadFile(this.forms).then((res)=>{
+				console.log("response")
+				console.log(res)
+				let raw_data = JSON.parse(res['data']['raw'])
+
+				this.y_size = raw_data.length 
+				this.x_size = raw_data[0].length
+				this.raw_data = raw_data
+				console.log(this.x_size, this.y_size)
+				
+
+			})
+			
 		}
 	}
 }

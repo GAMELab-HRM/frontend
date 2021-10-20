@@ -79,37 +79,7 @@ export default {
         // ws_10_draw,
 	},
     data() {
-        var main_table_data = [{
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            mrs_result_ray: 'Contractile Reserve',
-            mrs_result_liang: 'Not Contractile Reserve',
-            last_review_ray: '2021/10/3',
-            last_review_liang: '-',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            mrs_result_ray: 'Not Contractile Reserve',
-            mrs_result_liang: 'Not Contractile Reserve',
-            last_review_ray: '-',
-            last_review_liang: '2021/10/9',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            mrs_result_ray: 'Contractile Reserve',
-            mrs_result_liang: 'Contractile Reserve',
-            last_review_ray: '2021/10/1',
-            last_review_liang: '-',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            mrs_result_ray: 'Not Contractile Reserve',
-            mrs_result_liang: 'Not Contractile Reserve',
-            last_review_ray: '2021/10/3',
-            last_review_liang: '2021/10/7',
-        }]
         return {
-            main_table_data: main_table_data,
             table_item_width: 200,
             mrs_filter: [
                 {text: 'Contractile Reserve', value: 'CR'},
@@ -117,79 +87,6 @@ export default {
             ],
             current_patient_id: '',
             dialogVisible: false,
-            table_data: [{
-                metrics: 'Contraction Vigor',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Contraction Pattern',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Swallow Type',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'IRP 4s',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'DCI',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Distal Latency',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }],
             send_disable: true,
             object: '',
             delete_dialogVisible: false,
@@ -211,13 +108,13 @@ export default {
             table_send: false,
             draw_dialog_visible: false,
             default_sort_param: {
-                prop: Object.keys(main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
+                prop: Object.keys(this.main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
                 , order: 'ascending'
             },
             test: 0
         }
     },
-    props: [],
+    props: ["main_table_data"],
     computed:{
         check_login:function(){
             return !(this.$store.state.auth_app.login_status)

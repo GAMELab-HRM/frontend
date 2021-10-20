@@ -59,7 +59,6 @@
                 <el-button @click="draw_handle_close" type='danger'>關閉</el-button>
             </span>
         </el-dialog>
-
         <!-- 繪圖 dialog end -->
     </div>
 </template>
@@ -71,6 +70,7 @@
 <script>
 
 import add_table from "../components/WS_10_add_table.vue"
+
 // import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
@@ -80,41 +80,10 @@ export default {
         // ws_10_draw,
 	},
     data() {
-        var main_table_data = [{
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            cc_result_mms: 'normal',
-            cc_result_ray: '-',
-            cc_result_liang: '-',
-            last_review_ray: '2021/10/3',
-            last_review_liang: '-',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            cc_result_mms: 'normal',
-            cc_result_ray: '-',
-            cc_result_liang: '-',
-            last_review_ray: '-',
-            last_review_liang: '2021/10/9',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            cc_result_mms: 'normal',
-            cc_result_ray: '-',
-            cc_result_liang: '-',
-            last_review_ray: '2021/10/1',
-            last_review_liang: '-',
-        }, {
-            patient_id: 'A123456789',
-            raw_data: '1234-nromal.csv',
-            cc_result_mms: 'IEM',
-            cc_result_ray: '-',
-            cc_result_liang: '-',
-            last_review_ray: '2021/10/3',
-            last_review_liang: '2021/10/7',
-        }]
         return {
-            main_table_data: main_table_data,
+            x_size:0,
+			y_size:0,
+			raw_data:0,
             table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
@@ -124,79 +93,6 @@ export default {
             ],
             current_patient_id: '',
             dialogVisible: false,
-            table_data: [{
-                metrics: 'Contraction Vigor',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Contraction Pattern',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Swallow Type',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'IRP 4s',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'DCI',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Distal Latency',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }],
             send_disable: true,
             object: '',
             delete_dialogVisible: false,
@@ -218,13 +114,13 @@ export default {
             table_send: false,
             draw_dialog_visible: false,
             default_sort_param: {
-                prop: Object.keys(main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
+                prop: Object.keys(this.main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
                 , order: 'ascending'
             },
             test: 0
         }
     },
-    props: [],
+    props: ["main_table_data"],
     computed:{
         check_login:function(){
             return !(this.$store.state.auth_app.login_status)
@@ -365,7 +261,7 @@ export default {
             }
 
         },
-    },
+    }
     
 }
 </script>
