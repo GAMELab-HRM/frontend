@@ -70,8 +70,8 @@
 <script>
 
 import add_table from "../components/WS_10_add_table.vue"
+import {CallDemoAPI} from "@/apis/demo.js"
 
-// import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
     name: 'WS_10_home_table',
@@ -217,6 +217,9 @@ export default {
             this.current_patient_id = this.main_table_data[index].patient_id
             this.draw_dialog_visible = true
             console.log(index, row)
+            CallDemoAPI().then((res)=>{
+                console.log(res)
+            })
         },
         draw_handle_close() {
             this.draw_dialog_visible = false
