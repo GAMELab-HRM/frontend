@@ -20,9 +20,9 @@ export default{
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 .app-wrapper {
-  position: relative;
-  height: 100%;
-  width: 100%;
+    position: relative;
+    height: 100%;
+    width: 100%;
 }
 .main-container {
 //   text-align: center;

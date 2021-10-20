@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import home_table from '.././components/RDC_home_table'
+import home_table from '@/components/RDC_home_table'
 import {rdc_main_table_data} from "@/utils/fakedata.js"
 
 export default {

@@ -123,10 +123,26 @@ export default {
             return index
         },
         rdc_filter_method_ray: function(value, row) {
-            return row.rdc_result_ray === value;
+            for(var i=0 ; i<this.rdc_filter.length ; i++) {
+                var t = this.rdc_filter[i]['text']
+                var v = this.rdc_filter[i]['value']
+
+                if(t == row.rdc_result_ray && v == value) {
+                    return true
+                }
+            }
+            return false
         },
         rdc_filter_method_liang: function(value, row) {
-            return row.rdc_result_liang === value;
+            for(var i=0 ; i<this.rdc_filter.length ; i++) {
+                var t = this.rdc_filter[i]['text']
+                var v = this.rdc_filter[i]['value']
+
+                if(t == row.rdc_result_liang && v == value) {
+                    return true
+                }
+            }
+            return false
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id

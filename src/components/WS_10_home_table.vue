@@ -91,7 +91,7 @@ export default {
             table_item_width: 170,
             cc_filter: [
                 {text: 'normal', value: 'normal'},
-                {text: 'IRP', value: 'IRP'},
+                {text: 'IEM', value: 'IEM'},
                 {text: 'Absent', value: 'Absent'},
                 {text: 'Fragmented', value: 'Fragmented'}
             ],
@@ -132,13 +132,13 @@ export default {
     },
     methods: {
         cc_filter_method_mms: function(value, row) {
-            return row.mms_cc_result === value;
+            return row.cc_result_mms === value;
         },
         cc_filter_method_ray: function(value, row) {
-            return row.ray_cc_result === value;
+            return row.cc_result_ray === value;
         },
         cc_filter_method_liang: function(value, row) {
-            return row.liang_cc_result === value;
+            return row.cc_result_liang === value;
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
@@ -317,6 +317,10 @@ export default {
 
 .el-table .column_name {
     background: gray;
+}
+
+::v-deep .el-dialog .el-dialog__header .el-dialog__title {
+    font-size: 30px
 }
 
 </style>
