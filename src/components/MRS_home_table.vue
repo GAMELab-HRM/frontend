@@ -1,7 +1,7 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
             <el-table-column type="index">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
