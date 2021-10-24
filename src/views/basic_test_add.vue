@@ -67,10 +67,10 @@
 	
 </template>
 <script>
-import add_table from "../components/WS_10_add_table.vue"
+import add_table from "../components/basic_test_add_table.vue"
 import {uploadFile} from "@/apis/file.js"
 export default {
-	name: 'WS_10_add',
+	name: 'basic_test_add',
 	components: {
 		add_table,
 		
