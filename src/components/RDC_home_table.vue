@@ -1,7 +1,7 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
             <el-table-column type="index">
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" :width="table_item_width">
@@ -123,10 +123,26 @@ export default {
             return index
         },
         rdc_filter_method_ray: function(value, row) {
-            return row.rdc_result_ray === value;
+            for(var i=0 ; i<this.rdc_filter.length ; i++) {
+                var t = this.rdc_filter[i]['text']
+                var v = this.rdc_filter[i]['value']
+
+                if(t == row.rdc_result_ray && v == value) {
+                    return true
+                }
+            }
+            return false
         },
         rdc_filter_method_liang: function(value, row) {
-            return row.rdc_result_liang === value;
+            for(var i=0 ; i<this.rdc_filter.length ; i++) {
+                var t = this.rdc_filter[i]['text']
+                var v = this.rdc_filter[i]['value']
+
+                if(t == row.rdc_result_liang && v == value) {
+                    return true
+                }
+            }
+            return false
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id

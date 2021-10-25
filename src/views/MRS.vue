@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import home_table from '.././components/MRS_home_table'
+import home_table from '@/components/MRS_home_table'
 import {mrs_main_table_data} from "@/utils/fakedata.js"
 export default {
-    name: 'RDC',
+    name: 'MRS',
     components: {
         home_table,
     },

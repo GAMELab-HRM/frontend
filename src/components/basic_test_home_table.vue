@@ -1,35 +1,40 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#94F552', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
-            <el-table-column type="index">
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px'}" :span-method="main_table_span">
+            <!-- @sort-change='sort_date' :default-sort="default_sort_param" -->
+            <el-table-column type="index" :index="indexMethod">
             </el-table-column>
-            <el-table-column prop="patient_id" label="ID" :width="table_item_width">
+            <el-table-column prop="patient_id" label="ID" width="110">
             </el-table-column>
             <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="cc_result_mms" label="MMS CC result" :width="table_item_width" :filters="cc_filter" :filter-method="cc_filter_method_mms">
+            <el-table-column prop="doctor" label="Doctor" width="110">
             </el-table-column>
-            <el-table-column prop="cc_result_ray" label="Dr. Ray CC result" :width="table_item_width" :filters="cc_filter" :filter-method="cc_filter_method_ray">
+            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :width="table_item_width" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
             </el-table-column>
-            <el-table-column prop="cc_result_liang" label="Dr. Liang CC result" :width="table_item_width" :filters="cc_filter" :filter-method="cc_filter_method_liang">
+            <el-table-column prop="mrs_result" label="MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method">
             </el-table-column>
-            <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable>
+            <el-table-column prop="hh_result" label="Hiatal hernia result" :width="table_item_width" :filters="hh_filter" :filter-method="hh_filter_method">
             </el-table-column>
-            <el-table-column prop="last_review_liang" label="Dr. Liang" :width="table_item_width" sortable>
+            <el-table-column prop="rip_result" label="Rip result" :width="table_item_width" :filters="rip_filter" :filter-method="rip_filter_method">
+            </el-table-column>
+            <el-table-column prop="last_update" label="Last update" :width="table_item_width" >
+                <!-- sortable -->
             </el-table-column>
             <el-table-column prop="action" label="操作" :width="220">
                 <template slot-scope="scope" style="display: flex-box">
-                    <el-button size="mini" type='primary' @click="handleEdit(scope.$index, scope.row)" :disabled="check_login">輸 入</el-button>
+                    <el-button size="mini" type='primary' :disabled="check_login" :route="{ name: 'basic_test_add' }">輸 入</el-button>
+                    <!-- @click="handleEdit(scope.$index, scope.row)" -->
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪 除</el-button>
-                    <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪 圖</el-button>
+                    <!-- <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪 圖</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
         <!-- main table end -->
 
         <!-- 輸入 table start-->
-        <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="85%"  destroy-on-close :before-close="handleClose">
+        <!-- <el-dialog :title="current_patient_id" :visible.sync="dialogVisible" width="85%"  destroy-on-close :before-close="handleClose">
             <el-select v-model="cc_result" placeholder="CC Result" style="margin-bottom: 15px;" @change="cc_selected_update">
 				<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
 				</el-option>
@@ -40,7 +45,7 @@
                 <el-button type="primary" icon="el-icon-check" @click="send_backend(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送 出</el-button>
                 <el-button type="primary" icon="el-icon-check" @click="send_backend(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable">送出兩位醫師的診斷</el-button>
 			</div>
-        </el-dialog>
+        </el-dialog> -->
         <!-- 輸入 table end -->
 
         <!-- 刪除 dialog start -->
@@ -70,15 +75,15 @@
 
 <script>
 
-import add_table from "../components/WS_10_add_table.vue"
+// import add_table from "../components/WS_10_add_table.vue"
 import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
 import paint from "@/components/paint.vue"
 
 
 export default {
-    name: 'WS_10_home_table',
+    name: 'basic_test_home_table',
     components: {
-		add_table,
+		// add_table,
         paint,
         
 	},
@@ -88,12 +93,25 @@ export default {
             x_size:0,
 			y_size:0,
 			raw_data:0,
-            table_item_width: 170,
-            cc_filter: [
+            table_item_width: 190,
+            ws_10_filter: [
                 {text: 'normal', value: 'normal'},
-                {text: 'IRP', value: 'IRP'},
+                {text: 'IEM', value: 'IEM'},
                 {text: 'Absent', value: 'Absent'},
                 {text: 'Fragmented', value: 'Fragmented'}
+            ],
+            mrs_filter: [
+                {text: 'Contractile Reserve', value: 'CR'},
+                {text: 'Not Contractile Reserve', value: 'not_CR'},
+            ],
+            hh_filter: [
+                {text: 'No Hiatal hernia', value: 'no_hh'},
+                {text: 'Hiatal hernia indeterminant', value: 'indeterminant'},
+                {text: 'Hiatal hernia', value: 'hh'},
+            ],
+            rip_filter: [
+                {text: 'Proximal RIP', value: 'proximal'},
+                {text: 'Distal RIP', value: 'distal'},
             ],
             current_patient_id: '',
             dialogVisible: false,
@@ -131,14 +149,41 @@ export default {
         }
     },
     methods: {
-        cc_filter_method_mms: function(value, row) {
-            return row.mms_cc_result === value;
+        ws_10_filter_method: function(value, row) {
+            return row.ws_10_result === value;
         },
-        cc_filter_method_ray: function(value, row) {
-            return row.ray_cc_result === value;
+        mrs_filter_method: function(value, row) {
+            for(var i=0 ; i<this.mrs_filter.length ; i++) {
+                var t = this.mrs_filter[i]['text']
+                var v = this.mrs_filter[i]['value']
+
+                if(t == row.mrs_result && v == value) {
+                    return true
+                }
+            }
+            return false
         },
-        cc_filter_method_liang: function(value, row) {
-            return row.liang_cc_result === value;
+        hh_filter_method: function(value, row) {
+            for(var i=0 ; i<this.hh_filter.length ; i++) {
+                var t = this.hh_filter[i]['text']
+                var v = this.hh_filter[i]['value']
+
+                if(t == row.hh_result && v == value) {
+                    return true
+                }
+            }
+            return false
+        },
+        rip_filter_method: function(value, row) {
+            for(var i=0 ; i<this.rip_filter.length ; i++) {
+                var t = this.rip_filter[i]['text']
+                var v = this.rip_filter[i]['value']
+
+                if(t == row.rip_result && v == value) {
+                    return true
+                }
+            }
+            return false
         },
         handleEdit: function(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
@@ -258,46 +303,70 @@ export default {
             this.draw_dialog_visible = false
             this.draw_status = false
         },
-        sort_date(column) {
-            var col_key = column.prop
-            var sort_type = column.order
-            var time_stamp = 0
-            var t = ''
+        // sort 會直接改變每筆row的順序(有機會出現同個病人但兩個標註的醫師都是Liang)，因此暫刪
+        // sort_date(column) {
+        //     var col_key = column.prop
+        //     var sort_type = column.order
+        //     var time_stamp = 0
+        //     var t = ''
 
-            for(var i = 0 ; i<this.main_table_data.length ; i++) {
-                if(this.main_table_data[i][col_key] == '-'){
-                    time_stamp = 0
-                }
-                else{
-                    time_stamp = Date.parse(this.main_table_data[i][col_key])
-                }
-                this.main_table_data[i][col_key] = time_stamp
-            }
+        //     for(var i = 0 ; i<this.main_table_data.length ; i++) {
+        //         if(this.main_table_data[i][col_key] == '-'){
+        //             time_stamp = 0
+        //         }
+        //         else{
+        //             time_stamp = Date.parse(this.main_table_data[i][col_key])
+        //         }
+        //         this.main_table_data[i][col_key] = time_stamp
+        //     }
 
-            if(sort_type == 'descending') {
-                this.main_table_data = this.main_table_data.sort(function(a, b) {
-                    return b[col_key] < a[col_key]
-                });
-            }
-            else {
-                this.main_table_data = this.main_table_data.sort(function(a, b) {
-                    return a[col_key] > b[col_key]
-                });
-            }
+        //     if(sort_type == 'descending') {
+        //         this.main_table_data = this.main_table_data.sort(function(a, b) {
+        //             return b[col_key] < a[col_key]
+        //         });
+        //     }
+        //     else {
+        //         this.main_table_data = this.main_table_data.sort(function(a, b) {
+        //             return a[col_key] > b[col_key]
+        //         });
+        //     }
 
-            for(var j = 0 ; j<this.main_table_data.length ; j++) {
-                if(this.main_table_data[j][col_key] == 0) {
-                    t = '-'
+        //     for(var j = 0 ; j<this.main_table_data.length ; j++) {
+        //         if(this.main_table_data[j][col_key] == 0) {
+        //             t = '-'
+        //         }
+        //         else {
+        //             var date = new Date(this.main_table_data[j][col_key])
+        //             t = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+        //         }
+                
+        //         this.main_table_data[j][col_key] = t
+        //     }
+
+        // },
+        indexMethod(index) {
+            return parseInt(index/2) + 1
+        },
+        main_table_span({ row, column, rowIndex, columnIndex }) {
+            console.log(row, column)
+            var concate_row = [0, 1, 2, 9]
+            console.log(columnIndex)
+            if(concate_row.includes(columnIndex)) {
+                console.log(true)
+                if (rowIndex % 2 === 0) {
+                    return {
+                        rowspan: 2,
+                        colspan: 1
+                    }
                 }
                 else {
-                    var date = new Date(this.main_table_data[j][col_key])
-                    t = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+                    return {
+                        rowspan:0,
+                        colspan:0
+                    }
                 }
-                
-                this.main_table_data[j][col_key] = t
             }
-
-        },
+        }
     }
     
 }
@@ -317,6 +386,10 @@ export default {
 
 .el-table .column_name {
     background: gray;
+}
+
+::v-deep .el-dialog .el-dialog__header .el-dialog__title {
+    font-size: 30px
 }
 
 </style>

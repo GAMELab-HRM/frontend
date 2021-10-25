@@ -15,14 +15,14 @@ const routes = [
     name: 'Hello',
     children:[
       {
-        path: '/WS_10',
-        name: 'WS_10',
-        component: () => import("@/views/WS_10")
+        path: '/basic_test',
+        name: 'basic_test',
+        component: () => import("@/views/basic_test")
       },
       {
-        path: '/WS_10/add',
-        name: 'WS_10_add',
-        component: () => import("@/views/WS_10_add")        
+        path: '/basic_test/add',
+        name: 'basic_test_add',
+        component: () => import("@/views/basic_test_add")        
       },
       {
         path: '/MRS',

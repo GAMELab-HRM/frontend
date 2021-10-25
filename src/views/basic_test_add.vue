@@ -18,8 +18,8 @@
             </el-dialog>
 			<el-row :gutter="1">
 				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">Ground Truth
-						<el-select v-model="GT_cc_result" placeholder="CC Result" style="margin-top: 15px" @change="GT_selected_update">
+					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
+						<el-select v-model="ws_10_result" placeholder="CC Result" style="margin-top: 15px" @change="ws_10_selected_update">
 							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
@@ -32,20 +32,20 @@
 					</el-upload>
 				</el-col>
 			</el-row>
-			<div id=GT_table_container>
-				<add_table :patient_id="patient_id" @update_send="GT_update_send" @send_object="get_GT_object"/>
+			<div id=ws_10_table_container>
+				<add_table :patient_id="patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
 			</div>
 			<el-row :gutter="1">
 				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">MMS Result
-						<el-select v-model="MMS_cc_result" placeholder="CC Result" style="margin-top: 15px" @change="MMS_selected_update">
-							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="mrs_selected_update">
+							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=MMS_table_container>
+			<div id=MRS_table_container>
 				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
 			</div>
 
@@ -67,10 +67,10 @@
 	
 </template>
 <script>
-import add_table from "../components/WS_10_add_table.vue"
+import add_table from "../components/basic_test_add_table.vue"
 import {uploadFile} from "@/apis/file.js"
 export default {
-	name: 'WS_10_add',
+	name: 'basic_test_add',
 	components: {
 		add_table,
 		
@@ -88,14 +88,20 @@ export default {
 			dialog_btn_label: '',
 			send_dialogVisible: false,
 			send_btn_style: 'margin-top: 30px; ',
-			GT_send_disable: true,
-			MMS_send_disable: true,
+
+			ws_10_send_disable: true,
+			mrs_10_send_disable: true,
+
 			send_disable: true,
-			GT_object: '', 
-			MMS_object: '',
+
+			ws_10_object: '', 
+			mrs_pbject:'',
+
 			all_object: {},
-			GT_cc_result: '',
-			MMS_cc_result: '', 
+			
+			cc_result: '',
+			mrs_result: '',
+
 			cc_options:[{
                 value: 'Absent',
                 label: 'Absent'
@@ -109,8 +115,17 @@ export default {
                 value: 'Normal',
                 label: 'Normal'
             }],
-			GT_selected: false,
-			MMS_selected: false,
+			mrs_options:[{
+                value: 'CR',
+                label: 'Contractile Reserve'
+            }, {
+                value: 'not_CR',
+                label: 'Not Contractile Reserv'
+            }],
+
+			ws_10_selected: false,
+			mrs_10_selected: false,
+
 			raw_data_upload: false,
 			x_size:0,
 			y_size:0,
@@ -143,40 +158,28 @@ export default {
 			this.send_dialogVisible = true
 			this.send_doctor_num = doctor_num
 		},
-		GT_update_send: function(val) {
+		ws_10_update_send: function(val) {
 			console.log(val)
-			this.GT_send_disable = val
+			this.ws_10_send_disable = val
 			this.update_send_btn()
 		},
-		MMS_update_send: function(val) {
-			console.log(val)
-			this.MMS_send_disable = val
-			this.update_send_btn()
-		},
-		GT_selected_update: function() {
-			this.GT_selected = true
-			this.update_send_btn()
-		},
-		MMS_selected_update: function() {
-			this.MMS_selected = true
+		ws_10_selected_update: function() {
+			this.ws_10_selected = true
 			this.update_send_btn()
 		},
 		// &&  this.raw_data_upload == true
 		update_send_btn: function() {
-			if(this.GT_send_disable == false && this.MMS_send_disable == false && this.GT_selected == true && this.MMS_selected == true && this.patient_id != '') {
-				this.send_disable = false                                                                                                                           
+			if(this.ws_10_send_disable == false && this.ws_10_selected == true && this.patient_id != '') {
+				this.send_disable = false
 			}
 			else {
 				this.send_disable = true
 			}
 		},
-		get_GT_object: function(table) {
-			this.GT_object = table
+		get_ws_10_object: function(table) {
+			this.ws_10_object = table
 		},
-		get_MMS_object: function(table) {
-			this.MMS_object = table
-		},
-		preprocess_table_data: function(object) {
+		preprocess_ws_10_table_data: function(object) {
 			// 處理來自GT table & MMS table 的資料
 			var all_object_col = ['ID', 'V', 'P', 'swallow_type', 'IRP40', 'DCI', 'DL']
 			var dic = {}
@@ -186,28 +189,24 @@ export default {
 				temp.shift()
 				dic[all_object_col[i+1]] = temp
 			}
+			
 			return dic
 		},
-		preprocessing_data: function(object) {
-			// 處理CC result 與 doctor
-			object['GT']['cc_result'] = this.GT_cc_result
-			object['MMS']['cc_result'] = this.MMS_cc_result
-
-			return object
+		add_doctor_id(key) {
+			this.all_object[key]['doctor'] = this.$store.state.auth_app.login_name
 		},
 		send_backend: function() {
 			this.send_dialogVisible = false
-			this.all_object['GT'] = this.preprocess_table_data(this.GT_object)
-			this.all_object['MMS'] = this.preprocess_table_data(this.MMS_object)
-			this.all_object = this.preprocessing_data(this.all_object)
-			//加入doctor id 到all_object
-			this.all_object['GT']["doctor"] = this.$store.state.auth_app.login_name //拿到doctor id的方法
-			this.all_object["MMS"]["doctor"] = "MMS"
+			this.all_object['ws_10'] = this.preprocess_ws_10_table_data(this.ws_10_object)
+			this.all_object['ws_10']['cc_result'] = this.ws_10_result
+			this.add_doctor('ws_10')
+
 			// console.log(this.all_object)
 			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
 			// 	console.log("成功")
 			// 	console.log(res)
 			// })
+
 			console.log(this.all_object)
 			if(this.send_doctor_num==1) {
 				console.log("send 1 doctor's data")
@@ -254,7 +253,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
 	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 	-webkit-font-smoothing: antialiased;

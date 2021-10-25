@@ -8,9 +8,13 @@
             </el-table-column>
             <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
             </el-table-column>
-            <el-table-column prop="mrs_result_ray" label="Dr. Ray MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method_ray">
+            <el-table-column prop="hh_result_ray" label="Dr. Ray Hiatal hernia result" :width="table_item_width" :filters="hh_filter" :filter-method="hh_filter_method_ray">
             </el-table-column>
-            <el-table-column prop="mrs_result_liang" label="Dr. Liang MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method_liang">
+            <el-table-column prop="rip_result_ray" label="Dr. Ray RIP result" :width="table_item_width" :filters="rip_filter" :filter-method="rip_filter_method_ray">
+            </el-table-column>
+            <el-table-column prop="hh_result_liang" label="Dr. Liang Hiatal hernia result" :width="table_item_width" :filters="hh_filter" :filter-method="hh_filter_method_liang">
+            </el-table-column>
+            <el-table-column prop="rip_result_liang" label="Dr. Liang RIP result" :width="table_item_width" :filters="rip_filter" :filter-method="rip_filter_method_liang">
             </el-table-column>
             <el-table-column prop="last_review_ray" label="Dr. Ray" :width="table_item_width" sortable>
             </el-table-column>
@@ -73,7 +77,7 @@
 // import ws_10_draw from "./ws_10_draw.vue"
 
 export default {
-    name: 'MRS_home_table',
+    name: 'Hiatal_hernia_home_table',
     components: {
 		// add_table,
         // ws_10_draw,
@@ -81,9 +85,14 @@ export default {
     data() {
         return {
             table_item_width: 200,
-            mrs_filter: [
-                {text: 'Contractile Reserve', value: 'CR'},
-                {text: 'Not Contractile Reserve', value: 'not_CR'},
+            hh_filter: [
+                {text: 'No Hiatal hernia', value: 'not_hh'},
+                {text: 'Hiatal hernia indeterminant', value: 'indeterminant'},
+                {text: 'Hiatal hernia', value: 'hh'},
+            ],
+            rip_filter: [
+                {text: 'Proximal RIP', value: 'proximal'},
+                {text: 'Distal RIP', value: 'distal'},
             ],
             current_patient_id: '',
             dialogVisible: false,
@@ -124,23 +133,45 @@ export default {
         idx_method: function(index) {
             return index
         },
-        mrs_filter_method_ray: function(value, row) {
-            for(var i=0 ; i<this.mrs_filter.length ; i++) {
-                var t = this.mrs_filter[i]['text']
-                var v = this.mrs_filter[i]['value']
+        hh_filter_method_ray: function(value, row) {
+            for(var i=0 ; i<this.hh_filter.length ; i++) {
+                var t = this.hh_filter[i]['text']
+                var v = this.hh_filter[i]['value']
 
-                if(t == row.mrs_result_ray && v == value) {
+                if(t == row.hh_result_ray && v == value) {
                     return true
                 }
             }
             return false
         },
-        mrs_filter_method_liang: function(value, row) {
-            for(var i=0 ; i<this.mrs_filter.length ; i++) {
-                var t = this.mrs_filter[i]['text']
-                var v = this.mrs_filter[i]['value']
+        rip_filter_method_ray: function(value, row) {
+            for(var i=0 ; i<this.rip_filter.length ; i++) {
+                var t = this.rip_filter[i]['text']
+                var v = this.rip_filter[i]['value']
 
-                if(t == row.mrs_result_liang && v == value) {
+                if(t == row.rip_result_ray && v == value) {
+                    return true
+                }
+            }
+            return false
+        },
+        hh_filter_method_liang: function(value, row) {
+            for(var i=0 ; i<this.hh_filter.length ; i++) {
+                var t = this.hh_filter[i]['text']
+                var v = this.hh_filter[i]['value']
+
+                if(t == row.hh_result_liang && v == value) {
+                    return true
+                }
+            }
+            return false
+        },
+        rip_filter_method_liang: function(value, row) {
+            for(var i=0 ; i<this.rip_filter.length ; i++) {
+                var t = this.rip_filter[i]['text']
+                var v = this.rip_filter[i]['value']
+
+                if(t == row.rip_result_liang && v == value) {
                     return true
                 }
             }

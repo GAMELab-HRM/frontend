@@ -23,7 +23,7 @@
 
 <script>
 export default {
-    name: 'WS_10_add_table',
+    name: 'basic_test_add_table',
     data() {
         return {
             text:'',
