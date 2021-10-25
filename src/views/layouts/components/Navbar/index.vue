@@ -30,7 +30,7 @@
                         <el-dropdown @command="login">
                             <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
                             <el-dropdown-menu slot="dropdown" style="background: #606A78">
-                                <el-dropdown-item command="Dr. Ray">Dr. Ray</el-dropdown-item>
+                                <el-dropdown-item command="Dr. Lei">Dr. Lei</el-dropdown-item>
                                 <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
@@ -57,7 +57,7 @@ export default{
     data() {
         return {
             login_map:{
-                "Dr. Ray":"0",
+                "Dr. Lei":"0",
                 "Dr. Liang":"1"
             },
             login_status: "登入",
