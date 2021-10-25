@@ -22,8 +22,8 @@
                 </el-submenu>
                 <el-submenu index="4" :disabled="check_login">
                     <template slot="title">Hiatal Hernia</template>
-                    <el-menu-item :disabled="check_login" index="3-1" :route="{ name: 'Hiatal_hernia' }">所有資料</el-menu-item>
-                    <el-menu-item :disabled="check_login" index="3-2" :route="{ name: 'Hiatal_hernia_add' }">新增資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="4-1" :route="{ name: 'Hiatal_hernia' }">所有資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="4-2" :route="{ name: 'Hiatal_hernia_add' }">新增資料</el-menu-item>
                 </el-submenu>
                 <el-menu-item style="float:right">
                     <div>
