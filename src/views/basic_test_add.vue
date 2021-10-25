@@ -17,11 +17,12 @@
                     <el-button type="primary" @click="dialogVisible = false">{{ dialog_btn_label }}</el-button>
                 </span>
             </el-dialog>
+			<!-- section1 start -->
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
 						<el-select v-model="ws_10_result" placeholder="CC Result" style="margin-top: 15px" @change="ws_10_selected_update">
-							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
@@ -54,7 +55,66 @@
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
+			<!-- section1 end -->
 
+			<!-- section2 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="mrs_selected_update">
+							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			<!-- section2 end -->
+
+			<!-- section3 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
+						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="hh_selected_update">
+							<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			<!-- section3 end -->
+
+			<!-- section4 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
+							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			<!-- section4 end -->
+
+			
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
                 <span><h2> 確認送出? </h2></span>
                 <span slot="footer" class="dialog-footer">
@@ -77,6 +137,7 @@ export default {
 	},
 	data() {
 		return {
+			ws_10_result:'',
 			fileList:[],
 			dialogVisible: false,
 			check_btn_style: '',
@@ -98,8 +159,10 @@ export default {
 			
 			cc_result: '',
 			mrs_result: '',
+			hh_result: '',
+			rip_result: '',
 
-			cc_options:[{
+			ws_10_options:[{
                 value: 'Absent',
                 label: 'Absent'
             }, {
@@ -114,10 +177,27 @@ export default {
             }],
 			mrs_options:[{
                 value: 'CR',
-                label: 'Contractile Reserve'
+                label: 'Contractile Reverse'
             }, {
                 value: 'not_CR',
-                label: 'Not Contractile Reserv'
+                label: 'Not Contractile Reverse'
+            }],
+			hh_options:[{
+                value: 'no_hh',
+                label: 'No Hiatal hernia'
+            }, {
+                value: 'indet_hh',
+                label: 'Hiatal hernia indeterminant'
+            }, {
+                value: 'hh',
+                label: 'Hiatal hernia'
+            }],
+			rip_options:[{
+                value: 'proximal',
+                label: 'Proximal RIP'
+            }, {
+                value: 'distal',
+                label: 'Distal RIP'
             }],
 
 			ws_10_selected: false,

@@ -105,7 +105,7 @@ export default {
             ],
             hh_filter: [
                 {text: 'No Hiatal hernia', value: 'no_hh'},
-                {text: 'Hiatal hernia indeterminant', value: 'indeterminant'},
+                {text: 'Hiatal hernia indeterminant', value: 'indet_hh'},
                 {text: 'Hiatal hernia', value: 'hh'},
             ],
             rip_filter: [
