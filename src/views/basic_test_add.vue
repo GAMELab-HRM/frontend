@@ -73,7 +73,6 @@ export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
-		
 	},
 	data() {
 		return {
@@ -131,7 +130,11 @@ export default {
 			y_size:0,
 			raw_data:0,
 			send_doctor_num: 0,
+			current_patient_id: this.$route.params.current_patient_id
 		}
+	},
+	created(){
+		console.log(this.current_patient_id)
 	},
 	methods: {
 		check_patient_id: function() {
