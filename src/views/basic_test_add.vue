@@ -25,12 +25,12 @@
 						</el-select>
 					</h1>
 				</el-col>
-				<el-col :span="4" :offset="16"  style="margin-top: 70px">
+				<!-- <el-col :span="4" :offset="16"  style="margin-top: 70px">
 					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/"  :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
 						<el-button slot="trigger"  type="primary">選取文件</el-button>
 						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
 					</el-upload>
-				</el-col>
+				</el-col> -->
 			</el-row>
 			<div id=ws_10_table_container>
 				<add_table :patient_id="patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
