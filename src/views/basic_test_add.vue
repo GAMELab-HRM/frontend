@@ -153,7 +153,7 @@ export default {
 			send_disable: true,
 
 			ws_10_object: '', 
-			mrs_pbject:'',
+			mrs_object:'',
 
 			all_object: {},
 			

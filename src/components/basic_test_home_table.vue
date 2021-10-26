@@ -7,22 +7,22 @@
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" width="110">
             </el-table-column>
-            <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
+            <el-table-column prop="raw_data" label="Raw Data">
             </el-table-column>
             <el-table-column prop="doctor" label="Doctor" width="110">
             </el-table-column>
-            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :width="table_item_width" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
+            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
             </el-table-column>
-            <el-table-column prop="mrs_result" label="MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method">
+            <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method">
             </el-table-column>
-            <el-table-column prop="hh_result" label="Hiatal hernia result" :width="table_item_width" :filters="hh_filter" :filter-method="hh_filter_method">
+            <el-table-column prop="hh_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
             </el-table-column>
-            <el-table-column prop="rip_result" label="RIP result" :width="table_item_width" :filters="rip_filter" :filter-method="rip_filter_method">
+            <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method">
             </el-table-column>
-            <el-table-column prop="last_update" label="Last update" :width="table_item_width" >
+            <el-table-column prop="last_update" label="Last update">
                 <!-- sortable -->
             </el-table-column>
-            <el-table-column prop="action" label="操作" :width="220">
+            <el-table-column prop="action" label="操作">
                 <template slot-scope="scope" style="display: flex-box">
                     <el-button size="mini" type='primary' :disabled="check_login" @click="handleEdit(scope.$index, scope.row)">輸 入</el-button>
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪 除</el-button>
@@ -92,7 +92,6 @@ export default {
             x_size:0,
 			y_size:0,
 			raw_data:0,
-            table_item_width: 190,
             ws_10_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IEM', value: 'IEM'},

@@ -8,12 +8,12 @@
                 <el-submenu index="1" :disabled="check_login">
                     <template slot="title">wet swallows 10、MRS、Hiatal hernia</template>
                     <el-menu-item :disabled="check_login" index="1-1" :route="{ name: 'basic_test' }" >所有資料</el-menu-item>
-                    <el-menu-item :disabled="check_login" index="1-2" :route="{ name: 'basic_test_add' }" >新增資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="1-2" :route="{ name: 'upload_files' }" >批量上傳資料</el-menu-item>
                 </el-submenu>
                 <el-submenu index="2" :disabled="check_login">
                     <template slot="title">RDC</template>
                     <el-menu-item :disabled="check_login" index="2-1" :route="{ name: 'RDC' }">所有資料</el-menu-item>
-                    <el-menu-item :disabled="check_login" index="2-2" :route="{ name: 'RDC_add' }">新增資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="2-2" :route="{ name: 'upload_files' }">批量上傳資料</el-menu-item>
                 </el-submenu>
                 <!-- <el-submenu index="3" :disabled="check_login">
                     <template slot="title">RDC</template>

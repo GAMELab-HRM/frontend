@@ -190,3 +190,29 @@ export let main_table_data = [{
     rip_result: 'Proximal RIP',
     last_update: '2021/10/8'
 }]
+
+export let upload_data = [{
+    patient_id: 'A123452945',
+    raw_data: '2945-nromal.csv',
+    ws_10_result: 'Fragmented',
+    mrs_result: '-',
+    hh_result: 'No Hiatal hernia',
+    rip_result: 'Proximal RIP',
+    last_update: '2021/10/8'
+}, {
+    patient_id: 'A123452945',
+    raw_data: '2945-nromal.csv',
+    ws_10_result: '-',
+    mrs_result: 'Contractile Reverse',
+    hh_result: '-',
+    rip_result: 'Distal RIP',
+    last_update: '2021/10/6'
+}, {
+    patient_id: 'A123453423',
+    raw_data: '3423-nromal.csv',
+    ws_10_result: 'Absent',
+    mrs_result: '-',
+    hh_result: 'Hiatal hernia',
+    rip_result: '-',
+    last_update: '2021/10/4'
+}]
