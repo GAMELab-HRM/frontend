@@ -23,6 +23,11 @@ export default {
     components: {
         upload_table,
     },
+    data(){
+        return {
+            fileList:[]
+        }
+    },
     methods:{
         upload_preview(file) {
             console.log(file)
