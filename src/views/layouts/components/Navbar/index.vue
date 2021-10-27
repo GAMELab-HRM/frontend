@@ -6,7 +6,7 @@
                     <logo></logo>
                 </el-menu-item>
                 <el-submenu index="1" :disabled="check_login">
-                    <template slot="title">wet swallows 10、MRS、Hiatal hernia</template>
+                    <template slot="title">Wet swallows 10、MRS、Hiatal hernia</template>
                     <el-menu-item :disabled="check_login" index="1-1" :route="{ name: 'basic_test' }" >所有資料</el-menu-item>
                     <el-menu-item :disabled="check_login" index="1-2" :route="{ name: 'upload_files' }" >批量上傳資料</el-menu-item>
                 </el-submenu>
