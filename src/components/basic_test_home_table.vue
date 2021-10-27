@@ -7,25 +7,24 @@
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" width="110">
             </el-table-column>
-            <el-table-column prop="raw_data" label="Raw Data" :width="table_item_width">
+            <el-table-column prop="raw_data" label="Raw Data">
             </el-table-column>
             <el-table-column prop="doctor" label="Doctor" width="110">
             </el-table-column>
-            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :width="table_item_width" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
+            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
             </el-table-column>
-            <el-table-column prop="mrs_result" label="MRS result" :width="table_item_width" :filters="mrs_filter" :filter-method="mrs_filter_method">
+            <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method">
             </el-table-column>
-            <el-table-column prop="hh_result" label="Hiatal hernia result" :width="table_item_width" :filters="hh_filter" :filter-method="hh_filter_method">
+            <el-table-column prop="hh_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
             </el-table-column>
-            <el-table-column prop="rip_result" label="Rip result" :width="table_item_width" :filters="rip_filter" :filter-method="rip_filter_method">
+            <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method">
             </el-table-column>
-            <el-table-column prop="last_update" label="Last update" :width="table_item_width" >
+            <el-table-column prop="last_update" label="Last update">
                 <!-- sortable -->
             </el-table-column>
-            <el-table-column prop="action" label="操作" :width="220">
+            <el-table-column prop="action" label="操作">
                 <template slot-scope="scope" style="display: flex-box">
-                    <el-button size="mini" type='primary' :disabled="check_login" :route="{ name: 'basic_test_add' }">輸 入</el-button>
-                    <!-- @click="handleEdit(scope.$index, scope.row)" -->
+                    <el-button size="mini" type='primary' :disabled="check_login" @click="handleEdit(scope.$index, scope.row)">輸 入</el-button>
                     <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled="check_login">刪 除</el-button>
                     <!-- <el-button size="mini" type="success" @click="handleDraw(scope.$index, scope.row)" :disabled="check_login">繪 圖</el-button> -->
                 </template>
@@ -93,7 +92,6 @@ export default {
             x_size:0,
 			y_size:0,
 			raw_data:0,
-            table_item_width: 190,
             ws_10_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IEM', value: 'IEM'},
@@ -106,7 +104,7 @@ export default {
             ],
             hh_filter: [
                 {text: 'No Hiatal hernia', value: 'no_hh'},
-                {text: 'Hiatal hernia indeterminant', value: 'indeterminant'},
+                {text: 'Hiatal hernia indeterminant', value: 'indet_hh'},
                 {text: 'Hiatal hernia', value: 'hh'},
             ],
             rip_filter: [
@@ -149,6 +147,7 @@ export default {
         }
     },
     methods: {
+        // basic test filter method start
         ws_10_filter_method: function(value, row) {
             return row.ws_10_result === value;
         },
@@ -185,11 +184,11 @@ export default {
             }
             return false
         },
-        handleEdit: function(index, row) {
-            this.current_patient_id = this.main_table_data[index].patient_id
-            this.dialogVisible = true;
-            console.log(this.current_patient_id)
-            console.log(row)
+        // basic test filter method end
+
+        // 操作btn hendler start
+        handleEdit: function(index) {
+            this.$router.push({name: 'basic_test_add', params: {current_patient_id: this.main_table_data[index].patient_id}})
         },
         handleDelete: function(index, row) {
             this.delete_dialogVisible = true;
@@ -197,13 +196,17 @@ export default {
             console.log(index)
             console.log(row)
         },
-        tableRowClassName: function(row, rowIndex) {
-            if (rowIndex === 1) {
-                return 'column_name';
-            } 
-            console.log(row)
-            return '';
+
+        delete_one() {
+            console.log(this.$store.state.auth_app.login_name)
+            this.delete_dialogVisible = false
         },
+        delete_all() {
+            this.delete_dialogVisible = false
+        },
+        // 操作btn hendler end
+
+
         handleClose(done) {
             this.$confirm('確認關閉?').then(_ => {
                 done();
@@ -211,9 +214,11 @@ export default {
             }).catch(_ => {
                 console.log(_)
             });
-            
-        
         },
+        
+
+
+        // check sendable and data preprocessing start
         update_table_send(val) {
             // 因為val是send_disable
             this.table_send = !val
@@ -262,13 +267,10 @@ export default {
             this.cc_result_selected = true
             this.update_send()
         },
-        delete_one() {
-            console.log(this.$store.state.auth_app.login_name)
-            this.delete_dialogVisible = false
-        },
-        delete_all() {
-            this.delete_dialogVisible = false
-        },
+        // check sendable and data preprocessing end
+
+
+        
         handleDraw(index, row) {
             this.current_patient_id = this.main_table_data[index].patient_id
             this.draw_dialog_visible = true
@@ -344,6 +346,7 @@ export default {
         //     }
 
         // },
+
         indexMethod(index) {
             return parseInt(index/2) + 1
         },

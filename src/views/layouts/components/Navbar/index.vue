@@ -8,12 +8,12 @@
                 <el-submenu index="1" :disabled="check_login">
                     <template slot="title">wet swallows 10、MRS、Hiatal hernia</template>
                     <el-menu-item :disabled="check_login" index="1-1" :route="{ name: 'basic_test' }" >所有資料</el-menu-item>
-                    <el-menu-item :disabled="check_login" index="1-2" :route="{ name: 'basic_test_add' }" >新增資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="1-2" :route="{ name: 'upload_files' }" >批量上傳資料</el-menu-item>
                 </el-submenu>
                 <el-submenu index="2" :disabled="check_login">
                     <template slot="title">RDC</template>
                     <el-menu-item :disabled="check_login" index="2-1" :route="{ name: 'RDC' }">所有資料</el-menu-item>
-                    <el-menu-item :disabled="check_login" index="2-2" :route="{ name: 'RDC_add' }">新增資料</el-menu-item>
+                    <el-menu-item :disabled="check_login" index="2-2" :route="{ name: 'upload_files' }">批量上傳資料</el-menu-item>
                 </el-submenu>
                 <!-- <el-submenu index="3" :disabled="check_login">
                     <template slot="title">RDC</template>
@@ -30,7 +30,7 @@
                         <el-dropdown @command="login">
                             <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
                             <el-dropdown-menu slot="dropdown" style="background: #606A78">
-                                <el-dropdown-item command="Dr. Ray">Dr. Ray</el-dropdown-item>
+                                <el-dropdown-item command="Dr. Lei">Dr. Lei</el-dropdown-item>
                                 <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
@@ -57,7 +57,7 @@ export default{
     data() {
         return {
             login_map:{
-                "Dr. Ray":"0",
+                "Dr. Lei":"0",
                 "Dr. Liang":"1"
             },
             login_status: "登入",

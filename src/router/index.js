@@ -25,6 +25,11 @@ const routes = [
         component: () => import("@/views/basic_test_add")        
       },
       {
+        path: '/basic_test/upload_files',
+        name: 'upload_files',
+        component: () => import("@/views/upload_files")
+      },
+      {
         path: '/MRS',
         name: 'MRS',
         component: () => import("@/views/MRS")
@@ -53,7 +58,8 @@ const routes = [
         path: '/Hiatal_hernia/add',
         name: 'Hiatal_hernia_add',
         component: () => import("@/views/Hiatal_hernia_add")        
-      }
+      },
+
     ]
   }
 ]
