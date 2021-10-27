@@ -24,9 +24,6 @@ export default {
                 prop: 'last_update'
                 , order: 'descending'
             },
-            temp_upload_data: [{
-                file_name: 'test1.csv'
-            }],
             fileList: [],
         }
     },
