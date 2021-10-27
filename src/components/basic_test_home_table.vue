@@ -350,10 +350,11 @@ export default {
         indexMethod(index) {
             return parseInt(index/2) + 1
         },
-        main_table_span({ row, column, rowIndex, columnIndex }) {
-            console.log(row, column)
+        // main_table_span({row, column, rowIndex, columnIndex})
+        main_table_span({rowIndex, columnIndex }) {
+            // console.log(row, column)
             var concate_row = [0, 1, 2, 9]
-            console.log(columnIndex)
+            // console.log(columnIndex)
             if(concate_row.includes(columnIndex)) {
                 console.log(true)
                 if (rowIndex % 2 === 0) {

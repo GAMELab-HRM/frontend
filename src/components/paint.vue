@@ -2,7 +2,8 @@
     <div id="painting">
         <!-- 按shift multi selected box -->
         <!-- <el-button @click="force_update">add rect</el-button> -->
-        <Plotly :key="componentKey" @deselect="deselected_box"   @selected="select_event" @click="click_event" :data="data" :layout="layout" :display-mode-bar="true" :scrollZoom="true" :modeBarButtons="btn_list"></Plotly>
+        
+        <Plotly :key="componentKey" @deselect="deselected_box"   @selected="select_event" @click="click_event" :data="data" :layout="layout" :display-mode-bar="true" :scrollZoom="false" :modeBarButtons="btn_list"></Plotly>
     </div>
 </template>
 

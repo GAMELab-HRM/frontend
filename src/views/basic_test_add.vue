@@ -68,8 +68,8 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
-
+			<!-- <add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/> -->
+			<paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint>
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -86,9 +86,16 @@
 						</el-select>
 					</h1>
 				</el-col>
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
+							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
 			</el-row>
-			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
-
+			<paint v-if="hiatal_paint_render" :x_size="hiatal_xsize" :y_size="hiatal_ysize" :raw_data="hiatal_rawdata"></paint>
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -96,7 +103,7 @@
 			<!-- section3 end -->
 
 			<!-- section4 start -->
-			<el-row :gutter="1">
+			<!-- <el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
 						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
@@ -111,7 +118,7 @@
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div>
+			</div> -->
 			<!-- section4 end -->
 
 			
@@ -129,14 +136,29 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
+import paint from "../components/paint.vue"
 import {uploadFile} from "@/apis/file.js"
+import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
+import {ws_10_options, mrs_options, hh_options, rip_options} from "@/utils/optiondata.js"
 export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
+		paint
 	},
 	data() {
 		return {
+			// for painting 
+			mrs_xsize:0,
+			mrs_ysize:0,
+			mrs_rawdata:0,
+			mrs_paint_render:false,
+			hiatal_xsize:0,
+			hiatal_ysize:0,
+			hiatal_rawdata:0,
+			hiatal_paint_render:false,
+
+
 			ws_10_result:'',
 			fileList:[],
 			dialogVisible: false,
@@ -162,43 +184,10 @@ export default {
 			hh_result: '',
 			rip_result: '',
 
-			ws_10_options:[{
-                value: 'Absent',
-                label: 'Absent'
-            }, {
-                value: 'IEM',
-                label: 'IEM'
-            }, {
-                value: 'Fragmented',
-                label: 'Fragmented'
-            }, {
-                value: 'Normal',
-                label: 'Normal'
-            }],
-			mrs_options:[{
-                value: 'CR',
-                label: 'Contractile Reverse'
-            }, {
-                value: 'not_CR',
-                label: 'Not Contractile Reverse'
-            }],
-			hh_options:[{
-                value: 'no_hh',
-                label: 'No Hiatal hernia'
-            }, {
-                value: 'indet_hh',
-                label: 'Hiatal hernia indeterminant'
-            }, {
-                value: 'hh',
-                label: 'Hiatal hernia'
-            }],
-			rip_options:[{
-                value: 'proximal',
-                label: 'Proximal RIP'
-            }, {
-                value: 'distal',
-                label: 'Distal RIP'
-            }],
+			ws_10_options:0,
+			mrs_options:0,
+			hh_options:0,
+			rip_options:0,
 
 			ws_10_selected: false,
 			mrs_10_selected: false,
@@ -212,7 +201,32 @@ export default {
 		}
 	},
 	created(){
+		// load option data 
+		this.ws_10_options = ws_10_options
+		this.mrs_options = mrs_options
+		this.hh_options = hh_options
+		this.rip_options = rip_options 
+		
 		console.log(this.current_patient_id)
+		CallDemoAPI().then((res)=>{
+			console.log("call demo API")
+			console.log(res)
+			let raw_data = JSON.parse(res['data']['raw'])
+			this.mrs_ysize = raw_data.length 
+			this.mrs_xsize = raw_data[0].length 
+			this.mrs_rawdata = raw_data
+			this.mrs_paint_render = true 
+
+		})
+		CallDemo2API().then((res)=>{
+			console.log("call demo2 API")
+			console.log(res)
+			let raw_data = JSON.parse(res['data']['raw'])
+			this.hiatal_ysize = raw_data.length
+			this.hiatal_xsize = raw_data[0].length
+			this.hiatal_rawdata = raw_data
+			this.hiatal_paint_render = true
+		})
 	},
 	methods: {
 		// input patient ID hendler
