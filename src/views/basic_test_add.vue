@@ -137,7 +137,7 @@
 <script>
 import add_table from "../components/basic_test_add_table.vue"
 import paint from "../components/paint.vue"
-import {uploadFile} from "@/apis/file.js"
+import {uploadFileDemo} from "@/apis/file.js"
 import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
 import {ws_10_options, mrs_options, hh_options, rip_options} from "@/utils/optiondata.js"
 export default {
@@ -333,7 +333,8 @@ export default {
 			this.forms = new FormData()
 			this.forms.append("files", file)
 
-			uploadFile(this.forms).then((res)=>{
+			/* 這個api的內容寫在 /src/apis/file.js  */
+			uploadFileDemo(this.forms).then((res)=>{
 				console.log("response")
 				console.log(res)
 				let raw_data = JSON.parse(res['data']['raw'])
