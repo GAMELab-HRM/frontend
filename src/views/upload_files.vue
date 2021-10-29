@@ -1,7 +1,7 @@
 <template>
     <div id=main_container>
         <div id=upload_container>
-            <el-upload class="upload-demo" ref="upload" accept="" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/" :on-remove="upload_remove" :file-list="fileList" :auto-upload="false" :limit=3 :on-success="upload_success" :on-error="upload_failed" list-type="picture" multiple :on-exceed="upload_exceed" :on-change="upload_change">
+            <el-upload class="upload-demo" ref="upload" accept="" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/" :on-remove="upload_remove" :file-list="fileList" :auto-upload="false" :limit=3 list-type="picture" multiple :on-exceed="upload_exceed" :on-change="upload_change">
                 <el-button slot="trigger"  type="primary">選取文件</el-button>
                 <el-button style="margin-left: 10px; margin-right: 0px" type="success" @click="submitUpload">上傳檔案</el-button>
             </el-upload>
@@ -12,8 +12,7 @@
 
 <script>
 import upload_table from '@/components/upload_table.vue'
-import axios from 'axios'
-
+import {uploadFileDemo} from '@/apis/file.js'
 export default {
     name: 'upload_files',
     components: {
@@ -30,17 +29,6 @@ export default {
         upload_remove(file, fileList) {
             console.log(file, fileList)
         },
-        upload_success(response, file, fileList) {
-            this.alert_success(file)
-            console.log('success')
-            console.log(response, file, fileList)
-            fileList
-            // this.fileList.append(file)
-        },
-        upload_failed(err, file, fileList) {
-            this.alert_failed(file)
-            console.log(err, fileList)
-        },
         upload_exceed() {
             this.alert_exceed()
         }, 
@@ -55,29 +43,29 @@ export default {
             this.$refs.upload.submit();
             this.fileList = []
         },
-        customUpload(file){
-            axios.post("http://127.0.0.1:8000/api/v1/swallows/data", file).then((res)=>{
-				console.log("成功")
-				console.log(res)
-			})
-            console.log('customUpload activate')
-            console.log(file)
+        customUpload(item){
+			const file = item.file 
+            let filename = file['name']
+			this.forms = new FormData()
+			this.forms.append("files", file)
+
+			/* 這個api的內容寫在 /src/apis/file.js  */
+            uploadFileDemo(this.forms).then((res)=>{
+                this.$message({message: filename + ' 上傳成功',type: 'success'});
+                console.log("Call upload API successed!")
+                console.log(res)
+            }).catch((err)=>{
+                this.$message.error(filename + ' 上傳失敗!');
+                console.log("Call upload API failed!")
+                console.log(err)
+            })
         },	
-        alert_success(file) {
-            this.$message({
-                message: '成功上傳' + file.name + '!',
-                type: 'success'
-            });
-        },
         alert_exceed() {
             this.$message({
                 message: '個數超過限制!',
                 type: 'warning'
             });
-        },
-        alert_failed(file) {
-            this.$message.error(file.name + ' 上傳失敗!');
-        },
+        }
     }
 }
 </script>
