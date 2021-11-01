@@ -8,8 +8,8 @@
 			<button style="width: 100px; height: 100px" @click="click_vertical" :disabled='vertical_count>=2'> vertical line </button>
 			<button style="width: 100px; height: 100px" @click="click_horizontal" :disabled='horizontal_count>=2'> horizontal line </button>
 			<button style="width: 100px; height: 100px" @click="click_box" :disabled='box_count>=2'> box </button>
-			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0'> clear all </button>
-			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0'> clear last </button>
+			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
+			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
 		</div>
 	</div>
 </template>
@@ -36,6 +36,7 @@ var vue_instance = {
 			vertical_count: 0,
 			horizontal_count: 0,
 			box_count: 0,
+			box_first_point: false,
 			data: [{
 				z: this.raw_data,
 				x: this.x_size,
@@ -73,7 +74,19 @@ var vue_instance = {
 						dash: 'solid'
 					},
 					flag: 'vertical',
-				},]
+				}, {
+					type: 'rect',
+					x0: 0,
+					y0: 0,
+					x1: 0,
+					y1: 0,
+					line: {
+						color: 'rgba(128, 0, 128, 1)',
+						width: 4,
+						dash: 'solid'
+					},
+					flag: 'box',
+				}]
 			},
 			options: {
 				modeBarButtonsToRemove: [
@@ -104,7 +117,12 @@ var vue_instance = {
 				this.draw_horizontal(args)
 			}
 			if(this.if_box === true) {
-				this.draw_box(args)
+				if(this.box_first_point) {
+					this.draw_box_second(args)
+				}
+				else {
+					this.draw_box_first(args)
+				}
 			}
 		},
 		hover_handler(args) {
@@ -114,7 +132,7 @@ var vue_instance = {
 			if(this.if_horizontal === true) {
 				this.hover_horizontal(args)
 			}
-			if(this.if_box === true) {
+			if(this.if_box === true && this.box_first_point) {
 				this.hover_box(args)
 			}
 		},
@@ -139,7 +157,10 @@ var vue_instance = {
 			this.update_chart()
 		},
 		click_box() {
-			console.log('click box activate')
+			this.if_vertical = false
+			this.if_horizontal = false
+			this.if_box = true
+			this.update_chart()
 		},
 		draw_horizontal(args) {
 			var new_line = {
@@ -183,6 +204,41 @@ var vue_instance = {
 			}
 			this.update_chart()
 		},
+		draw_box_first(args) {
+			this.layout.shapes[2].x0 = args['points'][0]['pointIndex'][1]
+			this.layout.shapes[2].y0 = args['points'][0]['pointIndex'][0]
+			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
+			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+			this.box_first_point = true
+			this.update_chart()
+		},
+		draw_box_second(args) {
+			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
+			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+			this.box_first_point = false
+
+			var new_box = {
+				type: 'rect',
+				x0: this.layout.shapes[2].x0,
+				y0: this.layout.shapes[2].y0,
+				x1: this.layout.shapes[2].x1,
+				y1: this.layout.shapes[2].y1,
+				line: {
+					color: 'rgba(128, 0, 128, 1)',
+					width: 4,
+					dash: 'solid'
+				},
+				flag: 'box',
+			}
+
+			this.layout.shapes.push(new_box)
+			this.box_count += 1
+			if(this.box_count == 2) {
+				this.reset_click_set()
+			}
+			this.update_chart()
+
+		},
 		hover_horizontal(args) {
 			this.layout.shapes[0].y0 = args['points'][0]['pointIndex'][0]
 			this.layout.shapes[0].y1 = args['points'][0]['pointIndex'][0]
@@ -193,18 +249,30 @@ var vue_instance = {
 			this.layout.shapes[1].x1 = args['points'][0]['pointIndex'][1]
 			this.update_chart()
 		},
+		hover_box(args) {
+			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
+			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+			this.update_chart()
+		},
 		leave_handler() {
 			console.log('leave handler')
 			this.layout.shapes[0].y0 = 0
 			this.layout.shapes[0].y1 = 0
 			this.layout.shapes[1].x0 = 0
 			this.layout.shapes[1].x1 = 0
+			if(!this.box_first_point){
+				this.layout.shapes[2].x0 = 0
+				this.layout.shapes[2].y0 = 0
+				this.layout.shapes[2].x1 = 0
+				this.layout.shapes[2].y1 = 0
+			}
 			this.update_chart()
 		},
 		clear_all_line() {
-			this.layout.shapes.splice(2, this.layout.shapes.length-2)
+			this.layout.shapes.splice(3, this.layout.shapes.length-2)
 			this.vertical_count = 0
 			this.horizontal_count = 0
+			this.box_count = 0
 			this.update_chart()
 		},
 		clear_last_line() {
@@ -212,10 +280,12 @@ var vue_instance = {
 			if(delete_line.flag == 'horizontal') {
 				this.horizontal_count -= 1
 			}
-			else {
+			else if(delete_line.flag == 'vertical'){
 				this.vertical_count -= 1
 			}
-			console.log(this.horizontal_count, this.vertical_count)
+			else{
+				this.box_count -= 1
+			}
 			this.update_chart()
 		}
 	}
