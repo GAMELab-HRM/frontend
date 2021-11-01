@@ -8,6 +8,8 @@
 			<button style="width: 100px; height: 100px" @click="click_vertical" :disabled='vertical_count>=2'> vertical line </button>
 			<button style="width: 100px; height: 100px" @click="click_horizontal" :disabled='horizontal_count>=2'> horizontal line </button>
 			<button style="width: 100px; height: 100px" @click="click_box" :disabled='box_count>=2'> box </button>
+			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0'> clear all </button>
+			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0'> clear last </button>
 		</div>
 	</div>
 </template>
@@ -56,7 +58,8 @@ var vue_instance = {
 						color: 'rgba(50, 171, 96, 0.3)',
 						width: 4,
 						dash: 'solid'
-					}
+					},
+					flag: 'horizontal',
 				}, {
 					// vertical initial hover line
 					type: 'line',
@@ -68,7 +71,8 @@ var vue_instance = {
 						color: 'rgba(50, 171, 96, 0.3)',
 						width: 4,
 						dash: 'solid'
-					}
+					},
+					flag: 'vertical',
 				},]
 			},
 			options: {
@@ -148,7 +152,8 @@ var vue_instance = {
 					color: 'rgba(50, 171, 96)',
 					width: 4,
 					dash: 'solid'
-				}
+				},
+				flag: 'horizontal',
 			}
 			this.layout.shapes.push(new_line)
 			this.horizontal_count += 1
@@ -168,7 +173,8 @@ var vue_instance = {
 					color: 'rgba(50, 171, 96)',
 					width: 4,
 					dash: 'solid'
-				}
+				},
+				flag: 'vertical',
 			}
 			this.layout.shapes.push(new_line)
 			this.vertical_count += 1
@@ -193,6 +199,23 @@ var vue_instance = {
 			this.layout.shapes[0].y1 = 0
 			this.layout.shapes[1].x0 = 0
 			this.layout.shapes[1].x1 = 0
+			this.update_chart()
+		},
+		clear_all_line() {
+			this.layout.shapes.splice(2, this.layout.shapes.length-2)
+			this.vertical_count = 0
+			this.horizontal_count = 0
+			this.update_chart()
+		},
+		clear_last_line() {
+			var delete_line = this.layout.shapes.splice(-1, 1)[0]
+			if(delete_line.flag == 'horizontal') {
+				this.horizontal_count -= 1
+			}
+			else {
+				this.vertical_count -= 1
+			}
+			console.log(this.horizontal_count, this.vertical_count)
 			this.update_chart()
 		}
 	}
