@@ -69,7 +69,9 @@
 				</el-col>
 			</el-row>
 			<!-- <add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/> -->
-			<paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint>
+			<!-- <paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint> -->
+			<draw :raw_data='fake_raw_data' :x_size='fake_x_size' :y_size='fake_y_size' />
+
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -140,11 +142,17 @@ import paint from "../components/paint.vue"
 import {uploadFileDemo} from "@/apis/file.js"
 import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
 import {ws_10_options, mrs_options, hh_options, rip_options} from "@/utils/optiondata.js"
+// fake data
+import { str_data } from '@/utils/fakedata.js'
+// pony draw
+import draw from '@/components/draw'
+
 export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
-		paint
+		paint,
+		draw,
 	},
 	data() {
 		return {
@@ -197,7 +205,11 @@ export default {
 			y_size:0,
 			raw_data:0,
 			send_doctor_num: 0,
-			current_patient_id: this.$route.params.current_patient_id
+			current_patient_id: this.$route.params.current_patient_id,
+
+			// fake raw data
+			fake_raw_data:0,
+
 		}
 	},
 	created(){
@@ -227,6 +239,11 @@ export default {
 			this.hiatal_rawdata = raw_data
 			this.hiatal_paint_render = true
 		})
+
+		var fake_obj = JSON.parse(str_data)
+        this.fake_raw_data = fake_obj['raw_data']
+        this.fake_x_size = this.fake_raw_data[0].length
+		this.fake_y_size = this.fake_raw_data.length
 	},
 	methods: {
 		// input patient ID hendler
