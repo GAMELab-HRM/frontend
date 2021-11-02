@@ -12,6 +12,7 @@
 
 import home_table from '../components/basic_test_home_table.vue'
 import {main_table_data} from "@/utils/fakedata.js"
+
 export default {
 	name: 'basic_test',
 	components: {
@@ -33,6 +34,18 @@ export default {
 
 	},
 	created(){
+		// mapping doctor name
+		// 0 -> Dr. Lei
+		// 1 -> Dr. Liang
+		
+		for(var i=0; i < main_table_data.length; i++) {
+			if(main_table_data[i]['doctor_id'] == 0) {
+				main_table_data[i]['doctor_id'] = 'Dr. Lei'
+			}
+			else {
+				main_table_data[i]['doctor_id'] = 'Dr.Liang'
+			}
+		}
 		this.main_table_data = main_table_data
 	}
 }
