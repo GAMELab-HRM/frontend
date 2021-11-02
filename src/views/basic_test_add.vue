@@ -314,7 +314,7 @@ export default {
 			this.send_dialogVisible = false
 			this.all_object['ws_10'] = this.preprocess_ws_10_table_data(this.ws_10_object)
 			this.all_object['ws_10']['cc_result'] = this.ws_10_result
-			this.add_doctor('ws_10')
+			this.add_doctor_id('ws_10')
 
 			// console.log(this.all_object)
 			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{

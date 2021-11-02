@@ -7,15 +7,15 @@
             </el-table-column>
             <el-table-column prop="patient_id" label="ID" width="110">
             </el-table-column>
-            <el-table-column prop="raw_data" label="Raw Data">
+            <el-table-column prop="filename" label="Filename">
             </el-table-column>
-            <el-table-column prop="doctor" label="Doctor" width="110">
+            <el-table-column prop="doctor_id" label="Doctor" width="110">
             </el-table-column>
-            <el-table-column prop="ws_10_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
+            <el-table-column prop="ws_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
             </el-table-column>
             <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method">
             </el-table-column>
-            <el-table-column prop="hh_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
+            <el-table-column prop="hiatal_hernia_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
             </el-table-column>
             <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method">
             </el-table-column>
@@ -58,12 +58,12 @@
         <!-- 刪除 dialog end -->
 
         <!-- 繪圖 dialog start-->
-        <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="95%" :close-on-click-modal="false" @close="draw_handle_close">
+        <!-- <el-dialog :title=current_patient_id :visible.sync="draw_dialog_visible" width="95%" :close-on-click-modal="false" @close="draw_handle_close">
             <paint v-if="draw_status" :x_size="x_size" :y_size="y_size" :raw_data="raw_data"></paint>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="draw_handle_close" type='danger'>關閉</el-button>
             </span>
-        </el-dialog>
+        </el-dialog> -->
         <!-- 繪圖 dialog end -->
     </div>
 </template>
@@ -75,15 +75,15 @@
 <script>
 
 // import add_table from "../components/WS_10_add_table.vue"
-import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
-import paint from "@/components/paint.vue"
+// import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
+// import paint from "@/components/paint.vue"
 
 
 export default {
     name: 'basic_test_home_table',
     components: {
 		// add_table,
-        paint,
+        // paint,
         
 	},
     data() {
@@ -270,41 +270,45 @@ export default {
         // check sendable and data preprocessing end
 
 
-        
-        handleDraw(index, row) {
-            this.current_patient_id = this.main_table_data[index].patient_id
-            this.draw_dialog_visible = true
-            console.log("index | row")
-            console.log(index, row)
-            if(index==0){
-                CallDemoAPI().then((res)=>{
-                    console.log(res)
-                    let raw_data = JSON.parse(res['data']['raw'])
-                    this.y_size = raw_data.length 
-                    this.x_size = raw_data[0].length
-                    this.raw_data = raw_data
-                    this.draw_status = true
-                    console.log("set draw status")
-                })
-            }
-            else{
-                CallDemo2API().then((res)=>{
-                    console.log(res)
-                    let raw_data = JSON.parse(res['data']['raw'])
-                    this.y_size = raw_data.length 
-                    this.x_size = raw_data[0].length
-                    this.raw_data = raw_data
-                    this.draw_status = true
-                    console.log("set draw status")
-                })
-            }
+        // 舊的繪圖
+        // handleDraw(index, row) {
+        //     this.current_patient_id = this.main_table_data[index].patient_id
+        //     this.draw_dialog_visible = true
+        //     console.log("index | row")
+        //     console.log(index, row)
+        //     if(index==0){
+        //         CallDemoAPI().then((res)=>{
+        //             console.log(res)
+        //             let raw_data = JSON.parse(res['data']['raw'])
+        //             this.y_size = raw_data.length 
+        //             this.x_size = raw_data[0].length
+        //             this.raw_data = raw_data
+        //             this.draw_status = true
+        //             console.log("set draw status")
+        //         })
+        //     }
+        //     else{
+        //         CallDemo2API().then((res)=>{
+        //             console.log(res)
+        //             let raw_data = JSON.parse(res['data']['raw'])
+        //             this.y_size = raw_data.length 
+        //             this.x_size = raw_data[0].length
+        //             this.raw_data = raw_data
+        //             this.draw_status = true
+        //             console.log("set draw status")
+        //         })
+        //     }
 
-        },
-        draw_handle_close() {
-            console.log("draw dialog close")
-            this.draw_dialog_visible = false
-            this.draw_status = false
-        },
+        // },
+        // draw_handle_close() {
+        //     console.log("draw dialog close")
+        //     this.draw_dialog_visible = false
+        //     this.draw_status = false
+        // },
+
+
+
+        
         // sort 會直接改變每筆row的順序(有機會出現同個病人但兩個標註的醫師都是Liang)，因此暫刪
         // sort_date(column) {
         //     var col_key = column.prop

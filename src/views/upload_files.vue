@@ -6,13 +6,15 @@
                 <el-button style="margin-left: 10px; margin-right: 0px" type="success" @click="submitUpload">上傳檔案</el-button>
             </el-upload>
         </div>
-        <upload_table :key="rerender"/>
+        <upload_table :key="rerender" :upload_data='upload_data'/>
     </div>
 </template>
 
 <script>
 import upload_table from '@/components/upload_table.vue'
 import {uploadFileDemo} from '@/apis/file.js'
+import {upload_data} from '@/utils/fakedata.js'
+
 export default {
     name: 'upload_files',
     components: {
@@ -23,6 +25,7 @@ export default {
             fileList: [],
             dialogVisible: false,
             rerender: 0,
+            upload_data:0,
         }
     },
     methods:{
@@ -66,7 +69,10 @@ export default {
                 type: 'warning'
             });
         }
-    }
+    },
+    created() {
+        this.upload_data = upload_data
+    },
 }
 </script>
 
