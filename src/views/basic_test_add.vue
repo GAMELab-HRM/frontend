@@ -1,42 +1,40 @@
 <template>
 	<div id="add">
-		<div id="main_container">
-			<!-- <el-row :gutter="1">
-				<el-col :span="4">
-					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
-				</el-col>
-				<el-col :span="3">
-					<el-button type="primary" icon="el-icon-check" @click="check_patient_id" :style="check_btn_style"> 確認 </el-button>
-					<el-button type="danger" icon="el-icon-refresh" @click="edit_patient_id" :style="edit_btn_style"> 修改 </el-button>
-				</el-col>
-			</el-row> -->
+		<div id="main_container">	
 			<p style="font-size: 30px; color: white; margin-bottom: 0px">Current patient ID : {{ current_patient_id }}</p>
-			<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>
-                <span><h2> {{ dialog_text }}</h2></span>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="dialogVisible = false">{{ dialog_btn_label }}</el-button>
-                </span>
-            </el-dialog>
+
 			<!-- section1 start -->
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
-						<el-select v-model="ws_10_result" placeholder="CC Result" style="margin-top: 15px" @change="ws_10_selected_update">
+						<el-select v-model="ws_10_result" placeholder="WS10 Result" style="margin-top: 15px" @change="ws_10_selected_update">
 							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
 				</el-col>
-				<!-- <el-col :span="4" :offset="16"  style="margin-top: 70px">
-					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/"  :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
-						<el-button slot="trigger"  type="primary">選取文件</el-button>
-						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
-					</el-upload>
-				</el-col> -->
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+				<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
 			</div>
+
+			<div style="text-align:right; ">
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="ws_10_send(1)" :disabled="ws_10_send_disable"> 送出 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="ws_10_send(2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			
+			<!-- section1 dialog start -->
+			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
+				<span><h2> 確認送出? </h2></span>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'ws_10'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ws_10'})"> 返回 </el-button>
+				</span>
+			</el-dialog>
+			<!-- section1 dialog end -->
+			<!-- section1 end -->
+
+			<!-- section2 start -->
 			<!-- <el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -47,39 +45,18 @@
 					</h1>
 				</el-col>
 			</el-row> -->
-			<!-- <div id=MRS_table_container>
-				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
-			</div> -->
-
-			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
-				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div>
-			<!-- section1 end -->
-
-			<!-- section2 start -->
-			<el-row :gutter="1">
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="mrs_selected_update">
-							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-			</el-row>
 			<!-- <add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/> -->
 			<!-- <paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint> -->
-			<draw :raw_data='fake_raw_data' :x_size='fake_x_size' :y_size='fake_y_size' />
+			<!-- <draw :raw_data='fake_raw_data' :x_size='fake_x_size' :y_size='fake_y_size' />
 
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
-				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div>
+				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="send(1)" :disabled="send_disable"> 送出 </el-button>
+				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="send(2)" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div> -->
 			<!-- section2 end -->
 
 			<!-- section3 start -->
-			<el-row :gutter="1">
+			<!-- <el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
 						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="hh_selected_update">
@@ -101,36 +78,10 @@
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div>
+			</div> -->
 			<!-- section3 end -->
 
-			<!-- section4 start -->
-			<!-- <el-row :gutter="1">
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
-						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
-							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-			</el-row>
-			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
 
-			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
-				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div> -->
-			<!-- section4 end -->
-
-			
-			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
-                <span><h2> 確認送出? </h2></span>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="send_backend()"> 確認 </el-button>
-					<el-button type="danger" @click="send_dialogVisible = false"> 返回 </el-button>
-                </span>
-            </el-dialog>
 
 		</div>
 	</div>
@@ -138,36 +89,27 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import paint from "../components/paint.vue"
-import {uploadFileDemo} from "@/apis/file.js"
-import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
-import {ws_10_options, mrs_options, hh_options, rip_options} from "@/utils/optiondata.js"
-// fake data
+import { ws_10_options, mrs_options, hh_options, rip_options } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
-// pony draw
-import draw from '@/components/draw'
+// import draw from '@/components/draw'
+import { uploadFileDemo } from "@/apis/file.js" // demo
+import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
+
 
 export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
-		paint,
-		draw,
+		// draw,
 	},
 	data() {
 		return {
-			// for painting 
-			mrs_xsize:0,
-			mrs_ysize:0,
-			mrs_rawdata:0,
-			mrs_paint_render:false,
-			hiatal_xsize:0,
-			hiatal_ysize:0,
-			hiatal_rawdata:0,
-			hiatal_paint_render:false,
-
-
+			// basic test selector result
 			ws_10_result:'',
+			mrs_result: '',
+			hh_result: '',
+			rip_result: '',
+
 			fileList:[],
 			dialogVisible: false,
 			check_btn_style: '',
@@ -177,27 +119,28 @@ export default {
 			send_dialogVisible: false,
 			send_btn_style: 'margin-top: 30px; ',
 
+			// ws_10 send btn 是否可以點擊
 			ws_10_send_disable: true,
 			mrs_10_send_disable: true,
 
-			send_disable: true,
+			ws_10_table_send_disable: true,
 
-			ws_10_object: '', 
-			mrs_object:'',
+
+			// basic test table data
+			ws_10_table_data: '', 
+			mrs_table_data:'',
+			hh_table_data:'',
 
 			all_object: {},
-			
-			cc_result: '',
-			mrs_result: '',
-			hh_result: '',
-			rip_result: '',
 
 			ws_10_options:0,
 			mrs_options:0,
 			hh_options:0,
 			rip_options:0,
 
+			// listen ws_10_result has value
 			ws_10_selected: false,
+			
 			mrs_10_selected: false,
 
 			raw_data_upload: false,
@@ -206,14 +149,21 @@ export default {
 			raw_data:0,
 			send_doctor_num: 0,
 			current_patient_id: this.$route.params.current_patient_id,
+			current_record_id: this.$route.params.current_record_id,
 
 			// fake raw data
 			fake_raw_data:0,
+			
+			// basic 二次確認 dialog
+			ws_10_confirm: false,
 
+
+			//test final data to send backend
+			ws_10_object:0,
 		}
 	},
 	created(){
-		// load option data 
+		// load option data
 		this.ws_10_options = ws_10_options
 		this.mrs_options = mrs_options
 		this.hh_options = hh_options
@@ -246,91 +196,107 @@ export default {
 		this.fake_y_size = this.fake_raw_data.length
 	},
 	methods: {
-		// input patient ID hendler
-
-		// check_patient_id: function() {
-		// 	this.patient_id_exist = true
-		// 	this.dialogVisible = true
-		// 	this.edit_btn_style = ''
-		// 	this.check_btn_style = 'display: none'
-		// 	this.dialog_text = 'Patient ID : ' + this.patient_id
-		// 	this.dialog_btn_label = '確認'
-		// 	this.update_send_btn()
-		// 	// this.patient_id_style = 'background: "red"'
-		// },
-		// edit_patient_id: function() {
-		// 	this.patient_id_exist = false
-		// 	this.dialogVisible = true
-		// 	this.edit_btn_style = 'display: none'
-		// 	this.check_btn_style = '',
-		// 	this.dialog_text = "修改病患身分證字號"
-		// 	this.dialog_btn_label = '關閉'
-		// 	this.patient_id = ''
-		// 	this.update_send_btn()
-		// },
-
-		send: function(doctor_num) {
-			this.send_dialogVisible = true
+		// click send data (trigger confirm dialog)
+		ws_10_send: function(doctor_num) {
 			this.send_doctor_num = doctor_num
+			this.ws_10_confirm = true
 		},
+
+		// trigger when table data input
 		ws_10_update_send: function(val) {
 			console.log(val)
-			this.ws_10_send_disable = val
-			this.update_send_btn()
+			this.ws_10_table_send_disable = val
+			this.update_ws_10_send_btn()
 		},
+
+		// trigger when ws_10_result selected 
 		ws_10_selected_update: function() {
 			this.ws_10_selected = true
-			this.update_send_btn()
+			this.update_ws_10_send_btn()
 		},
-		// &&  this.raw_data_upload == true
-		update_send_btn: function() {
-			if(this.ws_10_send_disable == false && this.ws_10_selected == true && this.patient_id != '') {
-				this.send_disable = false
+
+		// update ws_10 send btn status
+		update_ws_10_send_btn: function() {
+			if(this.ws_10_table_send_disable == false && this.ws_10_selected == true) {
+				this.ws_10_send_disable = false
 			}
 			else {
-				this.send_disable = true
+				this.ws_10_send_disable = true
 			}
 		},
-		get_ws_10_object: function(table) {
-			this.ws_10_object = table
+		
+		// get ws_10 table data
+		get_ws_10_table_data: function(table) {
+			this.ws_10_table_data = table
 		},
-		preprocess_ws_10_table_data: function(object) {
-			// 處理來自GT table & MMS table 的資料
-			var all_object_col = ['ID', 'V', 'P', 'swallow_type', 'IRP40', 'DCI', 'DL']
+
+		// 處理table的資料
+		preprocess_ws_10_table_data: function(table_data) {
+			// 這個只是要對add_table裡數據的順序而已
+			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
 			var dic = {}
-			dic[all_object_col[0]] = this.patient_id
-			for (var i = 0; i < object.length; i++) {
-				var temp = Object.values(object[i])
-				temp.shift()
-				dic[all_object_col[i+1]] = temp
-			}
 			
+			for (var i = 0; i < table_data.length; i++) {
+				var temp = Object.values(table_data[i])
+				// 去除metrics
+				temp.shift()
+				dic[ws_10_object_col[i]] = temp
+			}
+			dic['pressure_max'] = 0
+			dic['pressure_min'] = 0
+
 			return dic
 		},
-		add_doctor_id(key) {
-			this.all_object[key]['doctor'] = this.$store.state.auth_app.login_name
-		},
-		send_backend: function() {
-			this.send_dialogVisible = false
-			this.all_object['ws_10'] = this.preprocess_ws_10_table_data(this.ws_10_object)
-			this.all_object['ws_10']['cc_result'] = this.ws_10_result
-			this.add_doctor_id('ws_10')
 
-			// console.log(this.all_object)
+		// 剩下record_id
+		// doctor_id 目前是"0"，不是0
+		send_backend: function(test_type) {
+			this.send_dialogVisible = false
+			console.log(this.ws_10_table_data)
+			if(test_type == 'ws_10') {
+				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
+				
+				// 還沒實做送出兩位醫師的診斷(需要討論資料格式)
+				this.ws_10_object['doctor_id'] = this.$store.state.auth_app.login_name
+				this.ws_10_object['ws_result'] = this.ws_10_result
+				this.ws_10_object['record_id'] = this.current_record_id
+			}
+			console.log(this.ws_10_object)
+		
+
 			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
 			// 	console.log("成功")
 			// 	console.log(res)
 			// })
 
-			console.log(this.all_object)
-			if(this.send_doctor_num==1) {
-				console.log("send 1 doctor's data")
-			}
-			else {
-				console.log("send 2 doctor's data")
-			}
+			
+			// if(this.send_doctor_num==1) {
+			// 	console.log("send 1 doctor's data")
+			// }
+			// else {
+			// 	console.log("send 2 doctor's data")
+			// }
 
 		},
+
+		// 二次確認彈框關閉時的call back
+		confirm_send(response) {
+			var confirm_result = response.status
+			var type = response.test_type
+			if(type == 'ws_10'){
+				// 重置confirm dialog 狀態
+				this.ws_10_confirm = false
+				if(confirm_result) {
+					this.send_backend('ws_10')
+				}
+			}
+			// if(type == 'mrs'){
+			// 	this.ws_10_confirm = false
+			// }
+		},
+
+
+
 		submitUpload() {
 			this.$refs.upload.submit();
 		},
@@ -398,7 +364,10 @@ export default {
 	background-color:white;
 }
 
-
+.send_btn {
+	margin-top: 30px;
+	margin-bottom: 50px
+}
 
 
 
