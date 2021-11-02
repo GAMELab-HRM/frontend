@@ -1,20 +1,14 @@
 <template>
     <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
         <el-table-column type="index"></el-table-column>
+        <el-table-column prop="record_id" label="Record ID"></el-table-column>
         <el-table-column prop="patient_id" label="Patient ID"></el-table-column>
-        <el-table-column prop="ws_10_result" label="Wet swallow 10"></el-table-column>
-        <el-table-column prop="mrs_result" label="MRS"></el-table-column>
-        <el-table-column prop="hh_result" label="Hiatal hernia"></el-table-column>
-        <el-table-column prop="rip_result" label="RIP"></el-table-column>
+        <el-table-column prop="filename" label="Filename"></el-table-column>
         <el-table-column prop="last_update" label="Last update" sortable></el-table-column>
     </el-table>
 </template>
 
 <script>
-
-import {upload_data} from '@/utils/fakedata.js'
-
-
 export default {
     name: 'upload_table',
     data() {
@@ -27,8 +21,9 @@ export default {
             fileList: [],
         }
     },
+    props:['upload_data'],
     created() {
-        this.main_table_data = upload_data
+        this.main_table_data = this.upload_data
     },
     methods: {
         sort_date(column) {

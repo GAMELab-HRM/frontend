@@ -42,9 +42,13 @@ var vue_instance = {
 				x: this.x_size,
 				y: this.y_size,
 				type: 'contour',
+				contours:{
+                    coloring:"heatmap"
+                },
 				line: {
 					color: 'black',
-				}
+				},
+				colorscale:"Jet",
 			}],
 			layout: {
 				title: 'Setting the X and Y Coordinates in a Contour Plot',
@@ -143,6 +147,7 @@ var vue_instance = {
 			this.if_vertical = false
 			this.if_horizontal = false
 			this.if_box = false
+			this.update_chart()
 		},
 		click_horizontal() {
 			this.if_vertical = false
