@@ -7,7 +7,7 @@
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
-						<el-select v-model="ws_10_result" placeholder="WS10 Result" style="margin-top: 15px" @change="ws_10_selected_update">
+						<el-select v-model="ws_10_result" placeholder="WS10 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
 							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
@@ -19,8 +19,8 @@
 			</div>
 
 			<div style="text-align:right; ">
-				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="ws_10_send(1)" :disabled="ws_10_send_disable"> 送出 </el-button>
-				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="ws_10_send(2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
 			
 			<!-- section1 dialog start -->
@@ -35,24 +35,33 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
-			<!-- <el-row :gutter="1">
+			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="mrs_selected_update">
+						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
 							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
 				</el-col>
-			</el-row> -->
-			<!-- <add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/> -->
-			<!-- <paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint> -->
-			<!-- <draw :raw_data='fake_raw_data' :x_size='fake_x_size' :y_size='fake_y_size' />
+			</el-row>
+
+			<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' />
 
 			<div style="text-align:right; ">
-				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="send(1)" :disabled="send_disable"> 送出 </el-button>
-				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="send(2)" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div> -->
+				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+
+			<!-- section2 dialog start -->
+			<el-dialog title="提示" :visible.sync="mrs_confirm" width="30%" center>
+				<span><h2> 確認送出? </h2></span>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'mrs'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
+				</span>
+			</el-dialog>
+			<!-- section2 dialog end -->
 			<!-- section2 end -->
 
 			<!-- section3 start -->
@@ -91,7 +100,7 @@
 import add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
-// import draw from '@/components/draw'
+import draw from '@/components/draw'
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -100,7 +109,7 @@ export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
-		// draw,
+		draw,
 	},
 	data() {
 		return {
@@ -110,9 +119,9 @@ export default {
 			hh_result: '',
 			rip_result: '',
 
-			// ws_10 send btn 是否可以點擊
+			// basic test send btn 是否可以點擊
 			ws_10_send_disable: true,
-			mrs_10_send_disable: true,
+			mrs_send_disable: true,
 
 			// ws_10 table data是否可傳送(是否全部填完)
 			ws_10_table_send_disable: true,
@@ -130,30 +139,26 @@ export default {
 
 			// listen basic test result has value
 			ws_10_selected: false,
-			mrs_10_selected: false,
+			mrs_selected: false,
 
-
-
-			// 繪圖的變數
-			raw_data:0,
-			x_size:0,
-			y_size:0,
-			
 			// 上傳時送出診斷的醫生數量
 			send_doctor_num: 0,
 
 			// 回傳data時需要的重要參數
 			current_patient_id: this.$route.params.current_patient_id,
 			current_record_id: this.$route.params.current_record_id,
-
-			// fake raw data
-			fake_raw_data:0,
 			
 			// basic test 二次確認 dialogVisible
 			ws_10_confirm: false,
+			mrs_confirm: false,
 
 			//basic test final data to send backend
 			ws_10_object:0,
+
+			// 繪圖的變數
+			raw_data:0,
+			x_size:0,
+			y_size:0,
 		}
 	},
 	created(){
@@ -163,7 +168,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		
-		// 舊的繪圖
+		// 舊的繪圖，你看OK就刪掉再PR
 		// CallDemoAPI().then((res)=>{
 		// 	console.log("call demo API")
 		// 	console.log(res)
@@ -192,9 +197,15 @@ export default {
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
-		ws_10_send: function(doctor_num) {
+		basic_test_send: function(test_type, doctor_num) {
 			this.send_doctor_num = doctor_num
-			this.ws_10_confirm = true
+			if(test_type == 'ws_10') {
+				this.ws_10_confirm = true
+			}
+			else if(test_type == 'mrs') {
+				this.mrs_confirm = true
+			}
+			
 		},
 
 		// trigger when table data input
@@ -204,10 +215,17 @@ export default {
 			this.update_ws_10_send_btn()
 		},
 
-		// trigger when ws_10_result selected 
-		ws_10_selected_update: function() {
-			this.ws_10_selected = true
-			this.update_ws_10_send_btn()
+		// trigger when any result selector selected 
+		basic_test_selected_update: function(test_type) {
+			if(test_type == 'ws_10') {
+				this.ws_10_selected = true
+				this.update_ws_10_send_btn()
+			}
+			else if(test_type == 'mrs') {
+				this.mrs_selected = true
+				this.update_mrs_send_btn()
+			}
+			
 		},
 
 		// update ws_10 send btn status
@@ -218,6 +236,12 @@ export default {
 			else {
 				this.ws_10_send_disable = true
 			}
+		},
+
+		// update mrs send btn status
+		update_mrs_send_btn: function() {
+			this.mrs_send_disable = false
+			// this.mrs_send_disable = true
 		},
 		
 		// get ws_10 table data
@@ -243,7 +267,6 @@ export default {
 			return dic
 		},
 
-		// 剩下record_id
 		// doctor_id 目前是"0"，不是0
 		send_backend: function(test_type) {
 			console.log(this.ws_10_table_data)
@@ -282,12 +305,15 @@ export default {
 					this.send_backend('ws_10')
 				}
 			}
-			// if(type == 'mrs'){
-			// 	this.ws_10_confirm = false
-			// }
+			if(type == 'mrs'){
+				this.mrs_confirm = false
+				if(confirm_result) {
+					console.log('mrs can send to backend')
+				}
+			}
 		},
 
-		// 上傳檔案的都刪掉了，這邊應該也是，你看OK就刪掉再PR
+		// 上傳檔案的都刪掉了，這邊應該也是要刪，你看OK就刪掉再PR
 		// customUpload(item){
 		// 	const file = item.file 
 		// 	//const size = file.size / 1024 / 1024
