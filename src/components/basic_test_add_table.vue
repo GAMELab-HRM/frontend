@@ -169,7 +169,6 @@ export default {
             // for (var i = 0; i < this.table_data.length; i++) {
             for (var i = 0; i < 1; i++) {
                 var val_lst = Object.values(this.table_data[i])
-                console.log(val_lst)
                 val_lst.shift()
                 // for (var k = 0; k < val_lst.length; k++){
                 for (var k = 0; k < 1; k++){

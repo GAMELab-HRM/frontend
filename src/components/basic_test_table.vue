@@ -135,15 +135,15 @@ export default {
 
         // 輸入btn click event
         handleEdit: function(index) {
-            this.$router.push({name: 'basic_test_add', params: {current_patient_id: this.main_table_data[index].patient_id}})
+            console.log(this.main_table_data)
+            this.$router.push({name: 'basic_test_add', params: {current_patient_id: this.main_table_data[index].patient_id, current_record_id: this.main_table_data[index].record_id},})
         },
 
         // 刪除btn click event
         handleDelete: function(index, row) {
             this.delete_dialogVisible = true;
             this.current_patient_id = this.main_table_data[index].patient_id
-            console.log(index)
-            console.log(row)
+            console.log(index, row)
         },
 
         // two delete type
@@ -205,11 +205,8 @@ export default {
         },
         // main_table_span({row, column, rowIndex, columnIndex})
         main_table_span({rowIndex, columnIndex}) {
-            // console.log(row, column)
             var concate_row = [0, 1, 2, 9]
-            // console.log(columnIndex)
             if(concate_row.includes(columnIndex)) {
-                console.log(true)
                 if (rowIndex % 2 === 0) {
                     return {
                         rowspan: 2,
