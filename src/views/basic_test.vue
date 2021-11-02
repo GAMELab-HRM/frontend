@@ -2,21 +2,21 @@
 	<div class="home">
 		<el-container style="margin:0%" >
 			<el-main style="text-align: center;">
-				<home_table :key="rerender" :main_table_data="main_table_data"/>	
+				<basic_table :key="rerender" :main_table_data="main_table_data"/>	
 			</el-main>
 		</el-container>	
 	</div>
 </template>
 
-<script>
 
-import home_table from '../components/basic_test_home_table.vue'
+<script>
+import basic_table from '../components/basic_test_table.vue'
 import {main_table_data} from "@/utils/fakedata.js"
 
 export default {
 	name: 'basic_test',
 	components: {
-		home_table,
+		basic_table,
 	},
 	data() {
 		return {
@@ -37,7 +37,7 @@ export default {
 		// mapping doctor name
 		// 0 -> Dr. Lei
 		// 1 -> Dr. Liang
-		
+
 		for(var i=0; i < main_table_data.length; i++) {
 			if(main_table_data[i]['doctor_id'] == 0) {
 				main_table_data[i]['doctor_id'] = 'Dr. Lei'
