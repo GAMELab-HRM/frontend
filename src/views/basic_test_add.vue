@@ -1,7 +1,7 @@
 <template>
 	<div id="add">
 		<div id="main_container">
-			<el-row :gutter="1">
+			<!-- <el-row :gutter="1">
 				<el-col :span="4">
 					<el-input placeholder="請輸入身分證字號" prefix-icon="el-icon-s-custom" v-model="patient_id" :disabled="patient_id_exist" :style='patient_id_style'/>
 				</el-col>
@@ -9,32 +9,55 @@
 					<el-button type="primary" icon="el-icon-check" @click="check_patient_id" :style="check_btn_style"> 確認 </el-button>
 					<el-button type="danger" icon="el-icon-refresh" @click="edit_patient_id" :style="edit_btn_style"> 修改 </el-button>
 				</el-col>
-			</el-row>
+			</el-row> -->
+			<p style="font-size: 30px; color: white; margin-bottom: 0px">Current patient ID : {{ current_patient_id }}</p>
 			<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>
                 <span><h2> {{ dialog_text }}</h2></span>
                 <span slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="dialogVisible = false">{{ dialog_btn_label }}</el-button>
                 </span>
             </el-dialog>
+			<!-- section1 start -->
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
 						<el-select v-model="ws_10_result" placeholder="CC Result" style="margin-top: 15px" @change="ws_10_selected_update">
-							<el-option v-for="item in cc_options" :key="item.value" :label="item.label" :value="item.value">
+							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
 				</el-col>
-				<el-col :span="4" :offset="16"  style="margin-top: 70px">
+				<!-- <el-col :span="4" :offset="16"  style="margin-top: 70px">
 					<el-upload class="upload-demo" ref="upload" accept=".csv" :http-request="customUpload" action="https://jsonplaceholder.typicode.com/posts/"  :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-success="upload_success">
 						<el-button slot="trigger"  type="primary">選取文件</el-button>
 						<el-button style="margin-left: 10px; margin-right: 0px"  type="success" @click="submitUpload">上傳檔案</el-button>
 					</el-upload>
-				</el-col>
+				</el-col> -->
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+				<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
 			</div>
+			<!-- <el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="mrs_selected_update">
+							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row> -->
+			<!-- <div id=MRS_table_container>
+				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
+			</div> -->
+
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			<!-- section1 end -->
+
+			<!-- section2 start -->
 			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -45,15 +68,62 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=MRS_table_container>
-				<add_table :patient_id="patient_id" @update_send="MMS_update_send" @send_object="get_MMS_object"/>
-			</div>
+			<!-- <add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/> -->
+			<!-- <paint v-if="mrs_paint_render" :x_size="mrs_xsize" :y_size="mrs_ysize" :raw_data="mrs_rawdata"></paint> -->
+			<draw :raw_data='fake_raw_data' :x_size='fake_x_size' :y_size='fake_y_size' />
 
 			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
+			<!-- section2 end -->
 
+			<!-- section3 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
+						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="hh_selected_update">
+							<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
+							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<paint v-if="hiatal_paint_render" :x_size="hiatal_xsize" :y_size="hiatal_ysize" :raw_data="hiatal_rawdata"></paint>
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			<!-- section3 end -->
+
+			<!-- section4 start -->
+			<!-- <el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
+							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_object"/>
+
+			<div style="text-align:right; ">
+				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div> -->
+			<!-- section4 end -->
+
+			
 			<el-dialog title="提示" :visible.sync="send_dialogVisible" width="30%" center>
                 <span><h2> 確認送出? </h2></span>
                 <span slot="footer" class="dialog-footer">
@@ -68,19 +138,37 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import {uploadFile} from "@/apis/file.js"
+import paint from "../components/paint.vue"
+import {uploadFileDemo} from "@/apis/file.js"
+import {CallDemoAPI, CallDemo2API} from "@/apis/demo.js"
+import {ws_10_options, mrs_options, hh_options, rip_options} from "@/utils/optiondata.js"
+// fake data
+import { str_data } from '@/utils/fakedata.js'
+// pony draw
+import draw from '@/components/draw'
+
 export default {
 	name: 'basic_test_add',
 	components: {
 		add_table,
-		
+		paint,
+		draw,
 	},
 	data() {
 		return {
+			// for painting 
+			mrs_xsize:0,
+			mrs_ysize:0,
+			mrs_rawdata:0,
+			mrs_paint_render:false,
+			hiatal_xsize:0,
+			hiatal_ysize:0,
+			hiatal_rawdata:0,
+			hiatal_paint_render:false,
+
+
+			ws_10_result:'',
 			fileList:[],
-			patient_id: '',
-			patient_id_exist: false,
-			patient_id_style: '',
 			dialogVisible: false,
 			check_btn_style: '',
 			edit_btn_style: 'display: none',
@@ -95,33 +183,19 @@ export default {
 			send_disable: true,
 
 			ws_10_object: '', 
-			mrs_pbject:'',
+			mrs_object:'',
 
 			all_object: {},
 			
 			cc_result: '',
 			mrs_result: '',
+			hh_result: '',
+			rip_result: '',
 
-			cc_options:[{
-                value: 'Absent',
-                label: 'Absent'
-            }, {
-                value: 'IEM',
-                label: 'IEM'
-            }, {
-                value: 'Fragmented',
-                label: 'Fragmented'
-            }, {
-                value: 'Normal',
-                label: 'Normal'
-            }],
-			mrs_options:[{
-                value: 'CR',
-                label: 'Contractile Reserve'
-            }, {
-                value: 'not_CR',
-                label: 'Not Contractile Reserv'
-            }],
+			ws_10_options:0,
+			mrs_options:0,
+			hh_options:0,
+			rip_options:0,
 
 			ws_10_selected: false,
 			mrs_10_selected: false,
@@ -131,29 +205,70 @@ export default {
 			y_size:0,
 			raw_data:0,
 			send_doctor_num: 0,
+			current_patient_id: this.$route.params.current_patient_id,
+
+			// fake raw data
+			fake_raw_data:0,
+
 		}
 	},
+	created(){
+		// load option data 
+		this.ws_10_options = ws_10_options
+		this.mrs_options = mrs_options
+		this.hh_options = hh_options
+		this.rip_options = rip_options 
+		
+		console.log(this.current_patient_id)
+		CallDemoAPI().then((res)=>{
+			console.log("call demo API")
+			console.log(res)
+			let raw_data = JSON.parse(res['data']['raw'])
+			this.mrs_ysize = raw_data.length 
+			this.mrs_xsize = raw_data[0].length 
+			this.mrs_rawdata = raw_data
+			this.mrs_paint_render = true 
+
+		})
+		CallDemo2API().then((res)=>{
+			console.log("call demo2 API")
+			console.log(res)
+			let raw_data = JSON.parse(res['data']['raw'])
+			this.hiatal_ysize = raw_data.length
+			this.hiatal_xsize = raw_data[0].length
+			this.hiatal_rawdata = raw_data
+			this.hiatal_paint_render = true
+		})
+
+		var fake_obj = JSON.parse(str_data)
+        this.fake_raw_data = fake_obj['raw_data']
+        this.fake_x_size = this.fake_raw_data[0].length
+		this.fake_y_size = this.fake_raw_data.length
+	},
 	methods: {
-		check_patient_id: function() {
-			this.patient_id_exist = true
-			this.dialogVisible = true
-			this.edit_btn_style = ''
-			this.check_btn_style = 'display: none'
-			this.dialog_text = 'Patient ID : ' + this.patient_id
-			this.dialog_btn_label = '確認'
-			this.update_send_btn()
-			// this.patient_id_style = 'background: "red"'
-		},
-		edit_patient_id: function() {
-			this.patient_id_exist = false
-			this.dialogVisible = true
-			this.edit_btn_style = 'display: none'
-			this.check_btn_style = '',
-			this.dialog_text = "修改病患身分證字號"
-			this.dialog_btn_label = '關閉'
-			this.patient_id = ''
-			this.update_send_btn()
-		},
+		// input patient ID hendler
+
+		// check_patient_id: function() {
+		// 	this.patient_id_exist = true
+		// 	this.dialogVisible = true
+		// 	this.edit_btn_style = ''
+		// 	this.check_btn_style = 'display: none'
+		// 	this.dialog_text = 'Patient ID : ' + this.patient_id
+		// 	this.dialog_btn_label = '確認'
+		// 	this.update_send_btn()
+		// 	// this.patient_id_style = 'background: "red"'
+		// },
+		// edit_patient_id: function() {
+		// 	this.patient_id_exist = false
+		// 	this.dialogVisible = true
+		// 	this.edit_btn_style = 'display: none'
+		// 	this.check_btn_style = '',
+		// 	this.dialog_text = "修改病患身分證字號"
+		// 	this.dialog_btn_label = '關閉'
+		// 	this.patient_id = ''
+		// 	this.update_send_btn()
+		// },
+
 		send: function(doctor_num) {
 			this.send_dialogVisible = true
 			this.send_doctor_num = doctor_num
@@ -235,7 +350,8 @@ export default {
 			this.forms = new FormData()
 			this.forms.append("files", file)
 
-			uploadFile(this.forms).then((res)=>{
+			/* 這個api的內容寫在 /src/apis/file.js  */
+			uploadFileDemo(this.forms).then((res)=>{
 				console.log("response")
 				console.log(res)
 				let raw_data = JSON.parse(res['data']['raw'])
