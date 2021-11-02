@@ -92,8 +92,8 @@ import add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
 // import draw from '@/components/draw'
-import { uploadFileDemo } from "@/apis/file.js" // demo
-import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
+// import { uploadFileDemo } from "@/apis/file.js" // demo
+// import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
 
 export default {
@@ -110,55 +110,49 @@ export default {
 			hh_result: '',
 			rip_result: '',
 
-			fileList:[],
-			dialogVisible: false,
-			check_btn_style: '',
-			edit_btn_style: 'display: none',
-			dialog_text : '',
-			dialog_btn_label: '',
-			send_dialogVisible: false,
-			send_btn_style: 'margin-top: 30px; ',
-
 			// ws_10 send btn 是否可以點擊
 			ws_10_send_disable: true,
 			mrs_10_send_disable: true,
 
+			// ws_10 table data是否可傳送(是否全部填完)
 			ws_10_table_send_disable: true,
-
 
 			// basic test table data
 			ws_10_table_data: '', 
 			mrs_table_data:'',
 			hh_table_data:'',
 
-			all_object: {},
-
+			// basic test selector result 的 options，於created中獲取資料
 			ws_10_options:0,
 			mrs_options:0,
 			hh_options:0,
 			rip_options:0,
 
-			// listen ws_10_result has value
+			// listen basic test result has value
 			ws_10_selected: false,
-			
 			mrs_10_selected: false,
 
-			raw_data_upload: false,
+
+
+			// 繪圖的變數
+			raw_data:0,
 			x_size:0,
 			y_size:0,
-			raw_data:0,
+			
+			// 上傳時送出診斷的醫生數量
 			send_doctor_num: 0,
+
+			// 回傳data時需要的重要參數
 			current_patient_id: this.$route.params.current_patient_id,
 			current_record_id: this.$route.params.current_record_id,
 
 			// fake raw data
 			fake_raw_data:0,
 			
-			// basic 二次確認 dialog
+			// basic test 二次確認 dialogVisible
 			ws_10_confirm: false,
 
-
-			//test final data to send backend
+			//basic test final data to send backend
 			ws_10_object:0,
 		}
 	},
@@ -169,31 +163,32 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		
-		console.log(this.current_patient_id)
-		CallDemoAPI().then((res)=>{
-			console.log("call demo API")
-			console.log(res)
-			let raw_data = JSON.parse(res['data']['raw'])
-			this.mrs_ysize = raw_data.length 
-			this.mrs_xsize = raw_data[0].length 
-			this.mrs_rawdata = raw_data
-			this.mrs_paint_render = true 
+		// 舊的繪圖
+		// CallDemoAPI().then((res)=>{
+		// 	console.log("call demo API")
+		// 	console.log(res)
+		// 	let raw_data = JSON.parse(res['data']['raw'])
+		// 	this.mrs_ysize = raw_data.length 
+		// 	this.mrs_xsize = raw_data[0].length 
+		// 	this.mrs_rawdata = raw_data
+		// 	this.mrs_paint_render = true 
 
-		})
-		CallDemo2API().then((res)=>{
-			console.log("call demo2 API")
-			console.log(res)
-			let raw_data = JSON.parse(res['data']['raw'])
-			this.hiatal_ysize = raw_data.length
-			this.hiatal_xsize = raw_data[0].length
-			this.hiatal_rawdata = raw_data
-			this.hiatal_paint_render = true
-		})
+		// })
+		// CallDemo2API().then((res)=>{
+		// 	console.log("call demo2 API")
+		// 	console.log(res)
+		// 	let raw_data = JSON.parse(res['data']['raw'])
+		// 	this.hiatal_ysize = raw_data.length
+		// 	this.hiatal_xsize = raw_data[0].length
+		// 	this.hiatal_rawdata = raw_data
+		// 	this.hiatal_paint_render = true
+		// })
 
-		var fake_obj = JSON.parse(str_data)
-        this.fake_raw_data = fake_obj['raw_data']
-        this.fake_x_size = this.fake_raw_data[0].length
-		this.fake_y_size = this.fake_raw_data.length
+		// 繪圖initial data
+		var obj = JSON.parse(str_data)
+        this.raw_data = obj['raw_data']
+        this.x_size = this.raw_data[0].length
+		this.y_size = this.raw_data.length
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -251,7 +246,6 @@ export default {
 		// 剩下record_id
 		// doctor_id 目前是"0"，不是0
 		send_backend: function(test_type) {
-			this.send_dialogVisible = false
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
@@ -263,7 +257,6 @@ export default {
 			}
 			console.log(this.ws_10_object)
 		
-
 			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
 			// 	console.log("成功")
 			// 	console.log(res)
@@ -276,7 +269,6 @@ export default {
 			// else {
 			// 	console.log("send 2 doctor's data")
 			// }
-
 		},
 
 		// 二次確認彈框關閉時的call back
@@ -295,42 +287,25 @@ export default {
 			// }
 		},
 
+		// 上傳檔案的都刪掉了，這邊應該也是，你看OK就刪掉再PR
+		// customUpload(item){
+		// 	const file = item.file 
+		// 	//const size = file.size / 1024 / 1024
+		// 	this.forms = new FormData()
+		// 	this.forms.append("files", file)
 
+		// 	/* 這個api的內容寫在 /src/apis/file.js  */
+		// 	uploadFileDemo(this.forms).then((res)=>{
+		// 		console.log("response")
+		// 		console.log(res)
+		// 		let raw_data = JSON.parse(res['data']['raw'])
 
-		submitUpload() {
-			this.$refs.upload.submit();
-		},
-		handleRemove(file, fileList) {
-			console.log(file, fileList);
-			this.raw_data_upload = false
-			this.update_send_btn()
-		},
-		upload_success(response, file, fileList) {
-			this.raw_data_upload = true
-			this.update_send_btn()
-			console.log(response, file, fileList)
-		},
-		customUpload(item){
-			const file = item.file 
-			//const size = file.size / 1024 / 1024
-			this.forms = new FormData()
-			this.forms.append("files", file)
-
-			/* 這個api的內容寫在 /src/apis/file.js  */
-			uploadFileDemo(this.forms).then((res)=>{
-				console.log("response")
-				console.log(res)
-				let raw_data = JSON.parse(res['data']['raw'])
-
-				this.y_size = raw_data.length 
-				this.x_size = raw_data[0].length
-				this.raw_data = raw_data
-				console.log(this.x_size, this.y_size)
-				
-
-			})
-			
-		}
+		// 		this.y_size = raw_data.length 
+		// 		this.x_size = raw_data[0].length
+		// 		this.raw_data = raw_data
+		// 		console.log(this.x_size, this.y_size)
+		// 	})
+		// }
 	}
 }
 </script>
