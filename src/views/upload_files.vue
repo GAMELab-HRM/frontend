@@ -12,7 +12,7 @@
 
 <script>
 import upload_table from '@/components/upload_table.vue'
-import {uploadFileDemo} from '@/apis/file.js'
+import {uploadFile} from '@/apis/file.js'
 //import {upload_data} from '@/utils/fakedata.js'
 import {GetBasicUploadTable} from '@/apis/table.js'
 
@@ -54,7 +54,7 @@ export default {
 			this.forms.append("files", file)
 
 			/* 這個api的內容寫在 /src/apis/file.js  */
-            uploadFileDemo(this.forms).then((res)=>{
+            uploadFile(this.forms).then((res)=>{
                 this.$message({message: filename + ' 上傳成功',type: 'success'});
                 console.log("Call upload API successed!")
                 console.log(res)
@@ -72,7 +72,7 @@ export default {
         }
     },
     created() {
-        
+
 		/* call api to get this table's data */
         GetBasicUploadTable().then((res)=>{
             console.log("call api [ UPLOAD table ] successed!")
