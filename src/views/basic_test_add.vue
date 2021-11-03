@@ -101,6 +101,7 @@ import add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
+import {UpdateWetSwallow} from "@/apis/ws.js"
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -276,12 +277,18 @@ export default {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
 				
 				// 還沒實做送出兩位醫師的診斷(需要討論資料格式)
-				this.ws_10_object['doctor_id'] = this.$store.state.auth_app.login_name
+				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
 			}
 			console.log(this.ws_10_object)
-		
+			UpdateWetSwallow(this.ws_10_object).then((res)=>{
+                console.log("Call update WS API successed!")
+				console.log(res)
+			}).catch((err)=>{
+                console.log("Call update WS API successed!")
+				console.log(err)
+			})
 			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
 			// 	console.log("成功")
 			// 	console.log(res)
@@ -327,7 +334,6 @@ export default {
 		// 		console.log("response")
 		// 		console.log(res)
 		// 		let raw_data = JSON.parse(res['data']['raw'])
-
 		// 		this.y_size = raw_data.length 
 		// 		this.x_size = raw_data[0].length
 		// 		this.raw_data = raw_data
