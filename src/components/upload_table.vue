@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="upload_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px'}" @sort-change='sort_date' :default-sort="default_sort_param">
+    <el-table :data="upload_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" @sort-change='sort_date' :default-sort="default_sort_param">
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="record_id" label="Record ID"></el-table-column>
         <el-table-column prop="patient_id" label="Patient ID"></el-table-column>
@@ -22,7 +22,7 @@ export default {
     },
     props:['upload_data'],
     created() {
-      
+
     },
     methods: {
         sort_date(column) {
@@ -69,5 +69,29 @@ export default {
 </script>
 
 <style scoped>
+.el-table--border:after,
+.el-table--group:after,
+.el-table:before {
+    background-color: black;
+}
 
+.el-table--border,
+.el-table--group {
+    border-color: black;
+}
+
+.el-table td,
+.el-table th.is-leaf {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border th,
+.el-table--border th.gutter:last-of-type {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border td,
+.el-table--border th {
+        border-right: 1px solid black;
+}
 </style>

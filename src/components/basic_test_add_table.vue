@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="table_data" height="470" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
+        <el-table id=add_teble :data="table_data" height="470" border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
@@ -196,5 +196,29 @@ export default {
 
 
 <style scoped>
+.el-table--border:after,
+.el-table--group:after,
+.el-table:before {
+    background-color: black;
+}
 
+.el-table--border,
+.el-table--group {
+    border-color: black;
+}
+
+.el-table td,
+.el-table th.is-leaf {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border th,
+.el-table--border th.gutter:last-of-type {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border td,
+.el-table--border th {
+        border-right: 1px solid black;
+}
 </style>

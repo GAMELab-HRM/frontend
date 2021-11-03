@@ -269,6 +269,8 @@ export default {
 
 		// doctor_id 目前是"0"，不是0
 		send_backend: function(test_type) {
+			// call api here
+			// ws_10_object is ready send to backend
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
