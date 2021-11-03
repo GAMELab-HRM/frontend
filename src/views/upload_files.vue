@@ -58,6 +58,17 @@ export default {
                 this.$message({message: filename + ' 上傳成功',type: 'success'});
                 console.log("Call upload API successed!")
                 console.log(res)
+                /* RE call api to get this table's data */
+                GetBasicUploadTable().then((res)=>{
+                    console.log("call api [ UPLOAD table ] successed!")
+                    let retv = res.data 
+                    console.log(retv)
+                    this.upload_data = retv
+                    this.rerender++
+                }).catch((err)=>{
+                    console.log("call api [ UPLOAD table ] failed!")
+                    console.log(err)
+                })
             }).catch((err)=>{
                 this.$message.error(filename + ' 上傳失敗!');
                 console.log("Call upload API failed!")
