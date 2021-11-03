@@ -136,7 +136,13 @@ export default {
         // 輸入btn click event
         handleEdit: function(index) {
             console.log(this.main_table_data)
-            this.$router.push({name: 'basic_test_add', params: {current_patient_id: this.main_table_data[index].patient_id, current_record_id: this.main_table_data[index].record_id},})
+            this.$router.push({
+                name: 'basic_test_add', 
+                params: {
+                    current_patient_id: this.main_table_data[index].patient_id,
+                    current_record_id: this.main_table_data[index].record_id,
+                },
+            })
         },
 
         // 刪除btn click event

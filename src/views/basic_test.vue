@@ -58,7 +58,6 @@ export default {
 			console.log("call api [所有資料的table] failed!")
 			console.log(err)
 		})
-
 	}
 }
 </script>

@@ -51,7 +51,7 @@ var vue_instance = {
 				colorscale:"Jet",
 			}],
 			layout: {
-				title: 'Setting the X and Y Coordinates in a Contour Plot',
+				title: 'Title',
 				shapes:[{
 					// horizontal initial hover line
 					type: 'line',
@@ -60,8 +60,8 @@ var vue_instance = {
 					x1: this.x_size,
 					y1: 0,
 					line: {
-						color: 'rgba(50, 171, 96, 0.3)',
-						width: 4,
+						color: 'rgba(255, 255, 255, 0.3)',
+						width: 3,
 						dash: 'solid'
 					},
 					flag: 'horizontal',
@@ -73,8 +73,8 @@ var vue_instance = {
 					x1: 0 ,
 					y1: this.y_size,
 					line: {
-						color: 'rgba(50, 171, 96, 0.3)',
-						width: 4,
+						color: 'rgba(255, 255, 255, 0.3)',
+						width: 3,
 						dash: 'solid'
 					},
 					flag: 'vertical',
@@ -85,8 +85,8 @@ var vue_instance = {
 					x1: 0,
 					y1: 0,
 					line: {
-						color: 'rgba(128, 0, 128, 1)',
-						width: 4,
+						color: 'rgba(255, 255, 255, 1)',
+						width: 3,
 						dash: 'solid'
 					},
 					flag: 'box',
@@ -110,7 +110,29 @@ var vue_instance = {
 		}	
 	},
 	created() {
+		// initial update
 
+		// 暫刪
+		// window.layout = this.layout
+	},
+	mounted() {
+		var update_layout = {
+			height: 800,
+			plot_bgcolor:"transparent",
+			paper_bgcolor:"transparent",
+			margin: {
+				b: 50,
+				t: 50,
+				r: 30,
+				l: 35,
+			},
+			font: {
+				size: 20,
+			}
+		}
+		console.log('created')
+
+		this.$refs.plotly.relayout(update_layout)
 	},
 	methods: {
 		click_handler(args) {
@@ -140,32 +162,25 @@ var vue_instance = {
 				this.hover_box(args)
 			}
 		},
-		update_chart() {
-			window.layout = this.layout
-		},
 		reset_click_set() {
 			this.if_vertical = false
 			this.if_horizontal = false
 			this.if_box = false
-			this.update_chart()
 		},
 		click_horizontal() {
 			this.if_vertical = false
 			this.if_horizontal = true
 			this.if_box = false
-			this.update_chart()
 		},
 		click_vertical() {
 			this.if_vertical = true
 			this.if_horizontal = false
 			this.if_box = false
-			this.update_chart()
 		},
 		click_box() {
 			this.if_vertical = false
 			this.if_horizontal = false
 			this.if_box = true
-			this.update_chart()
 		},
 		draw_horizontal(args) {
 			var new_line = {
@@ -175,8 +190,8 @@ var vue_instance = {
 				x1: this.x_size,
 				y1: args['points'][0]['pointIndex'][0],
 				line: {
-					color: 'rgba(50, 171, 96)',
-					width: 4,
+					color: 'rgb(255, 255, 255)',
+					width: 3,
 					dash: 'solid'
 				},
 				flag: 'horizontal',
@@ -186,7 +201,6 @@ var vue_instance = {
 			if(this.horizontal_count == 2) {
 				this.reset_click_set()
 			}
-			this.update_chart()
 		},
 		draw_vertical(args) {
 			var new_line = {
@@ -196,8 +210,8 @@ var vue_instance = {
 				x1: args['points'][0]['pointIndex'][1] ,
 				y1: this.y_size,
 				line: {
-					color: 'rgba(50, 171, 96)',
-					width: 4,
+					color: 'rgb(255, 255, 255)',
+					width: 3,
 					dash: 'solid'
 				},
 				flag: 'vertical',
@@ -207,7 +221,6 @@ var vue_instance = {
 			if(this.vertical_count == 2) {
 				this.reset_click_set()
 			}
-			this.update_chart()
 		},
 		draw_box_first(args) {
 			this.layout.shapes[2].x0 = args['points'][0]['pointIndex'][1]
@@ -215,7 +228,6 @@ var vue_instance = {
 			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
 			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
 			this.box_first_point = true
-			this.update_chart()
 		},
 		draw_box_second(args) {
 			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
@@ -229,8 +241,8 @@ var vue_instance = {
 				x1: this.layout.shapes[2].x1,
 				y1: this.layout.shapes[2].y1,
 				line: {
-					color: 'rgba(128, 0, 128, 1)',
-					width: 4,
+					color: 'rgb(255, 255, 255)',
+					width: 3,
 					dash: 'solid'
 				},
 				flag: 'box',
@@ -241,23 +253,19 @@ var vue_instance = {
 			if(this.box_count == 2) {
 				this.reset_click_set()
 			}
-			this.update_chart()
 
 		},
 		hover_horizontal(args) {
 			this.layout.shapes[0].y0 = args['points'][0]['pointIndex'][0]
 			this.layout.shapes[0].y1 = args['points'][0]['pointIndex'][0]
-			this.update_chart()
 		},
 		hover_vertical(args) {
 			this.layout.shapes[1].x0 = args['points'][0]['pointIndex'][1]
 			this.layout.shapes[1].x1 = args['points'][0]['pointIndex'][1]
-			this.update_chart()
 		},
 		hover_box(args) {
 			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
 			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
-			this.update_chart()
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -271,14 +279,12 @@ var vue_instance = {
 				this.layout.shapes[2].x1 = 0
 				this.layout.shapes[2].y1 = 0
 			}
-			this.update_chart()
 		},
 		clear_all_line() {
 			this.layout.shapes.splice(3, this.layout.shapes.length-2)
 			this.vertical_count = 0
 			this.horizontal_count = 0
 			this.box_count = 0
-			this.update_chart()
 		},
 		clear_last_line() {
 			var delete_line = this.layout.shapes.splice(-1, 1)[0]
@@ -291,7 +297,6 @@ var vue_instance = {
 			else{
 				this.box_count -= 1
 			}
-			this.update_chart()
 		}
 	}
 }
