@@ -11,8 +11,8 @@
 
 <script>
 import basic_table from '../components/basic_test_table.vue'
-import {main_table_data} from "@/utils/fakedata.js"
-
+//import {main_table_data} from "@/utils/fakedata.js"
+import {GetBasicTable} from "@/apis/table.js"
 export default {
 	name: 'basic_test',
 	components: {
@@ -21,7 +21,7 @@ export default {
 	data() {
 		return {
 			rerender:0,
-			main_table_data:0
+			main_table_data:[]
 		}
 	},
 	watch: {
@@ -31,22 +31,33 @@ export default {
         
     },
 	methods:{
-
+		doctor_map: function(data){
+			// mapping doctor name
+			// 0 -> Dr. Lei
+			// 1 -> Dr. Liang
+			for(var i=0; i < data.length; i++) {
+				if(data[i]['doctor_id'] == 0) {
+					data[i]['doctor_id'] = 'Dr. Lei'
+				}
+				else {
+					data[i]['doctor_id'] = 'Dr.Liang'
+				}
+			}
+			return data
+		},
 	},
 	created(){
-		// mapping doctor name
-		// 0 -> Dr. Lei
-		// 1 -> Dr. Liang
+		GetBasicTable().then((res)=>{
+			let retv = res.data 
+			console.log("call api [所有資料的table] successed!")
+			console.log(retv)
+			retv = this.doctor_map(retv)
+			this.main_table_data = retv
+		}).catch((err)=>{
+			console.log("call api [所有資料的table] failed!")
+			console.log(err)
+		})
 
-		for(var i=0; i < main_table_data.length; i++) {
-			if(main_table_data[i]['doctor_id'] == 0) {
-				main_table_data[i]['doctor_id'] = 'Dr. Lei'
-			}
-			else {
-				main_table_data[i]['doctor_id'] = 'Dr.Liang'
-			}
-		}
-		this.main_table_data = main_table_data
 	}
 }
 </script>
