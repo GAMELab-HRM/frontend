@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
 			</div>
 
 			<div style="text-align:right; ">
@@ -98,10 +98,10 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
-import {UpdateWetSwallow} from "@/apis/ws.js"
+import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -128,6 +128,7 @@ export default {
 			ws_10_table_send_disable: true,
 
 			// basic test table data
+			table_data:[],
 			ws_10_table_data: '', 
 			mrs_table_data:'',
 			hh_table_data:'',
@@ -168,7 +169,24 @@ export default {
 		this.mrs_options = mrs_options
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
+		this.table_data = table_data_format
 		
+		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+            console.log("Call get swallow API successed!")
+			let retv = res.data
+			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			
+			for(let i=0; i<eptmetric_order.length; i++){
+				console.log(res.data[eptmetric_order[i]])
+				for(let j=0; j<10; j++){
+					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
+				}
+			}
+			this.ws_10_result = retv["ws_result"]
+		}).catch((err)=>{
+            console.log("Call get swallow API Failed!")
+			console.log(err)
+		})
 		// 舊的繪圖，你看OK就刪掉再PR
 		// CallDemoAPI().then((res)=>{
 		// 	console.log("call demo API")
@@ -283,17 +301,17 @@ export default {
 				this.ws_10_object['record_id'] = this.current_record_id
 			}
 			console.log(this.ws_10_object)
+
+			
 			UpdateWetSwallow(this.ws_10_object).then((res)=>{
                 console.log("Call update WS API successed!")
 				console.log(res)
+				this.$message({message: '更新成功!',type: 'success'});
 			}).catch((err)=>{
                 console.log("Call update WS API successed!")
 				console.log(err)
+				this.$message.error('更新失敗!');
 			})
-			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
-			// 	console.log("成功")
-			// 	console.log(res)
-			// })
 
 			
 			// if(this.send_doctor_num==1) {
