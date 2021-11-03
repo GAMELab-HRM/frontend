@@ -287,10 +287,6 @@ export default {
                 console.log("Call update WS API successed!")
 				console.log(err)
 			})
-			// axios.post("http://127.0.0.1:8000/api/v1/swallows/data", this.all_object).then((res)=>{
-			// 	console.log("成功")
-			// 	console.log(res)
-			// })
 
 			
 			// if(this.send_doctor_num==1) {
