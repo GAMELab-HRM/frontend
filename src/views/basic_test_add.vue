@@ -158,7 +158,7 @@ export default {
 			ws_10_object:0,
 
 			// 繪圖的變數
-			raw_data:0,
+			raw_data:[],
 			x_size:0,
 			y_size:0,
 		}
@@ -211,8 +211,9 @@ export default {
 		// 繪圖initial data
 		var obj = JSON.parse(str_data)
         this.raw_data = obj['raw_data']
-        this.x_size = this.raw_data[0].length
-		this.y_size = this.raw_data.length
+		// 不知道為啥，但他的y軸會突出去，所以先-1 
+        this.x_size = this.raw_data[0].length - 1
+		this.y_size = this.raw_data.length - 1
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
