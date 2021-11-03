@@ -21,7 +21,7 @@ export default {
 	data() {
 		return {
 			rerender:0,
-			main_table_data:[]
+			main_table_data:[] //不要初始化成0
 		}
 	},
 	watch: {
@@ -47,6 +47,7 @@ export default {
 		},
 	},
 	created(){
+		/* call api to get this table's data */
 		GetBasicTable().then((res)=>{
 			let retv = res.data 
 			console.log("call api [所有資料的table] successed!")
