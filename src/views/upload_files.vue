@@ -13,7 +13,8 @@
 <script>
 import upload_table from '@/components/upload_table.vue'
 import {uploadFileDemo} from '@/apis/file.js'
-import {upload_data} from '@/utils/fakedata.js'
+//import {upload_data} from '@/utils/fakedata.js'
+import {GetBasicUploadTable} from '@/apis/table.js'
 
 export default {
     name: 'upload_files',
@@ -25,7 +26,7 @@ export default {
             fileList: [],
             dialogVisible: false,
             rerender: 0,
-            upload_data:0,
+            upload_data:[], //el-table的data 不要初始化成0
         }
     },
     methods:{
@@ -71,7 +72,19 @@ export default {
         }
     },
     created() {
-        this.upload_data = upload_data
+        
+		/* call api to get this table's data */
+        GetBasicUploadTable().then((res)=>{
+            console.log("call api [ UPLOAD table ] successed!")
+            let retv = res.data 
+            console.log(retv)
+            this.upload_data = retv
+        }).catch((err)=>{
+            console.log("call api [ UPLOAD table ] failed!")
+            console.log(err)
+        })
+
+        //this.upload_data = upload_data
     },
 }
 </script>
