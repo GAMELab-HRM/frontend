@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2>{{mouse_x}} {{mouse_y}}</h2>
+		<h2>x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h2>
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
 			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 			<!--  @unhover="unhover_handler" -->
@@ -11,6 +11,7 @@
 			<button style="width: 100px; height: 100px" @click="click_box" :disabled='box_count>=2'> box </button>
 			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
 			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
+			<button style="width: 100px; height: 100px" @click="show_pic"> complete </button>
 		</div>
 	</div>
 </template>
@@ -52,6 +53,7 @@ var vue_instance = {
 					color: 'black',
 				},
 				colorscale:"Jet",
+				hoverinfo: 'none',
 			}],
 			layout: {
 				title: 'Title',
@@ -136,16 +138,14 @@ var vue_instance = {
 		console.log('created')
 
 		this.$refs.plotly.relayout(update_layout)
-		console.log("THIS IS PLOTLY")
-		console.log(this.$refs.plotly.$refs)
 	},
 	methods: {
 		mousemove_handler(evt){
-			console.log("mousemove")
-			console.log(evt)
 			let bb = evt.target.getBoundingClientRect()
 			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
 			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
+			this.mouse_x = this.mouse_x.toFixed(1)
+			this.mouse_y = this.mouse_y.toFixed(1)
 		},
 		click_handler(args) {
 			if(this.if_vertical === true) {
@@ -194,13 +194,13 @@ var vue_instance = {
 			this.if_horizontal = false
 			this.if_box = true
 		},
-		draw_horizontal(args) {
+		draw_horizontal() {
 			var new_line = {
 				type: 'line',
 				x0: 0,
-				y0: args['points'][0]['pointIndex'][0],
+				y0: this.mouse_y,
 				x1: this.x_size,
-				y1: args['points'][0]['pointIndex'][0],
+				y1: this.mouse_y,
 				line: {
 					color: 'rgb(255, 255, 255)',
 					width: 3,
@@ -214,12 +214,12 @@ var vue_instance = {
 				this.reset_click_set()
 			}
 		},
-		draw_vertical(args) {
+		draw_vertical() {
 			var new_line = {
 				type: 'line',
-				x0: args['points'][0]['pointIndex'][1] ,
+				x0: this.mouse_x,
 				y0: 0,
-				x1: args['points'][0]['pointIndex'][1] ,
+				x1: this.mouse_x,
 				y1: this.y_size,
 				line: {
 					color: 'rgb(255, 255, 255)',
@@ -234,16 +234,16 @@ var vue_instance = {
 				this.reset_click_set()
 			}
 		},
-		draw_box_first(args) {
-			this.layout.shapes[2].x0 = args['points'][0]['pointIndex'][1]
-			this.layout.shapes[2].y0 = args['points'][0]['pointIndex'][0]
-			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
-			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+		draw_box_first() {
+			this.layout.shapes[2].x0 = this.mouse_x
+			this.layout.shapes[2].y0 = this.mouse_y
+			this.layout.shapes[2].x1 = this.mouse_x
+			this.layout.shapes[2].y1 = this.mouse_y
 			this.box_first_point = true
 		},
-		draw_box_second(args) {
-			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
-			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+		draw_box_second() {
+			this.layout.shapes[2].x1 = this.mouse_x
+			this.layout.shapes[2].y1 = this.mouse_y
 			this.box_first_point = false
 
 			var new_box = {
@@ -267,17 +267,17 @@ var vue_instance = {
 			}
 
 		},
-		hover_horizontal(args) {
-			this.layout.shapes[0].y0 = args['points'][0]['pointIndex'][0]
-			this.layout.shapes[0].y1 = args['points'][0]['pointIndex'][0]
+		hover_horizontal() {
+			this.layout.shapes[0].y0 = this.mouse_y
+			this.layout.shapes[0].y1 = this.mouse_y
 		},
-		hover_vertical(args) {
-			this.layout.shapes[1].x0 = args['points'][0]['pointIndex'][1]
-			this.layout.shapes[1].x1 = args['points'][0]['pointIndex'][1]
+		hover_vertical() {
+			this.layout.shapes[1].x0 = this.mouse_x
+			this.layout.shapes[1].x1 = this.mouse_x
 		},
-		hover_box(args) {
-			this.layout.shapes[2].x1 = args['points'][0]['pointIndex'][1]
-			this.layout.shapes[2].y1 = args['points'][0]['pointIndex'][0]
+		hover_box() {
+			this.layout.shapes[2].x1 = this.mouse_x
+			this.layout.shapes[2].y1 = this.mouse_y
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -309,6 +309,10 @@ var vue_instance = {
 			else{
 				this.box_count -= 1
 			}
+		},
+		show_pic() {
+			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			console.log(pic_lst)
 		}
 	}
 }
