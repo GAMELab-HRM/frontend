@@ -1,7 +1,8 @@
 <template>
 	<div>
-		<div id='plt' @mouseleave="leave_handler">
-			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler'/>
+		<h2>{{mouse_x}} {{mouse_y}}</h2>
+		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
+			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 			<!--  @unhover="unhover_handler" -->
 		</div>
 		<div id="btn_container">
@@ -30,6 +31,8 @@ var vue_instance = {
 	props:['raw_data', 'x_size', 'y_size'],
 	data() {
 		return {
+			mouse_x: 0,
+			mouse_y: 0,
 			if_horizontal: false,
 			if_vertical: false,
 			if_box: false,
@@ -133,8 +136,17 @@ var vue_instance = {
 		console.log('created')
 
 		this.$refs.plotly.relayout(update_layout)
+		console.log("THIS IS PLOTLY")
+		console.log(this.$refs.plotly.$refs)
 	},
 	methods: {
+		mousemove_handler(evt){
+			console.log("mousemove")
+			console.log(evt)
+			let bb = evt.target.getBoundingClientRect()
+			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
+			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
+		},
 		click_handler(args) {
 			if(this.if_vertical === true) {
 				this.draw_vertical(args)
