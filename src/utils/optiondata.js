@@ -134,3 +134,25 @@ export let table_data_format = [
         sw10: '',
     }
 ]
+export let mrs_subtest_options = [
+    {
+        value: 1,
+        label: 'MRS1'
+    },
+    {
+        value: 2,
+        label: 'MRS2'
+    },
+    {
+        value: 3,
+        label: 'MRS3'
+    },
+    {
+        value: 4,
+        label: 'MRS4'
+    },
+    {
+        value: 5,
+        label: 'MRS5'
+    },
+]

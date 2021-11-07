@@ -3,7 +3,6 @@
 		<h2>x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h2>
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
 			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
-			<!--  @unhover="unhover_handler" -->
 		</div>
 		<div id="btn_container">
 			<button style="width: 100px; height: 100px" @click="click_vertical" :disabled='vertical_count>=2'> vertical line </button>
@@ -122,7 +121,7 @@ var vue_instance = {
 	},
 	mounted() {
 		var update_layout = {
-			height: 800,
+			// height: 800,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
