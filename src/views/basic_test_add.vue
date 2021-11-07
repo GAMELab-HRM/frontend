@@ -173,7 +173,7 @@ export default {
 			draw_obj_lst: [],
 
 			//不同次 mrs test 相關的變數
-			mrs_subtest:'',
+			mrs_subtest: 1,
 			mrs_subtest_options: 0
 		}
 	},
@@ -226,7 +226,7 @@ export default {
 		// 繪圖initial data
 		this.draw_obj_lst = str_data
 		// 預設繪製 mrs subtest1
-		this.set_draw_data(this.draw_obj_lst, 1)
+		this.set_draw_data(this.draw_obj_lst, 0)
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
