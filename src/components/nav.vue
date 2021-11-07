@@ -13,23 +13,23 @@
                 <el-menu class="el-menu-demo" mode="horizontal"  :active-text-color='act_text_color' @select="nav_bar_active" v-bind:style="nav_btn_lst" :default-active="activeIndex" background-color='#606A78' text-color='white'>
                     <el-submenu index="1" :disabled="check_login">
                         <template slot="title">Wet swallow 10</template>
-                        <el-menu-item index="1-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
-                        <el-menu-item index="1-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                        <el-menu-item index="1-1" v-bind:style="nav_btn" @click="$router.push('/WS_10')" :disabled="check_login">所有資料</el-menu-item>
+                        <el-menu-item index="1-2" v-bind:style="nav_btn" @click="$router.push('WS_10/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
                     <el-submenu index="2" :disabled="check_login">
                         <template slot="title">MRS</template>
-                        <el-menu-item index="2-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
-                        <el-menu-item index="2-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                        <el-menu-item index="2-1" v-bind:style="nav_btn" @click="$router.push('/MRS')" :disabled="check_login">所有資料</el-menu-item>
+                        <el-menu-item index="2-2" v-bind:style="nav_btn" @click="$router.push('/MRS/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
                     <el-submenu index="3" :disabled="check_login">
                         <template slot="title">RDC</template>
-                        <el-menu-item index="3-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
-                        <el-menu-item index="3-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                        <el-menu-item index="3-1" v-bind:style="nav_btn" @click="$router.push('/RDC')" :disabled="check_login">所有資料</el-menu-item>
+                        <el-menu-item index="3-2" v-bind:style="nav_btn" @click="$router.push('/RDC/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
                     <el-submenu index="4" :disabled="check_login">
-                        <template slot="title">hiatal hernia</template>
-                        <el-menu-item index="4-1" v-bind:style="nav_btn" @click="$router.push('/')" :disabled="check_login">Table</el-menu-item>
-                        <el-menu-item index="4-2" v-bind:style="nav_btn" @click="$router.push('add')" :disabled="check_login">Add</el-menu-item>
+                        <template slot="title">Hiatal hernia</template>
+                        <el-menu-item index="4-1" v-bind:style="nav_btn" @click="$router.push('/Hiatal_hernia')" :disabled="check_login">所有資料</el-menu-item>
+                        <el-menu-item index="4-2" v-bind:style="nav_btn" @click="$router.push('/Hiatal_hernia/add')" :disabled="check_login">新增資料</el-menu-item>
                     </el-submenu>
                 </el-menu>
             </div>
@@ -39,9 +39,8 @@
                 <el-dropdown @command="login">
                     <el-button id="dr_login_btn" type="info" size='medium' icon="el-icon-s-custom" round v-bind:style="login_btn"> {{ login_status }} </el-button>
                     <el-dropdown-menu slot="dropdown" style="background: #606A78">
-                        <el-dropdown-item command="Dr. Ray" >Dr. Ray</el-dropdown-item>
-                        <!-- :style='doctor_login_style' -->
-                        <el-dropdown-item command="Dr. Liang" >Dr. Liang</el-dropdown-item>
+                        <el-dropdown-item command="Dr. Ray">Dr. Ray</el-dropdown-item>
+                        <el-dropdown-item command="Dr. Liang">Dr. Liang</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" center>

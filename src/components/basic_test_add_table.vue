@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="table_data" height="470" border style="width: 100% text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white' }" highlight-current-row>
+        <el-table id=add_teble :data="table_data" height="470" border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
@@ -24,83 +24,10 @@
 
 <script>
 export default {
-    name: 'add_table',
+    name: 'basic_test_add_table',
     data() {
         return {
             text:'',
-            table_data: [{
-                metrics: 'Contraction Vigor',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Contraction Pattern',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Swallow Type',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'IRP 4s',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'DCI',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }, {
-                metrics: 'Distal Latency',
-                sw1: '',
-                sw2: '',
-                sw3: '',
-                sw4: '',
-                sw5: '',
-                sw6: '',
-                sw7: '',
-                sw8: '',
-                sw9: '',
-                sw10: '',
-            }],
             send_disable: true,
             vigor_options: [{
                 value: 'Failed',
@@ -151,6 +78,7 @@ export default {
     },
     props: {
         patient_id: [String],
+        table_data:[]
     },
 
     methods: {
@@ -170,7 +98,6 @@ export default {
             // for (var i = 0; i < this.table_data.length; i++) {
             for (var i = 0; i < 1; i++) {
                 var val_lst = Object.values(this.table_data[i])
-                console.log(val_lst)
                 val_lst.shift()
                 // for (var k = 0; k < val_lst.length; k++){
                 for (var k = 0; k < 1; k++){
@@ -198,5 +125,29 @@ export default {
 
 
 <style scoped>
+.el-table--border:after,
+.el-table--group:after,
+.el-table:before {
+    background-color: black;
+}
 
+.el-table--border,
+.el-table--group {
+    border-color: black;
+}
+
+.el-table td,
+.el-table th.is-leaf {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border th,
+.el-table--border th.gutter:last-of-type {
+        border-bottom: 1px solid black;
+}
+
+.el-table--border td,
+.el-table--border th {
+        border-right: 1px solid black;
+}
 </style>

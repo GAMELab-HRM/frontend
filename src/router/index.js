@@ -1,25 +1,48 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Add from '../views/Add.vue'
+import AppLayout from "../views/layouts/AppLayout"
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Root',
+    component: AppLayout
   },
   {
-    path: '/add',
-    name: 'Add',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: Add
-    // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  },
+    path: '/hello',
+    component: AppLayout,
+    name: 'Hello',
+    children:[
+      {
+        path: '/basic_test',
+        name: 'basic_test',
+        component: () => import("@/views/basic_test")
+      },
+      {
+        path: '/basic_test/add',
+        name: 'basic_test_add',
+        component: () => import("@/views/basic_test_add")        
+      },
+      {
+        path: '/basic_test/upload_files',
+        name: 'upload_files',
+        component: () => import("@/views/upload_files")
+      },
+      {
+        path: '/RDC',
+        name: 'RDC',
+        component: () => import("@/views/RDC")
+      },
+      {
+        path: '/RDC/add',
+        name: 'RDC_add',
+        component: () => import("@/views/RDC_add")        
+      },
+    ]
+  }
 ]
+
 
 const router = new VueRouter({
   mode: 'history',
