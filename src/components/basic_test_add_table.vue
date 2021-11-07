@@ -10,6 +10,7 @@
                             <el-option v-for="item in options(scope.$index)" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
+                        
                     </div>
                     <div v-else>
                         <el-input v-model="table_data[scope.$index]['sw'+index]" @change="check_table"></el-input>

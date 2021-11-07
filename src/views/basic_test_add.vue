@@ -35,7 +35,7 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
-			<el-row :gutter="1">
+			<el-row>
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
 						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
@@ -44,9 +44,17 @@
 						</el-select>
 					</h1>
 				</el-col>
+				<el-col :span="4" :offset="2">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test
+						<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
+							<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
 			</el-row>
 
-			<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' />
+			<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :key='draw_rerender' />
 
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
@@ -98,7 +106,7 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options } from "@/utils/optiondata.js"
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
@@ -161,6 +169,12 @@ export default {
 			raw_data:[],
 			x_size:0,
 			y_size:0,
+			draw_rerender: 0,
+			draw_obj_lst: [],
+
+			//不同次 mrs test 相關的變數
+			mrs_subtest:'',
+			mrs_subtest_options: 0
 		}
 	},
 	created(){
@@ -170,6 +184,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
+		this.mrs_subtest_options = mrs_subtest_options
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
@@ -209,11 +224,9 @@ export default {
 		// })
 
 		// 繪圖initial data
-		var obj = JSON.parse(str_data)
-        this.raw_data = obj['raw_data']
-		// 不知道為啥，但他的y軸會突出去，所以先-1 
-        this.x_size = this.raw_data[0].length - 1
-		this.y_size = this.raw_data.length - 1
+		this.draw_obj_lst = str_data
+		// 預設繪製 mrs subtest1
+		this.set_draw_data(this.draw_obj_lst, 1)
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -359,6 +372,19 @@ export default {
 		// 		console.log(this.x_size, this.y_size)
 		// 	})
 		// }
+
+		// set new raw data to draw
+		set_draw_data(obj_lst, idx) {
+			this.raw_data = JSON.parse(obj_lst[idx]['raw_data'])
+			// 不知道為啥，但他的y軸會突出去，所以先-1 
+			this.x_size = this.raw_data[0].length - 1
+			this.y_size = this.raw_data.length - 1
+		},
+
+		mrs_subtest_selected_update() {
+			this.set_draw_data(this.draw_obj_lst, this.mrs_subtest-1)
+			this.draw_rerender += 1
+		},
 	}
 }
 </script>
