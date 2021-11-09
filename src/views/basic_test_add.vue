@@ -44,8 +44,8 @@
 						</el-select>
 					</h1>
 				</el-col>
-				<el-col :span="4" :offset="2">
-					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
 						<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
 							<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
@@ -53,8 +53,11 @@
 					</h1>
 				</el-col>
 			</el-row>
-
-			<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :key='draw_rerender' />
+			<!-- <el-row>
+				<el-col :span="10" :offset="5"> -->
+					<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :key='draw_rerender' />
+				<!-- </el-col>
+			</el-row> -->
 
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
@@ -201,26 +204,6 @@ export default {
             console.log("Call get swallow API Failed!")
 			console.log(err)
 		})
-		// 舊的繪圖，你看OK就刪掉再PR
-		// CallDemoAPI().then((res)=>{
-		// 	console.log("call demo API")
-		// 	console.log(res)
-		// 	let raw_data = JSON.parse(res['data']['raw'])
-		// 	this.mrs_ysize = raw_data.length 
-		// 	this.mrs_xsize = raw_data[0].length 
-		// 	this.mrs_rawdata = raw_data
-		// 	this.mrs_paint_render = true 
-
-		// })
-		// CallDemo2API().then((res)=>{
-		// 	console.log("call demo2 API")
-		// 	console.log(res)
-		// 	let raw_data = JSON.parse(res['data']['raw'])
-		// 	this.hiatal_ysize = raw_data.length
-		// 	this.hiatal_xsize = raw_data[0].length
-		// 	this.hiatal_rawdata = raw_data
-		// 	this.hiatal_paint_render = true
-		// })
 
 		// 繪圖initial data
 		this.draw_obj_lst = str_data['rawdata']
@@ -358,7 +341,7 @@ export default {
 			}
 		},
 
-		// 上傳檔案的都刪掉了，這邊應該也是要刪，你看OK就刪掉再PR
+
 		// customUpload(item){
 		// 	const file = item.file 
 		// 	//const size = file.size / 1024 / 1024
