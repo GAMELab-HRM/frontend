@@ -184,7 +184,6 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
-		this.mrs_subtest_options = mrs_subtest_options
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
@@ -224,9 +223,14 @@ export default {
 		// })
 
 		// 繪圖initial data
-		this.draw_obj_lst = str_data
+		this.draw_obj_lst = str_data['rawdata']
 		// 預設繪製 mrs subtest1
 		this.set_draw_data(this.draw_obj_lst, 0)
+
+		// 因為要先確認有幾個mrs_subtest所以放這裡
+		var mrs_subtest_num = JSON.parse(this.draw_obj_lst).length;
+		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
+		this.mrs_subtest_options = mrs_subtest_options
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -375,7 +379,7 @@ export default {
 
 		// set new raw data to draw
 		set_draw_data(obj_lst, idx) {
-			this.raw_data = JSON.parse(obj_lst[idx]['raw_data'])
+			this.raw_data = JSON.parse(obj_lst)[idx]
 			// 不知道為啥，但他的y軸會突出去，所以先-1 
 			this.x_size = this.raw_data[0].length - 1
 			this.y_size = this.raw_data.length - 1
