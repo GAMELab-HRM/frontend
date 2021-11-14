@@ -325,11 +325,54 @@ var vue_instance = {
 		},
 		compute_4IRP() {
 			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			// var line_lst = []
-			// for(var i=0; i<pic_lst; i++) {
-			// 	if(pic_lst[i]['flag']==)
-			// }
-			console.log(pic_lst)
+			var line_lst = [[], []]
+			
+			for(var i=0; i<pic_lst.length; i++) {
+				if(pic_lst[i]['flag']=='horizontal') {
+					line_lst[1].push(pic_lst[i]['y0'])
+				}
+				else if(pic_lst[i]['flag']=='vertical') {
+					line_lst[0].push(pic_lst[i]['x0'])
+				}
+			}
+			var max_x = Math.floor(Math.max(...line_lst[0]))
+			var min_x = Math.ceil(Math.min(...line_lst[0]))
+			var max_y = Math.ceil(Math.max(...line_lst[1]))
+			var min_y = Math.floor(Math.min(...line_lst[1]))
+
+			for(i=0; i<this.catheter_scale.length; i++) {
+				if(this.catheter_scale[i] <= max_y) {
+					max_y = i
+					break;
+				}
+			}
+
+			for(i=0; i<this.catheter_scale.length; i++) {
+				if(this.catheter_scale[i] <= min_y) {
+					min_y = i
+					break;
+				}
+			}
+
+			var x_lst = [min_x]
+			
+			for(i=1; i<5; i++){
+				x_lst.push(min_x + Math.floor((max_x - min_x) * i * 0.25))
+			}
+
+			console.log(min_y, max_y)
+			console.log(x_lst)
+
+			var IRP_data = [[], [], [], []]
+
+			for(i=max_y; i<=min_y; i+=1) {
+				console.log(2)
+				for(var j=0, k=1; j<x_lst.length-1; j++, k++) {
+					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]))
+					
+				}
+			}
+			console.log(IRP_data)
 		}
 	}
 }
