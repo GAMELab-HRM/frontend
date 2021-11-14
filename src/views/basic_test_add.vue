@@ -55,7 +55,7 @@
 			</el-row>
 			<!-- <el-row>
 				<el-col :span="10" :offset="5"> -->
-					<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :key='draw_rerender' />
+					<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :catheter_scale='catheter_scale' :key='draw_rerender' />
 				<!-- </el-col>
 			</el-row> -->
 
@@ -174,6 +174,7 @@ export default {
 			y_size:0,
 			draw_rerender: 0,
 			draw_obj_lst: [],
+			catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
