@@ -11,6 +11,7 @@
 			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
 			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
 			<button style="width: 100px; height: 100px" @click="compute_4IRP">compute IRP*4</button>
+			<button style="width: 100px; height: 100px" @click="compute_DCI">compute DCI</button>
 		</div>
 	</div>
 </template>
@@ -340,19 +341,8 @@ var vue_instance = {
 			var max_y = Math.ceil(Math.max(...line_lst[1]))
 			var min_y = Math.floor(Math.min(...line_lst[1]))
 
-			for(i=0; i<this.catheter_scale.length; i++) {
-				if(this.catheter_scale[i] <= max_y) {
-					max_y = i
-					break;
-				}
-			}
-
-			for(i=0; i<this.catheter_scale.length; i++) {
-				if(this.catheter_scale[i] <= min_y) {
-					min_y = i
-					break;
-				}
-			}
+			max_y = this.get_y_index(max_y)
+			min_y = this.get_y_index(min_y)
 
 			var x_lst = [min_x]
 			
@@ -365,15 +355,48 @@ var vue_instance = {
 
 			var IRP_data = [[], [], [], []]
 
+			// 從max開始，因為坐標軸有reversed過
 			for(i=max_y; i<=min_y; i+=1) {
 				console.log(2)
 				for(var j=0, k=1; j<x_lst.length-1; j++, k++) {
-					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]))
+					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]+1))
 					
 				}
 			}
 			console.log(IRP_data)
-		}
+		},
+
+		compute_DCI() {
+			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			var box = pic_lst.filter(function(obj){
+				return obj['flag'] === 'box'
+			})
+			box = box[0]
+
+			var max_x = Math.floor(box['x1'])
+			var min_x = Math.ceil(box['x0'])
+			var min_y = this.get_y_index(box['y0'])
+			var max_y = this.get_y_index(box['y1'])
+			
+			console.log(min_x, min_y, max_x, max_y)
+
+			var DCI_data = []
+			
+			// 從max開始，因為坐標軸有reversed過
+			for(var i=max_y; i<=min_y; i+=1) {
+				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
+			}
+			console.log(DCI_data)
+
+		},
+
+		get_y_index(y) {
+			for(var i=0; i<this.catheter_scale.length; i++) {
+				if(this.catheter_scale[i] <= y) {
+					return i
+				}
+			}
+		},
 	}
 }
 
