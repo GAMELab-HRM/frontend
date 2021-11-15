@@ -55,7 +55,7 @@
 			</el-row>
 			<!-- <el-row>
 				<el-col :span="10" :offset="5"> -->
-					<draw :raw_data='raw_data' :x_size='x_size' :y_size='y_size' :catheter_scale='catheter_scale' :key='draw_rerender' />
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' />
 				<!-- </el-col>
 			</el-row> -->
 
@@ -170,11 +170,11 @@ export default {
 
 			// 繪圖的變數
 			raw_data:[],
-			x_size:0,
-			y_size:0,
+			x_size: 0,
 			draw_rerender: 0,
 			draw_obj_lst: [],
 			catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+			time_scale: [],
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -366,7 +366,9 @@ export default {
 			this.raw_data = JSON.parse(obj_lst)[idx]
 			// 不知道為啥，但他的y軸會突出去，所以先-1 
 			this.x_size = this.raw_data[0].length - 1
-			this.y_size = this.raw_data.length - 1
+			this.time_scale = [...Array(this.x_size).keys()].map(function(val){
+				return val / 5
+			})
 		},
 
 		mrs_subtest_selected_update() {
