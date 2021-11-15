@@ -346,22 +346,16 @@ var vue_instance = {
 			min_y = this.get_y_index(min_y)
 
 			var x_lst = []
-			
-			console.log('min', min_x)
-			console.log('max', max_x)
 
-			for(i=0; i<5; i++){
+			for(i=0; i<4; i++){
 				x_lst.push(this.get_x_index(min_x + (max_x - min_x) * i * 0.25, 'min'))
 			}
-
-
-			console.log('x_lst', x_lst)
+			x_lst.push(this.get_x_index(max_x, 'max'))
 
 			var IRP_data = [[], [], [], []]
 
 			// 從max開始，因為坐標軸有reversed過
 			for(i=max_y; i<=min_y; i+=1) {
-				console.log(2)
 				for(var j=0, k=1; j<x_lst.length-1; j++, k++) {
 					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]+1))
 					
@@ -377,13 +371,11 @@ var vue_instance = {
 			})
 			box = box[0]
 
-			var max_x = Math.floor(box['x1'])
-			var min_x = Math.ceil(box['x0'])
+			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
+			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])
 			var max_y = this.get_y_index(box['y1'])
 			
-			console.log(min_x, min_y, max_x, max_y)
-
 			var DCI_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
@@ -409,7 +401,6 @@ var vue_instance = {
 			else if(type == 'min'){
 				x -= 0.05
 			}
-			console.log('this', x)
 			for(var i=0; i<this.time_scale.length; i++) {
 				if(this.time_scale[i] >= x) {
 					return i
