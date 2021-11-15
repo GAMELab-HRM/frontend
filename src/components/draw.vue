@@ -29,7 +29,7 @@ var vue_instance = {
 	components: {
 		VuePlotly,
 	},
-	props:['raw_data', 'x_size', 'y_size', 'catheter_scale'],
+	props:['raw_data', 'time_scale', 'catheter_scale'],
 	data() {
 		return {
 			mouse_x: 0,
@@ -43,7 +43,7 @@ var vue_instance = {
 			box_first_point: false,
 			data: [{
 				z: this.raw_data,
-				x: this.x_size,
+				x: this.time_scale,
 				y: this.catheter_scale, 
 				// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, ]
 				// [21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
@@ -64,7 +64,7 @@ var vue_instance = {
 					type: 'line',
 					x0: 0,
 					y0: 0,
-					x1: this.x_size,
+					x1: Math.max(...this.time_scale),
 					y1: 0,
 					line: {
 						color: 'rgba(255, 255, 255, 0.3)',
@@ -213,7 +213,7 @@ var vue_instance = {
 				type: 'line',
 				x0: 0,
 				y0: this.mouse_y,
-				x1: this.x_size,
+				x1: Math.max(...this.time_scale),
 				y1: this.mouse_y,
 				line: {
 					color: 'rgb(255, 255, 255)',
