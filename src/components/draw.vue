@@ -158,8 +158,8 @@ var vue_instance = {
 			let bb = evt.target.getBoundingClientRect()
 			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
 			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
-			this.mouse_x = this.mouse_x.toFixed(1)
-			this.mouse_y = this.mouse_y.toFixed(1)
+			this.mouse_x = this.mouse_x.toFixed(2)
+			this.mouse_y = this.mouse_y.toFixed(2)
 		},
 		click_handler() {
 			if(this.if_vertical === true) {
@@ -336,22 +336,26 @@ var vue_instance = {
 					line_lst[0].push(pic_lst[i]['x0'])
 				}
 			}
-			var max_x = Math.floor(Math.max(...line_lst[0]))
-			var min_x = Math.ceil(Math.min(...line_lst[0]))
+
+			var max_x = Math.max(...line_lst[0])
+			var min_x = Math.min(...line_lst[0])
 			var max_y = Math.ceil(Math.max(...line_lst[1]))
 			var min_y = Math.floor(Math.min(...line_lst[1]))
 
 			max_y = this.get_y_index(max_y)
 			min_y = this.get_y_index(min_y)
 
-			var x_lst = [min_x]
+			var x_lst = []
 			
-			for(i=1; i<5; i++){
-				x_lst.push(min_x + Math.floor((max_x - min_x) * i * 0.25))
+			console.log('min', min_x)
+			console.log('max', max_x)
+
+			for(i=0; i<5; i++){
+				x_lst.push(this.get_x_index(min_x + (max_x - min_x) * i * 0.25, 'min'))
 			}
 
-			console.log(min_y, max_y)
-			console.log(x_lst)
+
+			console.log('x_lst', x_lst)
 
 			var IRP_data = [[], [], [], []]
 
@@ -393,6 +397,21 @@ var vue_instance = {
 		get_y_index(y) {
 			for(var i=0; i<this.catheter_scale.length; i++) {
 				if(this.catheter_scale[i] <= y) {
+					return i
+				}
+			}
+		},
+
+		get_x_index(x, type) {
+			if(type == 'max') {
+				x += 0.05
+			}
+			else if(type == 'min'){
+				x -= 0.05
+			}
+			console.log('this', x)
+			for(var i=0; i<this.time_scale.length; i++) {
+				if(this.time_scale[i] >= x) {
 					return i
 				}
 			}

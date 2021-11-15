@@ -367,7 +367,7 @@ export default {
 			// 不知道為啥，但他的y軸會突出去，所以先-1 
 			this.x_size = this.raw_data[0].length - 1
 			this.time_scale = [...Array(this.x_size).keys()].map(function(val){
-				return val / 5
+				return val / 20
 			})
 		},
 
