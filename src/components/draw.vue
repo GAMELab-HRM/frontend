@@ -158,8 +158,8 @@ var vue_instance = {
 			let bb = evt.target.getBoundingClientRect()
 			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
 			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
-			this.mouse_x = this.mouse_x.toFixed(1)
-			this.mouse_y = this.mouse_y.toFixed(1)
+			this.mouse_x = this.mouse_x.toFixed(2)
+			this.mouse_y = this.mouse_y.toFixed(2)
 		},
 		click_handler() {
 			if(this.if_vertical === true) {
@@ -336,28 +336,26 @@ var vue_instance = {
 					line_lst[0].push(pic_lst[i]['x0'])
 				}
 			}
-			var max_x = Math.floor(Math.max(...line_lst[0]))
-			var min_x = Math.ceil(Math.min(...line_lst[0]))
+
+			var max_x = Math.max(...line_lst[0])
+			var min_x = Math.min(...line_lst[0])
 			var max_y = Math.ceil(Math.max(...line_lst[1]))
 			var min_y = Math.floor(Math.min(...line_lst[1]))
 
 			max_y = this.get_y_index(max_y)
 			min_y = this.get_y_index(min_y)
 
-			var x_lst = [min_x]
-			
-			for(i=1; i<5; i++){
-				x_lst.push(min_x + Math.floor((max_x - min_x) * i * 0.25))
-			}
+			var x_lst = []
 
-			console.log(min_y, max_y)
-			console.log(x_lst)
+			for(i=0; i<4; i++){
+				x_lst.push(this.get_x_index(min_x + (max_x - min_x) * i * 0.25, 'min'))
+			}
+			x_lst.push(this.get_x_index(max_x, 'max'))
 
 			var IRP_data = [[], [], [], []]
 
 			// 從max開始，因為坐標軸有reversed過
 			for(i=max_y; i<=min_y; i+=1) {
-				console.log(2)
 				for(var j=0, k=1; j<x_lst.length-1; j++, k++) {
 					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]+1))
 					
@@ -373,13 +371,11 @@ var vue_instance = {
 			})
 			box = box[0]
 
-			var max_x = Math.floor(box['x1'])
-			var min_x = Math.ceil(box['x0'])
+			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
+			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])
 			var max_y = this.get_y_index(box['y1'])
 			
-			console.log(min_x, min_y, max_x, max_y)
-
 			var DCI_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
@@ -393,6 +389,20 @@ var vue_instance = {
 		get_y_index(y) {
 			for(var i=0; i<this.catheter_scale.length; i++) {
 				if(this.catheter_scale[i] <= y) {
+					return i
+				}
+			}
+		},
+
+		get_x_index(x, type) {
+			if(type == 'max') {
+				x += 0.05
+			}
+			else if(type == 'min'){
+				x -= 0.05
+			}
+			for(var i=0; i<this.time_scale.length; i++) {
+				if(this.time_scale[i] >= x) {
 					return i
 				}
 			}
