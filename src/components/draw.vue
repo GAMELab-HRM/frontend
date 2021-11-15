@@ -325,6 +325,10 @@ var vue_instance = {
 			}
 		},
 		compute_4IRP() {
+			var IRP_raw_data = this.get_raw_data_4IRP()
+			console.log(IRP_raw_data)
+		},
+		get_raw_data_4IRP() {
 			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
 			var line_lst = [[], []]
 			
@@ -361,10 +365,26 @@ var vue_instance = {
 					
 				}
 			}
-			console.log(IRP_data)
-		},
 
+			return IRP_data
+		},
 		compute_DCI() {
+			var DCI_raw_data = this.get_raw_data_DCI()
+			var over20 = 0
+			var ct = 0
+			for(var i=0; i<DCI_raw_data.length; i++) {
+				for(var j=0; j<DCI_raw_data[i].length; j++) {
+					if(DCI_raw_data[i][j] >= 20) {
+						over20 += DCI_raw_data[i][j]
+						ct+=1
+					}
+				}
+			}
+			var DCI = Math.floor((over20 / ct) * DCI_raw_data.length * (DCI_raw_data[0].length / 20))
+			console.log('DCI', DCI)
+
+		},
+		get_raw_data_DCI() {
 			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
 			var box = pic_lst.filter(function(obj){
 				return obj['flag'] === 'box'
@@ -382,7 +402,8 @@ var vue_instance = {
 			for(var i=max_y; i<=min_y; i+=1) {
 				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
-			console.log(DCI_data)
+			
+			return DCI_data
 
 		},
 
