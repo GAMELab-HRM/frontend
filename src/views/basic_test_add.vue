@@ -60,12 +60,12 @@
 				<el-col :span="5" :offset='7'>
 					<div style="margin-top: 100px">
 						<h2>繪圖工具</h2>
-						<el-button type="primary" @click="MRS_draw_btn('MRS_DCI')" :disabled='MRS_DCI_disable'>MRS DCI</el-button>
+						<el-button type="primary" @click="MRS_draw_btn('MRS_DCI')" :disabled="MRS_DCI_disable">MRS DCI</el-button>
 						<el-button type="primary" @click="MRS_draw_btn('MRS_DCI_after_MRS')" :disabled='MRS_DCI_after_MRS_disable'>MRS DCI after MRS</el-button>
 					</div>
 				</el-col>
 			</el-row>
-
+			<el-button type="primary" @click="test"></el-button>
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -387,16 +387,23 @@ export default {
 		},
 
 		MRS_draw_btn(draw_type) {
+			console.log(this)
 			this.$refs.MRS_draw.set_draw_data('box', draw_type)
+			console.log(this)
 		},
-		mrs_update_draw_btn(obj) {
-			if(obj['flag']=='MRS_DCI') {
-				this.MRS_DCI_disable = true
-			}
+		mrs_update_draw_btn() {
+			
+			this.MRS_DCI_disable = true
+			// if(obj['flag']=='MRS_DCI') {
+			// 	this.MRS_DCI_disable = true
+			// }
 			// if(flag=='MRS_DCI_after_MRS') {
 			// 	this.MRS_DCI_after_MRS_disable = status
 			// }
 		},
+		test() {
+			this.MRS_DCI_disable = true
+		}
 	}
 }
 </script>

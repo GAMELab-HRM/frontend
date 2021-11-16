@@ -4,14 +4,14 @@
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
 			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 		</div>
-		<div id="btn_container">
+		<!-- <div id="btn_container">
 			<button style="width: 100px; height: 100px" @click="click_vertical" :disabled='vertical_count>=2'> vertical line </button>
 			<button style="width: 100px; height: 100px" @click="click_horizontal" :disabled='horizontal_count>=2'> horizontal line </button>
 			<button style="width: 100px; height: 100px" @click="click_box" :disabled='box_count>=2'> box </button>
 			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
 			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
 			<button style="width: 100px; height: 100px" @click="compute_4IRP">compute IRP*4</button>
-		</div>
+		</div> -->
 	</div>
 </template>
 
