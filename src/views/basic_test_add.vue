@@ -53,11 +53,21 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<!-- <el-row>
-				<el-col :span="10" :offset="5"> -->
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' />
-				<!-- </el-col>
-			</el-row> -->
+			<el-row>
+				<el-col :span="12">
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" />
+				</el-col>
+				<el-col :span="5" :offset="5" style="margin-top: 100px; text-align: left">
+					<h2>繪圖工具</h2>					
+					<el-row type="flex" justify="space-between">
+						<el-button type="primary" @click='mrs_dci' :disabled='mrs_dci_disable' >MRS DCI</el-button>
+						<el-button type="primary" >主要按钮</el-button>
+					</el-row>
+				</el-col>
+			</el-row>
+			<!-- <el-table :data='mrs_table_data'>
+				<el-table-column prop: />
+			</el-table> -->
 
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
@@ -175,6 +185,7 @@ export default {
 			draw_obj_lst: [],
 			catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
 			time_scale: [],
+			mrs_dci_disable: false,
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -375,6 +386,13 @@ export default {
 			this.set_draw_data(this.draw_obj_lst, this.mrs_subtest-1)
 			this.draw_rerender += 1
 		},
+		mrs_dci() {
+			console.log(111)
+			this.$refs.MRS_draw.click_box();
+		},
+		update_mrs_dci(val) {
+			this.mrs_dci_disable = val;
+		}
 	}
 }
 </script>
