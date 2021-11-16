@@ -53,12 +53,30 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<!-- <el-row>
-				<el-col :span="10" :offset="5"> -->
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' />
-				<!-- </el-col>
-			</el-row> -->
-
+			<el-row>
+				<el-col :span="10">
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last'/>
+				</el-col>
+				<el-col :span="7" :offset='7'>
+					<div style="margin-top: 100px">
+						<h2>繪圖工具</h2>
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI')"  :disabled="MRS_DCI_disable" >MRS DCI</el-button >
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI_after_MRS')" :disabled='MRS_DCI_after_MRS_disable'>MRS DCI after MRS</el-button>
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_IRP')" :disabled='MRS_IRP_disable'>MRS IRP4</el-button>
+						<br>
+					</div>
+					<el-row style="margin-top: 30px">
+						<el-col :span="5" :offset="6">
+							<el-button type="danger" class="draw_btn" @click="$refs.MRS_draw.clear_last()" :disabled='MRS_DCI_disable==false&&MRS_DCI_after_MRS_disable==false&&MRS_IRP_disable== false'>Clear last</el-button>
+						</el-col>
+						<el-col :span="5" :offset="2">
+							<el-button type="danger" class="draw_btn" @click="clear_all('MRS')" :disabled='MRS_DCI_disable==false&&MRS_DCI_after_MRS_disable==false&&MRS_IRP_disable== false'>Clear all</el-button>
+							{{ MRS_DCI }}
+							{{ MRS_DCI_after_MRS }}
+						</el-col>
+					</el-row>
+				</el-col>
+			</el-row>
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -175,6 +193,13 @@ export default {
 			draw_obj_lst: [],
 			catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
 			time_scale: [],
+			MRS_DCI_disable: false,
+			MRS_DCI_after_MRS_disable: false,
+			MRS_IRP_disable: false,
+			MRS_DCI: 0,
+			MRS_DCI_after_MRS: 0,
+			MRS_IRP: 0,
+
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -375,6 +400,54 @@ export default {
 			this.set_draw_data(this.draw_obj_lst, this.mrs_subtest-1)
 			this.draw_rerender += 1
 		},
+
+		MRS_draw_btn(draw_type) {
+			this.$refs.MRS_draw.set_draw_data('box', draw_type)
+		},
+		mrs_update_draw_btn(obj) {
+			if(obj['flag']=='MRS_DCI') {
+				this.MRS_DCI_disable = obj['status']
+			}
+			if(obj['flag']=='MRS_DCI_after_MRS') {
+				this.MRS_DCI_after_MRS_disable = obj['status']
+			}
+			if(obj['flag']=='MRS_IRP') {
+				this.MRS_IRP_disable = obj['status']
+			}
+		},
+		get_DCI(obj) {
+			if(obj['flag']=='MRS_DCI') {
+				this.MRS_DCI = obj['DCI']
+			}
+			if(obj['flag']=='MRS_DCI_after_MRS') {
+				this.MRS_DCI_after_MRS = obj['DCI']
+			}
+		},
+		clear_all(test) {
+			this.$refs.MRS_draw.clear_all()
+			if(test == 'MRS') {
+				this.MRS_DCI = 0
+				this.MRS_DCI_after_MRS = 0
+				this.MRS_IRP = 0
+				this.MRS_DCI_disable = false
+				this.MRS_DCI_after_MRS_disable = false
+				this.MRS_IRP_disable = false
+			}
+		},
+		clear_last(flag) {
+			if(flag == 'MRS_DCI') {
+				this.MRS_DCI = 0
+				this.MRS_DCI_disable = false
+			}
+			else if(flag=='MRS_DCI_after_MRS') {
+				this.MRS_DCI_after_MRS = 0
+				this.MRS_DCI_after_MRS_disable = false
+			}
+			else if(flag == 'MRS_IRP') {
+				this.MRS_IRP = 0
+				this.MRS_IRP_disable = false
+			}
+		},
 	}
 }
 </script>
@@ -413,6 +486,9 @@ export default {
 	margin-bottom: 50px
 }
 
+.draw_btn {
+	padding: 45px 25px 45px 25px;
 
+}
 
 </style>
