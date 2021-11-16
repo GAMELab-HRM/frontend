@@ -124,8 +124,8 @@ var vue_instance = {
 	},
 	mounted() {
 		var update_layout = {
-			height: 900,
-			width: 1300,
+			height: 750,
+			width: 1100,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
@@ -140,12 +140,12 @@ var vue_instance = {
 			yaxis:{
 				autorange: 'reversed',
 				title: {
-					text: 'cm'
+					text: 'length(cm)'
 				}
 			},
 			xaxis:{
 				title: {
-					text: 'second'
+					text: 'duration(sec)'
 				}
 			}
 		}
@@ -248,7 +248,7 @@ var vue_instance = {
 				this.reset_click_set()
 			}
 		},
-		draw_box_first() {
+		draw_box_first(www) {
 			this.layout.shapes[2].x0 = this.mouse_x
 			this.layout.shapes[2].y0 = this.mouse_y
 			this.layout.shapes[2].x1 = this.mouse_x
