@@ -11,8 +11,6 @@
 			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
 			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
 			<button style="width: 100px; height: 100px" @click="compute_4IRP">compute IRP*4</button>
-			<button style="width: 100px; height: 100px" @click="compute_DCI">compute DCI</button>
-			DCI : {{DCI}}
 		</div>
 	</div>
 </template>
@@ -42,13 +40,12 @@ var vue_instance = {
 			horizontal_count: 0,
 			box_count: 0,
 			box_first_point: false,
-			DCI: 0,
+			flag: '',
+			draw_type:'',
 			data: [{
 				z: this.raw_data,
 				x: this.time_scale,
 				y: this.catheter_scale, 
-				// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, ]
-				// [21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
 				type: 'contour',
 				contours:{
                     coloring:"heatmap"
@@ -163,14 +160,20 @@ var vue_instance = {
 			this.mouse_x = this.mouse_x.toFixed(2)
 			this.mouse_y = this.mouse_y.toFixed(2)
 		},
+
+		set_draw_data(draw_type, flag) {
+			this.draw_type = draw_type
+			this.flag = flag
+		},
+
 		click_handler() {
-			if(this.if_vertical === true) {
+			if(this.draw_type == 'vertical') {
 				this.draw_vertical()
 			}
-			if(this.if_horizontal === true) {
+			if(this.draw_type == 'horizontal') {
 				this.draw_horizontal()
 			}
-			if(this.if_box === true) {
+			if(this.draw_type == 'box') {
 				if(this.box_first_point) {
 					this.draw_box_second()
 				}
@@ -180,36 +183,36 @@ var vue_instance = {
 			}
 		},
 		hover_handler() {
-			if(this.if_vertical === true) {
+			if(this.draw_type == 'vertical') {
 				this.hover_vertical()
 			}
-			if(this.if_horizontal === true) {
+			if(this.draw_type == 'horizontal') {
 				this.hover_horizontal()
 			}
-			if(this.if_box === true && this.box_first_point) {
+			if(this.draw_type == 'box' && this.box_first_point) {
 				this.hover_box()
 			}
 		},
-		reset_click_set() {
-			this.if_vertical = false
-			this.if_horizontal = false
-			this.if_box = false
-		},
-		click_horizontal() {
-			this.if_vertical = false
-			this.if_horizontal = true
-			this.if_box = false
-		},
-		click_vertical() {
-			this.if_vertical = true
-			this.if_horizontal = false
-			this.if_box = false
-		},
-		click_box() {
-			this.if_vertical = false
-			this.if_horizontal = false
-			this.if_box = true
-		},
+		// reset_click_set() {
+		// 	this.if_vertical = false
+		// 	this.if_horizontal = false
+		// 	this.if_box = false
+		// },
+		// click_horizontal() {
+		// 	this.if_vertical = false
+		// 	this.if_horizontal = true
+		// 	this.if_box = false
+		// },
+		// click_vertical() {
+		// 	this.if_vertical = true
+		// 	this.if_horizontal = false
+		// 	this.if_box = false
+		// },
+		// click_box() {
+		// 	this.if_vertical = false
+		// 	this.if_horizontal = false
+		// 	this.if_box = true
+		// },
 		draw_horizontal() {
 			var new_line = {
 				type: 'line',
@@ -227,7 +230,7 @@ var vue_instance = {
 			this.layout.shapes.push(new_line)
 			this.horizontal_count += 1
 			if(this.horizontal_count == 2) {
-				this.reset_click_set()
+				// this.reset_click_set()
 			}
 		},
 		draw_vertical() {
@@ -247,14 +250,15 @@ var vue_instance = {
 			this.layout.shapes.push(new_line)
 			this.vertical_count += 1
 			if(this.vertical_count == 2) {
-				this.reset_click_set()
+				// this.reset_click_set()
 			}
 		},
-		draw_box_first(kkk) {
+		draw_box_first() {
 			this.layout.shapes[2].x0 = this.mouse_x
 			this.layout.shapes[2].y0 = this.mouse_y
 			this.layout.shapes[2].x1 = this.mouse_x
 			this.layout.shapes[2].y1 = this.mouse_y
+			this.$refs.plotly.relayout(this.layout)
 			this.box_first_point = true
 		},
 		draw_box_second() {
@@ -273,15 +277,15 @@ var vue_instance = {
 					width: 3,
 					dash: 'solid'
 				},
-				flag: 'box',
+				flag: this.flag,
 			}
-
-			this.DCI = this.compute_DCI()
+			this.$refs.plotly.relayout(this.layout)
+			// this.$emit('get_DCI', this.compute_DCI())
 			this.layout.shapes.push(new_box)
+			console.log(this.layout.shapes)
 			this.box_count += 1
-			if(this.box_count == 2) {
-				this.reset_click_set()
-			}
+			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.draw_type = ''
 
 		},
 		hover_horizontal() {
@@ -295,7 +299,8 @@ var vue_instance = {
 		hover_box() {
 			this.layout.shapes[2].x1 = this.mouse_x
 			this.layout.shapes[2].y1 = this.mouse_y
-			this.DCI = this.compute_DCI()
+			this.$refs.plotly.relayout(this.layout)
+			// this.$emit("get_DCI", this.compute_DCI())
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -392,12 +397,10 @@ var vue_instance = {
 			return DCI
 		},
 		get_raw_data_DCI() {
-			// var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			// var box = pic_lst.filter(function(obj){
-			// 	return obj['flag'] === 'box'
-			// })
-			// box = box[0]
-			var box = this.layout.shapes[2]
+			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			var box = pic_lst.filter(function(obj){
+				return obj['flag'] === this.flag
+			})[0]
 			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
 			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])
