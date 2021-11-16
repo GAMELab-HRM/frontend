@@ -12,6 +12,7 @@
 			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
 			<button style="width: 100px; height: 100px" @click="compute_4IRP">compute IRP*4</button>
 			<button style="width: 100px; height: 100px" @click="compute_DCI">compute DCI</button>
+			DCI : {{DCI}}
 		</div>
 	</div>
 </template>
@@ -41,6 +42,7 @@ var vue_instance = {
 			horizontal_count: 0,
 			box_count: 0,
 			box_first_point: false,
+			DCI: 0,
 			data: [{
 				z: this.raw_data,
 				x: this.time_scale,
@@ -274,6 +276,7 @@ var vue_instance = {
 				flag: 'box',
 			}
 
+			this.DCI = this.compute_DCI()
 			this.layout.shapes.push(new_box)
 			this.box_count += 1
 			if(this.box_count == 2) {
@@ -292,6 +295,7 @@ var vue_instance = {
 		hover_box() {
 			this.layout.shapes[2].x1 = this.mouse_x
 			this.layout.shapes[2].y1 = this.mouse_y
+			this.DCI = this.compute_DCI()
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -376,21 +380,25 @@ var vue_instance = {
 				for(var j=0; j<DCI_raw_data[i].length; j++) {
 					if(DCI_raw_data[i][j] >= 20) {
 						over20 += DCI_raw_data[i][j]
-						ct+=1
+						
 					}
+					ct+=1
 				}
 			}
 			var DCI = Math.floor((over20 / ct) * DCI_raw_data.length * (DCI_raw_data[0].length / 20))
-			console.log('DCI', DCI)
-
+			console.log('Amplitude : ', (over20 / ct))
+			console.log('length', DCI_raw_data.length)
+			console.log('second', (DCI_raw_data[0].length / 20))
+			
+			return DCI
 		},
 		get_raw_data_DCI() {
-			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			var box = pic_lst.filter(function(obj){
-				return obj['flag'] === 'box'
-			})
-			box = box[0]
-
+			// var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			// var box = pic_lst.filter(function(obj){
+			// 	return obj['flag'] === 'box'
+			// })
+			// box = box[0]
+			var box = this.layout.shapes[2]
 			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
 			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])
@@ -402,9 +410,8 @@ var vue_instance = {
 			for(var i=max_y; i<=min_y; i+=1) {
 				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
-			
-			return DCI_data
 
+			return DCI_data
 		},
 
 		get_y_index(y) {
