@@ -4,22 +4,14 @@
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
 			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 		</div>
-		<!-- <div id="btn_container">
-			<button style="width: 100px; height: 100px" @click="click_vertical" :disabled='vertical_count>=2'> vertical line </button>
-			<button style="width: 100px; height: 100px" @click="click_horizontal" :disabled='horizontal_count>=2'> horizontal line </button>
-			<button style="width: 100px; height: 100px" @click="click_box" :disabled='box_count>=2'> box </button>
-			<button style="width: 100px; height: 100px" @click="clear_all_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear all </button>
-			<button style="width: 100px; height: 100px" @click="clear_last_line" :disabled='vertical_count == 0 && horizontal_count == 0 && box_count == 0'> clear last </button>
-			<button style="width: 100px; height: 100px" @click="compute_4IRP">compute IRP*4</button>
-		</div> -->
 	</div>
 </template>
 
 <script>
 
-// import { Plotly } from 'vue-plotly'
+
 import VuePlotly from "@statnett/vue-plotly";
-// import Plotly2 from 'plotly.js'
+
 
 window.VuePlotly = VuePlotly;
 
@@ -279,13 +271,15 @@ var vue_instance = {
 				},
 				flag: this.flag,
 			}
-			this.$refs.plotly.relayout(this.layout)
-			// this.$emit('get_DCI', this.compute_DCI())
 			this.layout.shapes.push(new_box)
-			console.log(this.layout.shapes)
+			this.$refs.plotly.relayout(this.layout)
 			this.box_count += 1
-			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.draw_type = ''
+			if(this.flag.slice(4, 7) == 'DCI') {
+				console.log(this.layout.shapes)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			}
+			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 
 		},
 		hover_horizontal() {
@@ -300,7 +294,9 @@ var vue_instance = {
 			this.layout.shapes[2].x1 = this.mouse_x
 			this.layout.shapes[2].y1 = this.mouse_y
 			this.$refs.plotly.relayout(this.layout)
-			// this.$emit("get_DCI", this.compute_DCI())
+			// if(this.flag.slice(4, 7) == 'DCI') {
+			// 	this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			// }
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -398,9 +394,11 @@ var vue_instance = {
 		},
 		get_raw_data_DCI() {
 			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			console.log(111, pic_lst[3]['flag'])
 			var box = pic_lst.filter(function(obj){
 				return obj['flag'] === this.flag
-			})[0]
+			})
+			console.log(box)
 			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
 			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])

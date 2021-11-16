@@ -55,17 +55,19 @@
 			</el-row>
 			<el-row>
 				<el-col :span="10">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn'/>
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI'/>
 				</el-col>
 				<el-col :span="5" :offset='7'>
 					<div style="margin-top: 100px">
 						<h2>繪圖工具</h2>
 						<el-button type="primary" @click="MRS_draw_btn('MRS_DCI')" :disabled="MRS_DCI_disable">MRS DCI</el-button>
 						<el-button type="primary" @click="MRS_draw_btn('MRS_DCI_after_MRS')" :disabled='MRS_DCI_after_MRS_disable'>MRS DCI after MRS</el-button>
+						<el-button type="primary" @click="MRS_draw_btn('MRS_IRP')" :disabled='MRS_IRP_disable'>MRS IRP4</el-button>
+						MRS_DCI : {{ MRS_DCI }}
+						MRS_DCI_after_MRS : {{ MRS_DCI_after_MRS }}
 					</div>
 				</el-col>
 			</el-row>
-			<el-button type="primary" @click="test"></el-button>
 			<div style="text-align:right; ">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -184,6 +186,9 @@ export default {
 			time_scale: [],
 			MRS_DCI_disable: false,
 			MRS_DCI_after_MRS_disable: false,
+			MRS_IRP_disable: false,
+			MRS_DCI: 0,
+			MRS_DCI_after_MRS: 0,
 
 
 			//不同次 mrs test 相關的變數
@@ -391,18 +396,24 @@ export default {
 			this.$refs.MRS_draw.set_draw_data('box', draw_type)
 			console.log(this)
 		},
-		mrs_update_draw_btn() {
-			
-			this.MRS_DCI_disable = true
-			// if(obj['flag']=='MRS_DCI') {
-			// 	this.MRS_DCI_disable = true
-			// }
-			// if(flag=='MRS_DCI_after_MRS') {
-			// 	this.MRS_DCI_after_MRS_disable = status
-			// }
+		mrs_update_draw_btn(obj) {
+			if(obj['flag']=='MRS_DCI') {
+				this.MRS_DCI_disable = obj['status']
+			}
+			if(obj['flag']=='MRS_DCI_after_MRS') {
+				this.MRS_DCI_after_MRS_disable = obj['status']
+			}
+			if(obj['flag']=='MRS_IRP') {
+				this.MRS_IRP_disable = obj['status']
+			}
 		},
-		test() {
-			this.MRS_DCI_disable = true
+		get_DCI(obj) {
+			if(obj['flag']=='MRS_DCI') {
+				this.MRS_DCI = obj['DCI']
+			}
+			if(obj['flag']=='MRS_DCI_after_MRS') {
+				this.MRS_DCI_after_MRS = obj['DCI']
+			}
 		}
 	}
 }
