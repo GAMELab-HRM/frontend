@@ -63,6 +63,7 @@ var vue_instance = {
 						dash: 'solid'
 					},
 					flag: 'horizontal',
+					draw_type: 'horizontal',
 				}, {
 					// vertical initial hover line
 					type: 'line',
@@ -76,6 +77,7 @@ var vue_instance = {
 						dash: 'solid'
 					},
 					flag: 'vertical',
+					draw_type: 'vertical',
 				}, {
 					type: 'rect',
 					x0: 0,
@@ -88,6 +90,7 @@ var vue_instance = {
 						dash: 'solid'
 					},
 					flag: 'box',
+					draw_type: 'box',
 				}]
 			},
 			options: {
@@ -185,26 +188,6 @@ var vue_instance = {
 				this.hover_box()
 			}
 		},
-		// reset_click_set() {
-		// 	this.if_vertical = false
-		// 	this.if_horizontal = false
-		// 	this.if_box = false
-		// },
-		// click_horizontal() {
-		// 	this.if_vertical = false
-		// 	this.if_horizontal = true
-		// 	this.if_box = false
-		// },
-		// click_vertical() {
-		// 	this.if_vertical = true
-		// 	this.if_horizontal = false
-		// 	this.if_box = false
-		// },
-		// click_box() {
-		// 	this.if_vertical = false
-		// 	this.if_horizontal = false
-		// 	this.if_box = true
-		// },
 		draw_horizontal() {
 			var new_line = {
 				type: 'line',
@@ -270,6 +253,7 @@ var vue_instance = {
 					dash: 'solid'
 				},
 				flag: this.flag,
+				draw_type: 'box',
 			}
 			this.layout.shapes.push(new_box)
 			this.$refs.plotly.relayout(this.layout)
@@ -294,9 +278,10 @@ var vue_instance = {
 			this.layout.shapes[2].x1 = this.mouse_x
 			this.layout.shapes[2].y1 = this.mouse_y
 			this.$refs.plotly.relayout(this.layout)
-			// if(this.flag.slice(4, 7) == 'DCI') {
-			// 	this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
-			// }
+			if(this.flag.slice(4, 7) == 'DCI') {
+				console.log(this.layout.shapes)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			}
 		},
 		leave_handler() {
 			console.log('leave handler')
@@ -311,22 +296,24 @@ var vue_instance = {
 				this.layout.shapes[2].y1 = 0
 			}
 		},
-		clear_all_line() {
+		clear_all() {
 			this.layout.shapes.splice(3, this.layout.shapes.length-2)
+			this.$refs.plotly.relayout(this.layout)
 			this.vertical_count = 0
 			this.horizontal_count = 0
 			this.box_count = 0
 		},
-		clear_last_line() {
+		clear_last() {
 			var delete_line = this.layout.shapes.splice(-1, 1)[0]
-			if(delete_line.flag == 'horizontal') {
+			if(delete_line.draw_type == 'horizontal') {
 				this.horizontal_count -= 1
 			}
-			else if(delete_line.flag == 'vertical'){
+			else if(delete_line.draw_type == 'vertical'){
 				this.vertical_count -= 1
 			}
-			else{
+			else if(delete_line.draw_type == 'box') {
 				this.box_count -= 1
+				this.$emit('clear_last', delete_line.flag)
 			}
 		},
 		compute_4IRP() {
@@ -393,12 +380,14 @@ var vue_instance = {
 			return DCI
 		},
 		get_raw_data_DCI() {
-			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			console.log(111, pic_lst[3]['flag'])
-			var box = pic_lst.filter(function(obj){
-				return obj['flag'] === this.flag
-			})
-			console.log(box)
+			// var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
+			// // 坑R
+			// var flag = this.flag
+			// var box = pic_lst.filter(function(obj){
+			// 	return obj['flag'] === flag
+			// })[0]
+
+			var box = this.layout.shapes[2]
 			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
 			var min_x = this.get_x_index(box['x0'], 'min')
 			var min_y = this.get_y_index(box['y0'])
@@ -410,7 +399,7 @@ var vue_instance = {
 			for(var i=max_y; i<=min_y; i+=1) {
 				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
-
+			console.log('DCI', DCI_data)
 			return DCI_data
 		},
 
