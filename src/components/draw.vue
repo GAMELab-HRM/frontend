@@ -24,7 +24,7 @@ var vue_instance = {
 	components: {
 		VuePlotly,
 	},
-	props:['raw_data', 'time_scale', 'catheter_scale'],
+	props:['raw_data', 'time_scale', 'catheter_scale', 'polys'],
 	data() {
 		return {
 			mouse_x: 0,
@@ -147,6 +147,10 @@ var vue_instance = {
 				}
 			}
 		}
+		for(var i=0; i<this.polys.length; i++) {
+			this.$emit('update_draw_btn_status', {'flag': this.polys[i]['flag'], 'status': true})
+		}
+		this.layout.shapes = this.layout.shapes.concat(this.polys)
 		console.log('created')
 
 		this.$refs.plotly.relayout(update_layout)
@@ -263,11 +267,11 @@ var vue_instance = {
 			this.box_count += 1
 			this.draw_type = ''
 			if(this.flag.slice(4, 7) == 'DCI') {
-				console.log(this.layout.shapes)
+				// console.log(this.layout.shapes)
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
-
+			this.get_current_polys()
 		},
 		hover_horizontal() {
 			this.layout.shapes[0].y0 = this.mouse_y
@@ -282,7 +286,7 @@ var vue_instance = {
 			this.layout.shapes[2].y1 = this.mouse_y
 			this.$refs.plotly.relayout(this.layout)
 			if(this.flag.slice(4, 7) == 'DCI') {
-				console.log(this.layout.shapes)
+				// console.log(this.layout.shapes)
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 		},
@@ -305,6 +309,7 @@ var vue_instance = {
 			this.vertical_count = 0
 			this.horizontal_count = 0
 			this.box_count = 0
+			this.get_current_polys()
 		},
 		clear_last() {
 			var delete_line = this.layout.shapes.splice(-1, 1)[0]
@@ -318,6 +323,10 @@ var vue_instance = {
 				this.box_count -= 1
 				this.$emit('clear_last', delete_line.flag)
 			}
+			this.get_current_polys()
+		},
+		get_current_polys() {
+			this.$emit('get_polys', this.layout.shapes.slice(3, this.layout.shapes.length))
 		},
 		compute_4IRP() {
 			var IRP_raw_data = this.get_raw_data_4IRP()
@@ -376,9 +385,9 @@ var vue_instance = {
 				}
 			}
 			var DCI = Math.floor((over20 / ct) * DCI_raw_data.length * (DCI_raw_data[0].length / 20))
-			console.log('Amplitude : ', (over20 / ct))
-			console.log('length', DCI_raw_data.length)
-			console.log('second', (DCI_raw_data[0].length / 20))
+			// console.log('Amplitude : ', (over20 / ct))
+			// console.log('length', DCI_raw_data.length)
+			// console.log('second', (DCI_raw_data[0].length / 20))
 			
 			return DCI
 		},
@@ -405,7 +414,7 @@ var vue_instance = {
 			for(var i=max_y; i<=min_y; i+=1) {
 				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
-			console.log('DCI', DCI_data)
+			// console.log('DCI', DCI_data)
 			return DCI_data
 		},
 

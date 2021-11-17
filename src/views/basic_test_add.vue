@@ -58,7 +58,7 @@
 			</el-row>
 			<el-row>
 				<el-col :span="14">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' />
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' @get_polys='get_polys' />
 				</el-col>
 				<el-col :span="7" :offset='3'>
 					<div style="margin-top: 50px">
@@ -206,6 +206,7 @@ export default {
 			MRS_DCI_after_MRS_disable: false,
 			MRS_IRP_disable: false,
 			MRS_metrics: {},
+			MRS_polys:{},
 			MRS_draw_data: [
 			{
 				flag: 'MRS DCI',
@@ -268,7 +269,9 @@ export default {
 				'MRS_IRP': 0,
 			}
 			this.MRS_metrics['MRS'+(i+1).toString()] = temp
+			this.MRS_polys['MRS'+(i+1).toString()] = []
 		}
+
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -425,7 +428,13 @@ export default {
 			})
 		},
 
+		get_polys(poly_lst) {
+			this.MRS_polys['MRS'+this.mrs_subtest.toString()] = poly_lst
+		},
+
 		mrs_subtest_selected_update() {
+			// this.$refs.MRS_draw.get_current_polys()
+
 			this.set_draw_data(this.draw_obj_lst, this.mrs_subtest-1)
 			this.draw_rerender += 1
 
@@ -434,6 +443,19 @@ export default {
 			this.MRS_draw_data[1]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS']
 			this.MRS_draw_data[2]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP']
 			this.clear_all('MRS', false)
+
+			for(var i=0; i<this.MRS_polys['MRS'+this.mrs_subtest.toString()].length; i++) {
+				var flag = this.MRS_polys['MRS'+this.mrs_subtest.toString()][i]['flag']
+				if(flag == 'MRS_DCI') {
+					this.MRS_DCI_disable = true
+				}
+				else if(flag == 'MRS_DCI_after_MRS') {
+					this.MRS_DCI_after_MRS_disable = true
+				}
+				else if(flag == 'MRS_IRP') {
+					this.MRS_IRP_disable = true
+				}
+			}
 		},
 
 		MRS_draw_btn(draw_type) {
