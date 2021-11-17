@@ -1,6 +1,10 @@
 <template>
 	<div>
-		<h2>x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h2>
+		<el-row>
+			<el-col :span="15" :offset="5">
+				<h1 style="font-size: 30px">x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h1>
+			</el-col>
+		</el-row>
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
 			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 		</div>
@@ -49,7 +53,7 @@ var vue_instance = {
 				// hoverinfo: 'none',
 			}],
 			layout: {
-				title: 'Title',
+				title: '',
 				shapes:[{
 					// horizontal initial hover line
 					type: 'line',
@@ -118,8 +122,8 @@ var vue_instance = {
 	},
 	mounted() {
 		var update_layout = {
-			height: 750,
-			width: 1100,
+			height: window.innerHeight * 0.7,
+			width: window.innerWidth * 0.5,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
@@ -155,7 +159,6 @@ var vue_instance = {
 			this.mouse_x = this.mouse_x.toFixed(2)
 			this.mouse_y = this.mouse_y.toFixed(2)
 		},
-
 		set_draw_data(draw_type, flag) {
 			this.draw_type = draw_type
 			this.flag = flag
@@ -338,8 +341,8 @@ var vue_instance = {
 			var max_y = Math.ceil(Math.max(...line_lst[1]))
 			var min_y = Math.floor(Math.min(...line_lst[1]))
 
-			max_y = this.get_y_index(max_y)
-			min_y = this.get_y_index(min_y)
+			max_y = this.get_y_index(max_y, 'max')
+			min_y = this.get_y_index(min_y, 'min')
 
 			var x_lst = []
 
@@ -387,11 +390,14 @@ var vue_instance = {
 			// 	return obj['flag'] === flag
 			// })[0]
 
+			
 			var box = this.layout.shapes[2]
-			var max_x = this.get_x_index(parseInt(box['x1'], 10), 'max')
-			var min_x = this.get_x_index(box['x0'], 'min')
-			var min_y = this.get_y_index(box['y0'])
-			var max_y = this.get_y_index(box['y1'])
+			var x_lst = [parseInt(box['x1'], 10), box['x0']]
+			var y_lst = [box['y0'], box['y1']]
+			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
+			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
+			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
+			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
 			
 			var DCI_data = []
 			
@@ -403,10 +409,16 @@ var vue_instance = {
 			return DCI_data
 		},
 
-		get_y_index(y) {
+		get_y_index(y, type) {
 			for(var i=0; i<this.catheter_scale.length; i++) {
 				if(this.catheter_scale[i] <= y) {
-					return i
+					if(type == 'max') {
+						return i-1
+					}
+					else {
+						return i
+					}
+					
 				}
 			}
 		},

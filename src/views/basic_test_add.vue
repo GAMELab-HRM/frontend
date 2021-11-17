@@ -54,11 +54,11 @@
 				</el-col>
 			</el-row>
 			<el-row>
-				<el-col :span="10">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last'/>
+				<el-col :span="14">
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' />
 				</el-col>
-				<el-col :span="7" :offset='7'>
-					<div style="margin-top: 100px">
+				<el-col :span="7" :offset='3'>
+					<div style="margin-top: 50px">
 						<h2>繪圖工具</h2>
 						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI')"  :disabled="MRS_DCI_disable" >MRS DCI</el-button >
 						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI_after_MRS')" :disabled='MRS_DCI_after_MRS_disable'>MRS DCI after MRS</el-button>
@@ -71,8 +71,14 @@
 						</el-col>
 						<el-col :span="5" :offset="2">
 							<el-button type="danger" class="draw_btn" @click="clear_all('MRS')" :disabled='MRS_DCI_disable==false&&MRS_DCI_after_MRS_disable==false&&MRS_IRP_disable== false'>Clear all</el-button>
-							{{ MRS_DCI }}
-							{{ MRS_DCI_after_MRS }}
+						</el-col>
+					</el-row>
+					<el-row style="margin-top: 30px">
+						<el-col :span="12" :offset="6">
+							<el-table :data='MRS_draw_data' style="width: 100%">
+								<el-table-column prop="flag" label="參數"/>
+								<el-table-column prop="value"  label="值"/>
+							</el-table>
 						</el-col>
 					</el-row>
 				</el-col>
@@ -199,7 +205,19 @@ export default {
 			MRS_DCI: 0,
 			MRS_DCI_after_MRS: 0,
 			MRS_IRP: 0,
-
+			MRS_draw_data: [
+			{
+				flag: 'MRS DCI',
+				value: 0
+			}, 
+			{
+				flag: 'MRS DCI after MRS',
+				value: 0
+			},
+			{
+				flag: 'MRS IRP4',
+				value: 0
+			}],
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -418,17 +436,30 @@ export default {
 		get_DCI(obj) {
 			if(obj['flag']=='MRS_DCI') {
 				this.MRS_DCI = obj['DCI']
+				this.MRS_draw_data[0]['value'] = this.MRS_DCI
 			}
 			if(obj['flag']=='MRS_DCI_after_MRS') {
 				this.MRS_DCI_after_MRS = obj['DCI']
+				this.MRS_draw_data[1]['value'] = this.MRS_DCI_after_MRS
 			}
 		},
 		clear_all(test) {
 			this.$refs.MRS_draw.clear_all()
 			if(test == 'MRS') {
+				// MRS DCI
 				this.MRS_DCI = 0
+				this.MRS_draw_data[0]['value'] = this.MRS_DCI
 				this.MRS_DCI_after_MRS = 0
+
+				// MRS DCI_after_MRS
+				this.MRS_DCI_after_MRS = 0
+				this.MRS_draw_data[1]['value'] = this.MRS_DCI_after_MRS
+				
+				// MRS IRP
 				this.MRS_IRP = 0
+				this.MRS_draw_data[2]['value'] = this.MRS_IRP
+
+				// draw btn disable
 				this.MRS_DCI_disable = false
 				this.MRS_DCI_after_MRS_disable = false
 				this.MRS_IRP_disable = false
@@ -437,14 +468,17 @@ export default {
 		clear_last(flag) {
 			if(flag == 'MRS_DCI') {
 				this.MRS_DCI = 0
+				this.MRS_draw_data[0]['value'] = this.MRS_DCI
 				this.MRS_DCI_disable = false
 			}
 			else if(flag=='MRS_DCI_after_MRS') {
 				this.MRS_DCI_after_MRS = 0
+				this.MRS_draw_data[1]['value'] = this.MRS_DCI_after_MRS
 				this.MRS_DCI_after_MRS_disable = false
 			}
 			else if(flag == 'MRS_IRP') {
 				this.MRS_IRP = 0
+				this.MRS_draw_data[2]['value'] = this.MRS_IRP
 				this.MRS_IRP_disable = false
 			}
 		},
