@@ -15,7 +15,7 @@
 
 
 import VuePlotly from "@statnett/vue-plotly";
-
+import {initial_line} from '@/utils/metrics_poly'
 
 window.VuePlotly = VuePlotly;
 
@@ -38,6 +38,15 @@ var vue_instance = {
 			box_first_point: false,
 			flag: '',
 			draw_type:'',
+			MRS_mapping_flag: {
+				'MRS_TZ': 3,
+				'MRS_LES_upper': 4,
+				'MRS_LES_lower': 5,
+				"MRS_DCI_left": 6,
+				'MRS_DCI_right': 7,
+				'MRS_IRP_left': 8,
+				'MRS_IRP_right': 9
+			},
 			data: [{
 				z: this.raw_data,
 				x: this.time_scale,
@@ -50,8 +59,8 @@ var vue_instance = {
 					color: 'black',
 				},
 				colorscale:"Jet",
-				// hoverinfo: 'none',
-			}],
+				hoverinfo: 'none',
+			}, ],
 			layout: {
 				title: '',
 				shapes:[{
@@ -95,7 +104,32 @@ var vue_instance = {
 					},
 					flag: 'box',
 					draw_type: 'box',
-				}]
+				}, 
+
+					// 如果只是 '{}' 做初始化的話，plotly會自動補上黑色長方形的圖(WTF)
+					// 改成dict會更新資料很麻煩(且噴一堆錯)所以先暫時這樣
+
+					// for TZ
+					initial_line,
+
+					//for LES upper
+					initial_line,
+
+					//for Les lower
+					initial_line,
+
+					//for DCI left
+					initial_line,
+
+					//for DCI right
+					initial_line,
+
+					//for IRP left
+					initial_line,
+
+					//for IRP right
+					initial_line,
+				]
 			},
 			options: {
 				modeBarButtonsToRemove: [
@@ -167,7 +201,28 @@ var vue_instance = {
 			this.draw_type = draw_type
 			this.flag = flag
 		},
-
+		add_line_title() {
+			var offset = 0
+			if(this.flag.length > 6) {
+				offset = 3
+			}
+			else {
+				offset = 2
+			}
+			var new_line_title={
+				x: [offset],
+				y: [this.mouse_y-1],
+				mode: 'text',
+				text: [this.flag.slice(4, this.flag.length)],
+				showlegend: false,
+				hoverinfo: 'none',
+				textfont: {
+					color: "white",
+					size: 20,
+				}
+			}
+			this.$refs.plotly.addTraces(new_line_title)
+		},
 		click_handler() {
 			if(this.draw_type == 'vertical') {
 				this.draw_vertical()
@@ -207,13 +262,17 @@ var vue_instance = {
 					width: 3,
 					dash: 'solid'
 				},
-				flag: 'horizontal',
+				draw_type: 'horizontal',
+				flag: this.flag,
 			}
-			this.layout.shapes.push(new_line)
-			this.horizontal_count += 1
-			if(this.horizontal_count == 2) {
-				// this.reset_click_set()
-			}
+			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+			this.$refs.plotly.relayout(this.layout)
+			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.add_line_title()
+			this.draw_type=''
+			this.flag = ''
+			
+			
 		},
 		draw_vertical() {
 			var new_line = {
@@ -227,7 +286,8 @@ var vue_instance = {
 					width: 3,
 					dash: 'solid'
 				},
-				flag: 'vertical',
+				draw_type: 'vertical',
+				flag: this.flag,
 			}
 			this.layout.shapes.push(new_line)
 			this.vertical_count += 1

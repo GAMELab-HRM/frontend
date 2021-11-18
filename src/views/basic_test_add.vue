@@ -53,7 +53,7 @@
 					</h1>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="primary" @click="draw_rerender+=1,clear_all('MRS', true)" icon='el-icon-refresh' style="margin-top: 60%">Refresh Contour plots</el-button>
+					<el-button type="primary" @click="draw_rerender+=1,clear_all('MRS', true)" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>
 			</el-row>
 			<el-row>
@@ -63,9 +63,10 @@
 				<el-col :span="7" :offset='3'>
 					<div style="margin-top: 50px">
 						<h2>繪圖工具</h2>
-						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI')"  :disabled="MRS_DCI_disable" >MRS DCI</el-button >
-						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_DCI_after_MRS')" :disabled='MRS_DCI_after_MRS_disable'>MRS DCI after MRS</el-button>
-						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn('MRS_IRP')" :disabled='MRS_IRP_disable'>MRS IRP4</el-button>
+
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn(draw_type='horizontal', metrics='MRS_TZ')"  :disabled="MRS_disable['MRS_TZ']" >Time Zone</el-button >
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn(draw_type='horizontal', metrics='MRS_LES_upper')" :disabled="MRS_disable['MRS_LES_upper']">LES upper</el-button>
+						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn(draw_type='horizontal', metrics='MRS_LES_lower')" :disabled="MRS_disable['MRS_LES_lower']">LES lower</el-button>
 						<br>
 					</div>
 					<el-row style="margin-top: 30px">
@@ -77,7 +78,7 @@
 						</el-col>
 					</el-row>
 					<el-row style="margin-top: 30px">
-						<el-col :span="12" :offset="6">
+						<el-col :span="16" :offset="4">
 							<el-table :data='MRS_draw_data' style="width: 100%">
 								<el-table-column prop="flag" label="參數"/>
 								<el-table-column prop="value"  label="值"/>
@@ -202,6 +203,16 @@ export default {
 			draw_obj_lst: [],
 			catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
 			time_scale: [],
+			MRS_disable: {
+				'MRS_TZ': false,
+				'MRS_LES_upper': false,
+				'MRS_LES_lower': false,
+				'MRS_DCI_left': false,
+				'MRS_DCI_right': false,
+				'MRS_IRP_left': false,
+				'MRS_IRP_right': false,
+			},
+
 			MRS_DCI_disable: false,
 			MRS_DCI_after_MRS_disable: false,
 			MRS_IRP_disable: false,
@@ -458,19 +469,12 @@ export default {
 			}
 		},
 
-		MRS_draw_btn(draw_type) {
-			this.$refs.MRS_draw.set_draw_data('box', draw_type)
+		MRS_draw_btn(draw_type, metrics) {
+			this.$refs.MRS_draw.set_draw_data(draw_type, metrics)
 		},
 		mrs_update_draw_btn(obj) {
-			if(obj['flag']=='MRS_DCI') {
-				this.MRS_DCI_disable = obj['status']
-			}
-			if(obj['flag']=='MRS_DCI_after_MRS') {
-				this.MRS_DCI_after_MRS_disable = obj['status']
-			}
-			if(obj['flag']=='MRS_IRP') {
-				this.MRS_IRP_disable = obj['status']
-			}
+			this.MRS_disable[obj['flag']] = obj['status']
+
 		},
 		get_DCI(obj) {
 			if(obj['flag']=='MRS_DCI') {
@@ -568,9 +572,5 @@ export default {
 	margin-bottom: 50px
 }
 
-.draw_btn {
-	padding: 45px 25px 45px 25px;
-
-}
 
 </style>
