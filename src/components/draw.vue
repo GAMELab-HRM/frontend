@@ -365,6 +365,25 @@ var vue_instance = {
 			this.layout.shapes[0].y1 = this.mouse_y
 		},
 		hover_vertical() {
+			var new_y0 = 0
+			var new_y1 = 0
+
+			if(this.flag.includes('DCI')) {
+				// TZ
+				new_y0 = this.layout.shapes[3].y0
+
+				// LES upper
+				new_y1 = this.layout.shapes[4].y0
+			}
+			else if(this.flag.includes('IRP')) {
+				// LES lower
+				new_y0 = this.layout.shapes[4].y0
+
+				// LES upper
+				new_y1 = this.layout.shapes[5].y0
+			}
+			this.layout.shapes[1].y0 = new_y0
+			this.layout.shapes[1].y1 = new_y1
 			this.layout.shapes[1].x0 = this.mouse_x
 			this.layout.shapes[1].x1 = this.mouse_x
 		},
