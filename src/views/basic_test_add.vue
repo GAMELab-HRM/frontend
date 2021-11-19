@@ -73,7 +73,7 @@
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled='draw_disable("MRS", scope.$index)'>標記</el-button>
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled='Object.values(MRS_disable)[scope.$index]'>標記</el-button>
 									<el-button type="danger" @click="delete_handler(scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
 								</template>
 							</el-table-column>
@@ -498,6 +498,20 @@ export default {
 		},
 		mrs_update_draw_btn(obj) {
 			this.MRS_disable[obj['flag']] = obj['status']
+			if(Object.keys(this.MRS_disable).slice(0, 3).includes(obj['flag'])) {
+				if(!Object.values(this.MRS_disable).slice(0, 3).includes(false)) {
+					this.MRS_disable['MRS_DCI_left'] = false
+					this.MRS_disable['MRS_DCI_right'] = false
+					this.MRS_disable['MRS_IRP_left'] = false
+					this.MRS_disable['MRS_IRP_right'] = false
+				}
+				else {
+					this.MRS_disable['MRS_DCI_left'] = true
+					this.MRS_disable['MRS_DCI_right'] = true
+					this.MRS_disable['MRS_IRP_left'] = true
+					this.MRS_disable['MRS_IRP_right'] = true
+				}
+			}
 		},
 		draw_handler(test, idx) {
 			var horizontal_lst = [0, 1, 2]
@@ -524,25 +538,7 @@ export default {
 			this.$refs.MRS_draw.clear_target(idx+3)
 			this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_disable)[idx])
 		},
-		draw_disable(test, idx) {
-			if(test == "MRS") {
-				var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
-				if(basic_horizontal) {
-					this.MRS_disable['MRS_DCI_left'] = false
-					this.MRS_disable['MRS_DCI_right'] = false
-					this.MRS_disable['MRS_IRP_left'] = false
-					this.MRS_disable['MRS_IRP_right'] = false
-				}
-				else {
-					this.MRS_disable['MRS_DCI_left'] = true
-					this.MRS_disable['MRS_DCI_right'] = true
-					this.MRS_disable['MRS_IRP_left'] = true
-					this.MRS_disable['MRS_IRP_right'] = true
-				}
-				return Object.values(this.MRS_disable)[idx]
-			}
-			
-		},
+		
 		delete_disable(test, idx) {
 			if(test == "MRS") {
 				var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)

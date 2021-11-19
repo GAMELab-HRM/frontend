@@ -281,16 +281,32 @@ var vue_instance = {
 			this.add_line_title()
 			this.draw_type=''
 			this.flag = ''
-			
-			
 		},
 		draw_vertical() {
+			var new_y0 = 0
+			var new_y1 = 0
+
+			if(this.flag.includes('DCI')) {
+				// TZ
+				new_y0 = this.layout.shapes[3].y0
+
+				// LES upper
+				new_y1 = this.layout.shapes[4].y0
+			}
+			else if(this.flag.includes('IRP')) {
+				// LES lower
+				new_y0 = this.layout.shapes[4].y0
+
+				// LES upper
+				new_y1 = this.layout.shapes[5].y0
+			}
+			
 			var new_line = {
 				type: 'line',
 				x0: this.mouse_x,
-				y0: 0,
+				y0: new_y0,
 				x1: this.mouse_x,
-				y1: Math.max(...this.catheter_scale),
+				y1: new_y1,
 				line: {
 					color: 'rgb(255, 255, 255)',
 					width: 3,
@@ -299,11 +315,12 @@ var vue_instance = {
 				draw_type: 'vertical',
 				flag: this.flag,
 			}
-			this.layout.shapes.push(new_line)
-			this.vertical_count += 1
-			if(this.vertical_count == 2) {
-				// this.reset_click_set()
-			}
+
+			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+			this.$refs.plotly.relayout(this.layout)
+			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.draw_type=''
+			this.flag = ''
 		},
 		draw_box_first() {
 			this.layout.shapes[2].x0 = this.mouse_x
