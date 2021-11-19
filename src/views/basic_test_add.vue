@@ -535,7 +535,26 @@ export default {
 			}
 		},
 		delete_handler(idx) {
-			this.$refs.MRS_draw.clear_target(idx+3)
+			var idx_lst = [idx]
+
+			//  delete TZ
+			if(idx == 0) {
+				idx_lst = [0, 3, 4]
+			}
+			// delete LES upper
+			else if(idx == 1) {
+				idx_lst = [1, 3, 4, 5, 6]
+			}
+			// delete LES lower
+			else if (idx == 2) {
+				idx_lst = [2, 5, 6]
+			}
+
+			idx_lst = idx_lst.map(function(val) {
+				return val + 3
+			})
+
+			this.$refs.MRS_draw.clear_target(idx_lst)
 			this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_disable)[idx])
 		},
 		

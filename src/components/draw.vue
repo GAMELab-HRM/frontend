@@ -390,9 +390,12 @@ var vue_instance = {
 				this.layout.shapes[2].y1 = 0
 			}
 		},
-		clear_target(idx) {
-			var flag = this.layout.shapes[idx]['flag']
-			this.layout.shapes[idx] = initial_line
+		clear_target(idx_lst) {
+			var flag = this.layout.shapes[idx_lst[0]]['flag']
+			for(var i=0; i<idx_lst.length; i++) {
+				this.layout.shapes[idx_lst[i]] = initial_line
+			}
+			
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': flag, 'status': false})
 		},
