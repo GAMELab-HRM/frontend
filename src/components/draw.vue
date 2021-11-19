@@ -60,6 +60,7 @@ var vue_instance = {
 				},
 				colorscale:"Jet",
 				hoverinfo: 'none',
+				flag: 'contour',
 			}, ],
 			layout: {
 				title: '',
@@ -219,9 +220,18 @@ var vue_instance = {
 				textfont: {
 					color: "white",
 					size: 20,
-				}
+				},
+				flag: this.flag,
 			}
 			this.$refs.plotly.addTraces(new_line_title)
+		},
+		delete_line_title(flag) {
+			for(var i=0; i<this.data.length; i++) {
+				if(this.data[i].flag == flag) {
+					this.$refs.plotly.deleteTraces(i)
+					return
+				}
+			}
 		},
 		click_handler() {
 			if(this.draw_type == 'vertical') {
@@ -362,6 +372,12 @@ var vue_instance = {
 				this.layout.shapes[2].x1 = 0
 				this.layout.shapes[2].y1 = 0
 			}
+		},
+		clear_target(idx) {
+			var flag = this.layout.shapes[idx]['flag']
+			this.layout.shapes[idx] = initial_line
+			this.$refs.plotly.relayout(this.layout)
+			this.$emit('update_draw_btn_status', {'flag': flag, 'status': false})
 		},
 		clear_all() {
 			this.layout.shapes.splice(3, this.layout.shapes.length-2)

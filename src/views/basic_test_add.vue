@@ -68,6 +68,16 @@
 						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn(draw_type='horizontal', metrics='MRS_LES_upper')" :disabled="MRS_disable['MRS_LES_upper']">LES upper</el-button>
 						<el-button type="primary" class="draw_btn" @click="MRS_draw_btn(draw_type='horizontal', metrics='MRS_LES_lower')" :disabled="MRS_disable['MRS_LES_lower']">LES lower</el-button>
 						<br>
+
+						<el-table :data='MRS_metrics_table_data' style="width: 80%">
+							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column label='Operation'>
+								<template slot-scope="scope">
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled='draw_disable("MRS", scope.$index)'>標記</el-button>
+									<el-button type="danger" @click="delete_handler(scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
 					</div>
 					<el-row style="margin-top: 30px">
 						<el-col :span="5" :offset="6">
@@ -207,12 +217,26 @@ export default {
 				'MRS_TZ': false,
 				'MRS_LES_upper': false,
 				'MRS_LES_lower': false,
-				'MRS_DCI_left': false,
-				'MRS_DCI_right': false,
-				'MRS_IRP_left': false,
-				'MRS_IRP_right': false,
+				'MRS_DCI_left': true,
+				'MRS_DCI_right': true,
+				'MRS_IRP_left': true,
+				'MRS_IRP_right': true,
 			},
-
+			MRS_metrics_table_data:[{
+				'metrics': 'Time Zone'
+			},{
+				'metrics': 'LES upper line'
+			}, {
+				'metrics': 'LES lower line'
+			}, {
+				'metrics': 'DCI left line'
+			}, {
+				'metrics': 'DCI right line'
+			}, {
+				'metrics': 'IRP left line'
+			}, {
+				'metrics': 'IRP right line'
+			}],
 			MRS_DCI_disable: false,
 			MRS_DCI_after_MRS_disable: false,
 			MRS_IRP_disable: false,
@@ -265,7 +289,7 @@ export default {
 		// 繪圖initial data
 		this.draw_obj_lst = str_data['rawdata']
 		// 預設繪製 mrs subtest1
-		this.set_draw_data(this.draw_obj_lst, 0)
+		this.set_contour_data(this.draw_obj_lst, 0)
 
 		// 因為要先確認有幾個mrs_subtest所以放這裡
 		var mrs_subtest_num = JSON.parse(this.draw_obj_lst).length;
@@ -430,7 +454,7 @@ export default {
 		// }
 
 		// set new raw data to draw
-		set_draw_data(obj_lst, idx) {
+		set_contour_data(obj_lst, idx) {
 			this.raw_data = JSON.parse(obj_lst)[idx]
 			// 不知道為啥，但他的y軸會突出去，所以先-1 
 			this.x_size = this.raw_data[0].length - 1
@@ -446,7 +470,7 @@ export default {
 		mrs_subtest_selected_update() {
 			// this.$refs.MRS_draw.get_current_polys()
 
-			this.set_draw_data(this.draw_obj_lst, this.mrs_subtest-1)
+			this.set_contour_data(this.draw_obj_lst, this.mrs_subtest-1)
 			this.draw_rerender += 1
 
 			// rerender draw table data 
@@ -474,7 +498,66 @@ export default {
 		},
 		mrs_update_draw_btn(obj) {
 			this.MRS_disable[obj['flag']] = obj['status']
+		},
+		draw_handler(test, idx) {
+			var horizontal_lst = [0, 1, 2]
+			var vertical_lst = [3, 4, 5, 6]
+			// var box = []
+			var draw_type = ''
 
+			if(horizontal_lst.includes(idx)) {
+				draw_type = 'horizontal'
+			}
+			else if(vertical_lst.includes(idx)) {
+				draw_type = 'vertical'
+			}
+			else {
+				draw_type = 'box'
+			}
+			
+			if(test=='MRS') {
+				var metrics = Object.keys(this.MRS_disable)[idx]
+				this.$refs.MRS_draw.set_draw_data(draw_type, metrics)
+			}
+		},
+		delete_handler(idx) {
+			this.$refs.MRS_draw.clear_target(idx+3)
+			this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_disable)[idx])
+		},
+		draw_disable(test, idx) {
+			if(test == "MRS") {
+				var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
+				if(basic_horizontal) {
+					this.MRS_disable['MRS_DCI_left'] = false
+					this.MRS_disable['MRS_DCI_right'] = false
+					this.MRS_disable['MRS_IRP_left'] = false
+					this.MRS_disable['MRS_IRP_right'] = false
+				}
+				else {
+					this.MRS_disable['MRS_DCI_left'] = true
+					this.MRS_disable['MRS_DCI_right'] = true
+					this.MRS_disable['MRS_IRP_left'] = true
+					this.MRS_disable['MRS_IRP_right'] = true
+				}
+				return Object.values(this.MRS_disable)[idx]
+			}
+			
+		},
+		delete_disable(test, idx) {
+			if(test == "MRS") {
+				var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
+				if(idx<3) {
+					return !Object.values(this.MRS_disable)[idx]
+				}
+				else if(basic_horizontal) {
+					return !Object.values(this.MRS_disable)[idx]
+				}
+				else {
+					return true
+				}
+			}
+				
+			
 		},
 		get_DCI(obj) {
 			if(obj['flag']=='MRS_DCI') {
