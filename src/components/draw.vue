@@ -287,6 +287,7 @@ var vue_instance = {
 			}
 		},
 		draw_horizontal() {
+			console.log('draw', this.flag)
 			var new_line = {
 				type: 'line',
 				x0: 0,
@@ -321,7 +322,7 @@ var vue_instance = {
 			}
 
 			this.$refs.plotly.relayout(this.layout)
-			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
 			this.add_line_title()
 			this.draw_type=''
 			this.flag = ''

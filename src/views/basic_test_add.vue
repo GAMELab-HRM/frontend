@@ -499,17 +499,11 @@ export default {
 		mrs_update_draw_btn(obj) {
 			this.MRS_disable[obj['flag']] = obj['status']
 			if(Object.keys(this.MRS_disable).slice(0, 3).includes(obj['flag'])) {
-				if(!Object.values(this.MRS_disable).slice(0, 3).includes(false)) {
+				if(!Object.values(this.MRS_disable).slice(0, 3).includes(false) && !obj['rehorizontal']) {
 					this.MRS_disable['MRS_DCI_left'] = false
 					this.MRS_disable['MRS_DCI_right'] = false
 					this.MRS_disable['MRS_IRP_left'] = false
 					this.MRS_disable['MRS_IRP_right'] = false
-				}
-				else {
-					this.MRS_disable['MRS_DCI_left'] = true
-					this.MRS_disable['MRS_DCI_right'] = true
-					this.MRS_disable['MRS_IRP_left'] = true
-					this.MRS_disable['MRS_IRP_right'] = true
 				}
 			}
 		},
@@ -539,15 +533,23 @@ export default {
 
 			//  delete TZ
 			if(idx == 0) {
-				idx_lst = [0, 3, 4]
+				idx_lst.push(3, 4)
+				this.MRS_disable['MRS_DCI_left'] = true
+				this.MRS_disable['MRS_DCI_right'] = true
 			}
 			// delete LES upper
 			else if(idx == 1) {
-				idx_lst = [1, 3, 4, 5, 6]
+				idx_lst.push(3, 4, 5, 6)
+				this.MRS_disable['MRS_DCI_left'] = true
+				this.MRS_disable['MRS_DCI_right'] = true
+				this.MRS_disable['MRS_IRP_left'] = true
+				this.MRS_disable['MRS_IRP_right'] = true
 			}
 			// delete LES lower
 			else if (idx == 2) {
-				idx_lst = [2, 5, 6]
+				idx_lst.push(5, 6)
+				this.MRS_disable['MRS_IRP_left'] = true
+				this.MRS_disable['MRS_IRP_right'] = true
 			}
 
 			idx_lst = idx_lst.map(function(val) {
