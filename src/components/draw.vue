@@ -38,6 +38,7 @@ var vue_instance = {
 			box_first_point: false,
 			flag: '',
 			draw_type:'',
+			rehorizontal: false,
 			MRS_mapping_flag: {
 				'MRS_TZ': 3,
 				'MRS_LES_upper': 4,
@@ -108,7 +109,7 @@ var vue_instance = {
 				}, 
 
 					// 如果只是 '{}' 做初始化的話，plotly會自動補上黑色長方形的圖(WTF)
-					// 改成dict會更新資料很麻煩(且噴一堆錯)所以先暫時這樣
+					// 改成dict更新資料會很麻煩(且噴一堆錯)所以先暫時這樣
 
 					// for TZ
 					initial_line,
@@ -195,8 +196,8 @@ var vue_instance = {
 			let bb = evt.target.getBoundingClientRect()
 			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
 			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
-			this.mouse_x = this.mouse_x.toFixed(2)
-			this.mouse_y = this.mouse_y.toFixed(2)
+			this.mouse_x = parseFloat(this.mouse_x.toFixed(2))
+			this.mouse_y = parseFloat(this.mouse_y.toFixed(2))
 		},
 		set_draw_data(draw_type, flag) {
 			this.draw_type = draw_type
@@ -246,12 +247,13 @@ var vue_instance = {
 
 			// for horizontal line (TZ, LES upper、lower)
 			for(i=5; i>2; i--) {
-				if(this.mouse_x >= this.layout.shapes[i].x0 && this.mouse_x <= this.layout.shapes[i].x1 && this.mouse_y >= this.layout.shapes[i].y0 - 0.1 && this.mouse_y <= this.layout.shapes[i].y1 + 0.1) {
+				if(this.mouse_x >= this.layout.shapes[i].x0 && this.mouse_x <= this.layout.shapes[i].x1 && this.mouse_y >= this.layout.shapes[i].y0-0.1 && this.mouse_y <= this.layout.shapes[i].y1+0.1) {
 					this.flag = this.layout.shapes[i]['flag']
 					this.draw_type = this.layout.shapes[i]['draw_type']
 					console.log(this.mouse_x, this.mouse_y, this.flag)
 					this.delete_line_title(this.flag)
 					this.clear_target([i])
+					this.rehorizontal = true
 					
 					return
 				}
@@ -300,11 +302,31 @@ var vue_instance = {
 				flag: this.flag,
 			}
 			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+
+			if(this.rehorizontal) {
+				if(this.flag == 'MRS_TZ') {
+					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_left']].y0 = this.mouse_y
+					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_right']].y0 = this.mouse_y
+				}
+				else if(this.flag == 'MRS_LES_upper') {
+					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_left']].y1 = this.mouse_y
+					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_right']].y1 = this.mouse_y
+					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_left']].y0 = this.mouse_y
+					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_right']].y0 = this.mouse_y
+				}
+				else if(this.flag == 'MRS_LES_lower') {
+					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_left']].y1 = this.mouse_y
+					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_right']].y1 = this.mouse_y
+				}
+			}
+
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.add_line_title()
 			this.draw_type=''
 			this.flag = ''
+			this.rehorizontal = false
+			console.log(this.layout.shapes[3])
 		},
 		draw_vertical() {
 			var new_y0 = 0
