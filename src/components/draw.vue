@@ -39,6 +39,8 @@ var vue_instance = {
 			flag: '',
 			draw_type:'',
 			rehorizontal: false,
+			DCI_computable: false,
+			IRP_computable: false,
 			MRS_mapping_flag: {
 				'MRS_TZ': 3,
 				'MRS_LES_upper': 4,
@@ -250,7 +252,6 @@ var vue_instance = {
 				if(this.mouse_x >= this.layout.shapes[i].x0 && this.mouse_x <= this.layout.shapes[i].x1 && this.mouse_y >= this.layout.shapes[i].y0-0.1 && this.mouse_y <= this.layout.shapes[i].y1+0.1) {
 					this.flag = this.layout.shapes[i]['flag']
 					this.draw_type = this.layout.shapes[i]['draw_type']
-					console.log(this.mouse_x, this.mouse_y, this.flag)
 					this.delete_line_title(this.flag)
 					this.clear_target([i])
 					this.rehorizontal = true
@@ -287,7 +288,6 @@ var vue_instance = {
 			}
 		},
 		draw_horizontal() {
-			console.log('draw', this.flag)
 			var new_line = {
 				type: 'line',
 				x0: 0,
@@ -301,6 +301,7 @@ var vue_instance = {
 				},
 				draw_type: 'horizontal',
 				flag: this.flag,
+				is_draw: true,
 			}
 			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
 
@@ -324,10 +325,15 @@ var vue_instance = {
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
 			this.add_line_title()
+			if(this.DCI_computable) {
+				var temp = this.compute_DCI()
+				console.log(temp)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+			}
+			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
 			this.flag = ''
 			this.rehorizontal = false
-			console.log(this.layout.shapes[3])
 		},
 		draw_vertical() {
 			var new_y0 = 0
@@ -361,11 +367,18 @@ var vue_instance = {
 				},
 				draw_type: 'vertical',
 				flag: this.flag,
+				is_draw: true,
 			}
 
 			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			if(this.DCI_computable) {
+				var temp = this.compute_DCI()
+				console.log(temp)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+			}
+			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
 			this.flag = ''
 		},
@@ -395,6 +408,7 @@ var vue_instance = {
 				},
 				flag: this.flag,
 				draw_type: 'box',
+				is_draw: true,
 			}
 			this.layout.shapes.push(new_box)
 			this.$refs.plotly.relayout(this.layout)
@@ -408,6 +422,11 @@ var vue_instance = {
 			this.get_current_polys()
 		},
 		hover_horizontal() {
+			if(this.DCI_computable) {
+				var temp = this.compute_DCI()
+				console.log(temp)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+			}
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
 		},
@@ -428,6 +447,11 @@ var vue_instance = {
 
 				// LES upper
 				new_y1 = this.layout.shapes[5].y0
+			}
+			if(this.DCI_computable) {
+				var temp = this.compute_DCI()
+				console.log(temp)
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
 			}
 			this.layout.shapes[1].y0 = new_y0
 			this.layout.shapes[1].y1 = new_y1
@@ -489,6 +513,33 @@ var vue_instance = {
 		get_current_polys() {
 			this.$emit('get_polys', this.layout.shapes.slice(3, this.layout.shapes.length))
 		},
+
+		check_metrics_computable(metric) {
+			var DCI_line_idx = [3, 4, 6, 7]
+			// var IRP_line_idx = [4, 5, 8, 9]
+			var current_line_idx = this.MRS_mapping_flag[this.flag]
+
+			if(metric == 'DCI') {
+				if(DCI_line_idx.includes(current_line_idx)) {
+					var temp = []
+					for(var i=0; i<DCI_line_idx.length; i++) {
+						if(DCI_line_idx[i] != current_line_idx) {
+							temp.push(this.layout.shapes[DCI_line_idx[i]]['is_draw'])
+						}
+					}
+
+					temp = temp.filter(function(val) {
+						return val == false
+					})
+					if(temp.length == 1 || temp.length == 0) {
+						return true
+					}
+					return false
+				}
+			}
+
+		},
+
 		compute_4IRP() {
 			var IRP_raw_data = this.get_raw_data_4IRP()
 			console.log(IRP_raw_data)
@@ -559,20 +610,39 @@ var vue_instance = {
 			// var box = pic_lst.filter(function(obj){
 			// 	return obj['flag'] === flag
 			// })[0]
+			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
+			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
+			var x_lst = []
+			var y_lst = []
 
-			
-			var box = this.layout.shapes[2]
-			var x_lst = [parseInt(box['x1'], 10), box['x0']]
-			var y_lst = [box['y0'], box['y1']]
+			for(var i=0; i<x_line_lst.length; i++) {
+				if(this.flag == x_line_lst[i]) {
+					x_lst.push(this.mouse_x)
+				}
+				else {
+					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
+				}
+
+				if(this.flag == y_line_lst[i]) {
+					y_lst.push(this.mouse_y)
+				}
+				else {
+					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
+				}
+			}
+
+			// max_x、min_x、max_y、min_y 皆為catheter scale 的 index
 			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
 			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
-			
+
+			console.log(max_x, max_y, min_x, min_y)
+
 			var DCI_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
-			for(var i=max_y; i<=min_y; i+=1) {
+			for(i=max_y; i<=min_y; i+=1) {
 				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
 			// console.log('DCI', DCI_data)

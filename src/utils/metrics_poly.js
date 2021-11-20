@@ -9,4 +9,5 @@ export let initial_line = {
         width: 3,
         dash: 'solid'
     },
+    is_draw: false,
 }
