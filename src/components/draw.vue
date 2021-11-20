@@ -234,6 +234,30 @@ var vue_instance = {
 			}
 		},
 		click_handler() {
+			// for vertical line (DCI left、right, IRP left、right)
+			for(var i=this.layout.shapes.length-1; i>5; i--) {
+				if(this.mouse_x >= this.layout.shapes[i].x0 - 0.5 && this.mouse_x <= this.layout.shapes[i].x1 + 0.5 && this.mouse_y >= this.layout.shapes[i].y0 - 0.1 && this.mouse_y <= this.layout.shapes[i].y1 + 0.1) {
+					this.flag = this.layout.shapes[i]['flag']
+					this.draw_type = this.layout.shapes[i]['draw_type']
+					this.clear_target([i])
+					return
+				}
+			}
+
+			// for horizontal line (TZ, LES upper、lower)
+			for(i=5; i>2; i--) {
+				if(this.mouse_x >= this.layout.shapes[i].x0 && this.mouse_x <= this.layout.shapes[i].x1 && this.mouse_y >= this.layout.shapes[i].y0 - 0.1 && this.mouse_y <= this.layout.shapes[i].y1 + 0.1) {
+					this.flag = this.layout.shapes[i]['flag']
+					this.draw_type = this.layout.shapes[i]['draw_type']
+					console.log(this.mouse_x, this.mouse_y, this.flag)
+					this.delete_line_title(this.flag)
+					this.clear_target([i])
+					
+					return
+				}
+			}
+			
+			
 			if(this.draw_type == 'vertical') {
 				this.draw_vertical()
 			}
@@ -397,7 +421,6 @@ var vue_instance = {
 			}
 		},
 		leave_handler() {
-			console.log('leave handler')
 			this.layout.shapes[0].y0 = 0
 			this.layout.shapes[0].y1 = 0
 			this.layout.shapes[1].x0 = 0
