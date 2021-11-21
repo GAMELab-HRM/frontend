@@ -255,6 +255,8 @@ export default {
 				flag: 'MRS IRP4',
 				value: 0
 			}],
+			// param delete disable
+			ini_delete: true,
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -529,27 +531,28 @@ export default {
 			}
 		},
 		delete_handler(idx) {
+			this.ini_delete = false
 			var idx_lst = [idx]
 
-			//  delete TZ
-			if(idx == 0) {
-				idx_lst.push(3, 4)
-				this.MRS_disable['MRS_DCI_left'] = true
-				this.MRS_disable['MRS_DCI_right'] = true
-			}
-			// delete LES upper
-			else if(idx == 1) {
-				idx_lst.push(3, 4, 5, 6)
+			if(idx == 0 || idx == 1 || idx == 2){
+				// force button update status
 				this.MRS_disable['MRS_DCI_left'] = true
 				this.MRS_disable['MRS_DCI_right'] = true
 				this.MRS_disable['MRS_IRP_left'] = true
 				this.MRS_disable['MRS_IRP_right'] = true
-			}
-			// delete LES lower
-			else if (idx == 2) {
-				idx_lst.push(5, 6)
-				this.MRS_disable['MRS_IRP_left'] = true
-				this.MRS_disable['MRS_IRP_right'] = true
+			
+				//  delete TZ
+				if(idx == 0) {
+					idx_lst.push(3, 4)
+				}
+				// delete LES upper
+				else if(idx == 1) {
+					idx_lst.push(3, 4, 5, 6)
+				}
+				// delete LES lower
+				else if (idx == 2) {
+					idx_lst.push(5, 6)
+				}
 			}
 
 			idx_lst = idx_lst.map(function(val) {
@@ -577,10 +580,24 @@ export default {
 				else {
 					return true
 				}
+
+				// var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
+				// if(idx<3) {
+				// 	return !Object.values(this.MRS_disable)[idx]
+				// }
+				// else {
+				// 	if(this.ini_delete) {
+				// 		return true
+				// 	}
+				// 	else {
+				// 		return !Object.values(this.MRS_disable)[idx]
+				// 	}
+				// }
 			}
-				
+			
 			
 		},
+		
 		get_DCI(obj) {
 			if(obj['flag'].includes('DCI') || obj['flag']=='MRS_TZ' || obj['flag']=='MRS_LES_upper') {
 				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = obj['DCI']
