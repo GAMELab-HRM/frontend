@@ -487,12 +487,25 @@ var vue_instance = {
 			this.$emit('update_draw_btn_status', {'flag': flag, 'status': false})
 		},
 		clear_all() {
-			this.layout.shapes.splice(3, this.layout.shapes.length-2)
-			this.$refs.plotly.relayout(this.layout)
+			var flags = Object.keys(this.MRS_mapping_flag)
+
+			for(var i=0; i<flags.length; i++) {
+				// horizontal line can draw but vertical line cant
+				if(i<3) {
+					this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': false})
+				}
+				else {
+					this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': true})
+				}
+				
+				// 0 1 2 for hover line
+				this.layout.shapes[i+3] = initial_line
+			}
+			// this.$refs.plotly.relayout(this.layout)
 			this.vertical_count = 0
 			this.horizontal_count = 0
 			this.box_count = 0
-			this.get_current_polys()
+			// this.get_current_polys()
 		},
 		clear_last() {
 			var delete_line = this.layout.shapes.splice(-1, 1)[0]
