@@ -256,7 +256,7 @@ export default {
 				value: 0
 			}],
 			// param delete disable
-			ini_delete: true,
+			ini: true,
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
@@ -510,6 +510,7 @@ export default {
 			}
 		},
 		draw_handler(test, idx) {
+			this.ini = false
 			var horizontal_lst = [0, 1, 2]
 			var vertical_lst = [3, 4, 5, 6]
 			// var box = []
@@ -531,7 +532,6 @@ export default {
 			}
 		},
 		delete_handler(idx) {
-			this.ini_delete = false
 			var idx_lst = [idx]
 
 			if(idx == 0 || idx == 1 || idx == 2){
@@ -569,30 +569,45 @@ export default {
 		},
 		
 		delete_disable(test, idx) {
-			if(test == "MRS") {
-				var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
-				if(idx<3) {
-					return !Object.values(this.MRS_disable)[idx]
-				}
-				else if(basic_horizontal) {
-					return !Object.values(this.MRS_disable)[idx]
+			// if(test == "MRS") {
+			// 	var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
+			// 	if(idx<3) {
+			// 		return !Object.values(this.MRS_disable)[idx]
+			// 	}
+			// 	else if(basic_horizontal) {
+			// 		return !Object.values(this.MRS_disable)[idx]
+			// 	}
+			// 	else {
+			// 		return true
+			// 	}
+
+			// 	// var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
+			// 	// if(idx<3) {
+			// 	// 	return !Object.values(this.MRS_disable)[idx]
+			// 	// }
+			// 	// else {
+			// 	// 	if(this.ini_delete) {
+			// 	// 		return true
+			// 	// 	}
+			// 	// 	else {
+			// 	// 		return !Object.values(this.MRS_disable)[idx]
+			// 	// 	}
+			// 	// }
+			// }
+			if(this.ini) {
+				return true
+			}
+			else {
+				var flags = Object.keys(this.MRS_disable)
+				var exist_lines = this.MRS_polys['MRS'+this.mrs_subtest.toString()].map(function(obj) {
+					return obj['flag']
+				})
+				if(exist_lines.includes(flags[idx])) {
+					return false
 				}
 				else {
 					return true
 				}
-
-				// var basic_horizontal = !Object.values(this.MRS_disable).slice(0, 3).includes(false)
-				// if(idx<3) {
-				// 	return !Object.values(this.MRS_disable)[idx]
-				// }
-				// else {
-				// 	if(this.ini_delete) {
-				// 		return true
-				// 	}
-				// 	else {
-				// 		return !Object.values(this.MRS_disable)[idx]
-				// 	}
-				// }
 			}
 			
 			
