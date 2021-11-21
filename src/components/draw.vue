@@ -188,7 +188,12 @@ var vue_instance = {
 		for(var i=0; i<this.polys.length; i++) {
 			this.$emit('update_draw_btn_status', {'flag': this.polys[i]['flag'], 'status': true})
 		}
-		this.layout.shapes = this.layout.shapes.concat(this.polys)
+		for(i=0; i<this.polys.length; i++) {
+			this.layout.shapes[this.MRS_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
+			if(this.polys[i]['draw_type'] == 'horizontal') {
+				this.add_line_title(this.polys[i]['flag'], this.polys[i]['y0'])
+			}
+		}
 		console.log('created')
 
 		this.$refs.plotly.relayout(update_layout)
@@ -205,9 +210,9 @@ var vue_instance = {
 			this.draw_type = draw_type
 			this.flag = flag
 		},
-		add_line_title() {
+		add_line_title(flag, line_y) {
 			var offset = 0
-			if(this.flag.length > 6) {
+			if(flag.length > 6) {
 				offset = 3
 			}
 			else {
@@ -215,16 +220,16 @@ var vue_instance = {
 			}
 			var new_line_title={
 				x: [offset],
-				y: [this.mouse_y-1],
+				y: [line_y-1],
 				mode: 'text',
-				text: [this.flag.slice(4, this.flag.length)],
+				text: [flag.slice(4, flag.length)],
 				showlegend: false,
 				hoverinfo: 'none',
 				textfont: {
 					color: "white",
 					size: 20,
 				},
-				flag: this.flag,
+				flag: flag,
 			}
 			this.$refs.plotly.addTraces(new_line_title)
 		},
@@ -324,7 +329,8 @@ var vue_instance = {
 
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
-			this.add_line_title()
+			this.add_line_title(this.flag, this.mouse_y)
+			this.get_current_polys()
 			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
@@ -371,6 +377,7 @@ var vue_instance = {
 			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.get_current_polys()
 			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
@@ -484,6 +491,7 @@ var vue_instance = {
 			}
 			
 			this.$refs.plotly.relayout(this.layout)
+			this.get_current_polys()
 			this.$emit('update_draw_btn_status', {'flag': flag, 'status': false})
 		},
 		clear_all() {
@@ -522,7 +530,11 @@ var vue_instance = {
 			this.get_current_polys()
 		},
 		get_current_polys() {
-			this.$emit('get_polys', this.layout.shapes.slice(3, this.layout.shapes.length))
+			var polys = this.layout.shapes.slice(3, this.layout.shapes.length)
+			polys = polys.filter(function(obj) {
+				return obj['is_draw'] == true
+			})
+			this.$emit('get_polys', polys)
 		},
 
 		check_metrics_computable(metric, current_flag) {
@@ -538,7 +550,7 @@ var vue_instance = {
 							temp.push(this.layout.shapes[DCI_line_idx[i]]['is_draw'])
 						}
 					}
-					console.log(temp, current_flag)
+
 					temp = temp.filter(function(val) {
 						return val == false
 					})
