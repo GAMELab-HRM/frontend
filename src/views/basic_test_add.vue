@@ -577,14 +577,14 @@ export default {
 			
 		},
 		get_DCI(obj) {
-			if(obj['flag']=='MRS_DCI') {
+			if(obj['flag'].includes('DCI')) {
 				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = obj['DCI']
 				this.MRS_draw_data[0]['value'] = obj['DCI']
 			}
-			if(obj['flag']=='MRS_DCI_after_MRS') {
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
-				this.MRS_draw_data[1]['value'] = obj['DCI']
-			}
+			// if(obj['flag']=='MRS_DCI_after_MRS') {
+			// 	this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
+			// 	this.MRS_draw_data[1]['value'] = obj['DCI']
+			// }
 		},
 		clear_all(test, if_clean_line) {
 			if(test == 'MRS') {

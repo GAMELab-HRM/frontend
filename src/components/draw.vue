@@ -326,9 +326,7 @@ var vue_instance = {
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
 			this.add_line_title()
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
@@ -374,9 +372,7 @@ var vue_instance = {
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
@@ -423,9 +419,7 @@ var vue_instance = {
 		},
 		hover_horizontal() {
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
@@ -449,9 +443,7 @@ var vue_instance = {
 				new_y1 = this.layout.shapes[5].y0
 			}
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.layout.shapes[1].y0 = new_y0
 			this.layout.shapes[1].y1 = new_y1
