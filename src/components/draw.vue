@@ -325,12 +325,10 @@ var vue_instance = {
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
 			this.add_line_title()
+			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
-			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
 			this.flag = ''
 			this.rehorizontal = false
@@ -373,12 +371,10 @@ var vue_instance = {
 			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
-			this.DCI_computable = this.check_metrics_computable('DCI')
 			this.draw_type=''
 			this.flag = ''
 		},
@@ -422,10 +418,9 @@ var vue_instance = {
 			this.get_current_polys()
 		},
 		hover_horizontal() {
+			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
@@ -448,10 +443,9 @@ var vue_instance = {
 				// LES upper
 				new_y1 = this.layout.shapes[5].y0
 			}
+			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
-				var temp = this.compute_DCI()
-				console.log(temp)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': temp})
+				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
 			this.layout.shapes[1].y0 = new_y0
 			this.layout.shapes[1].y1 = new_y1
@@ -482,6 +476,10 @@ var vue_instance = {
 		clear_target(idx_lst) {
 			var flag = this.layout.shapes[idx_lst[0]]['flag']
 			for(var i=0; i<idx_lst.length; i++) {
+				this.DCI_computable = this.check_metrics_computable('DCI', this.layout.shapes[idx_lst[i]]['flag'])
+				if(!this.DCI_computable) {
+					this.$emit("get_DCI", {'flag': this.flag, 'DCI': 0})
+				}
 				this.layout.shapes[idx_lst[i]] = initial_line
 			}
 			
@@ -514,10 +512,10 @@ var vue_instance = {
 			this.$emit('get_polys', this.layout.shapes.slice(3, this.layout.shapes.length))
 		},
 
-		check_metrics_computable(metric) {
+		check_metrics_computable(metric, current_flag) {
 			var DCI_line_idx = [3, 4, 6, 7]
 			// var IRP_line_idx = [4, 5, 8, 9]
-			var current_line_idx = this.MRS_mapping_flag[this.flag]
+			var current_line_idx = this.MRS_mapping_flag[current_flag]
 
 			if(metric == 'DCI') {
 				if(DCI_line_idx.includes(current_line_idx)) {
@@ -527,11 +525,11 @@ var vue_instance = {
 							temp.push(this.layout.shapes[DCI_line_idx[i]]['is_draw'])
 						}
 					}
-
+					console.log(temp, current_flag)
 					temp = temp.filter(function(val) {
 						return val == false
 					})
-					if(temp.length == 1 || temp.length == 0) {
+					if(temp.length == 0) {
 						return true
 					}
 					return false
@@ -636,8 +634,6 @@ var vue_instance = {
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
 			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
-
-			console.log(max_x, max_y, min_x, min_y)
 
 			var DCI_data = []
 			

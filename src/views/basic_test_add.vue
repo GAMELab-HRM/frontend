@@ -558,6 +558,11 @@ export default {
 
 			this.$refs.MRS_draw.clear_target(idx_lst)
 			this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_disable)[idx])
+
+			// force DCI table to 0
+			if([0, 1, 3, 4].includes(idx)) {
+				this.MRS_draw_data[0]['value']=0
+			}
 		},
 		
 		delete_disable(test, idx) {
@@ -577,14 +582,14 @@ export default {
 			
 		},
 		get_DCI(obj) {
-			if(obj['flag']=='MRS_DCI') {
+			if(obj['flag'].includes('DCI') || obj['flag']=='MRS_TZ' || obj['flag']=='MRS_LES_upper') {
 				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = obj['DCI']
 				this.MRS_draw_data[0]['value'] = obj['DCI']
 			}
-			if(obj['flag']=='MRS_DCI_after_MRS') {
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
-				this.MRS_draw_data[1]['value'] = obj['DCI']
-			}
+			// if(obj['flag']=='MRS_DCI_after_MRS') {
+			// 	this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
+			// 	this.MRS_draw_data[1]['value'] = obj['DCI']
+			// }
 		},
 		clear_all(test, if_clean_line) {
 			if(test == 'MRS') {
