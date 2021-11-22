@@ -212,12 +212,25 @@ var vue_instance = {
 		},
 		add_line_title(flag, line_y) {
 			var offset = 0
-			if(flag.length > 6) {
-				offset = 3
+			var max_x = Math.max(...this.time_scale)
+			if(max_x > 40) {
+				if(flag.length > 6) {
+					offset = max_x-6
+				}
+				else {
+					offset = max_x-4
+				}
 			}
 			else {
-				offset = 2
+				if(flag.length > 6) {
+					offset = max_x-3
+				}
+				else {
+					offset = max_x-2
+				}
 			}
+				
+			console.log(offset)
 			var new_line_title={
 				x: [offset],
 				y: [line_y-1],
@@ -513,7 +526,7 @@ var vue_instance = {
 			this.vertical_count = 0
 			this.horizontal_count = 0
 			this.box_count = 0
-			// this.get_current_polys()
+			this.get_current_polys()
 		},
 		clear_last() {
 			var delete_line = this.layout.shapes.splice(-1, 1)[0]
