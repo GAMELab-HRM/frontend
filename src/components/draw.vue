@@ -230,8 +230,7 @@ var vue_instance = {
 					offset = max_x-2
 				}
 			}
-				
-			console.log(offset)
+
 			var new_line_title={
 				x: [offset],
 				y: [line_y-1],
@@ -295,10 +294,7 @@ var vue_instance = {
 				}
 			}
 		},
-		hover_handler(evt) {
-			// this.$event.event.target.classList.toggle('cursor_change')
-			console.log(this.$event)
-			console.log(evt)
+		hover_handler() {
 			if(this.draw_type == 'vertical') {
 				this.hover_vertical()
 			}
@@ -351,6 +347,10 @@ var vue_instance = {
 			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			}
+			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
 			}
 			this.draw_type=''
 			this.flag = ''
@@ -406,6 +406,10 @@ var vue_instance = {
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
+			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+			}
 			this.draw_type=''
 			this.flag = ''
 		},
@@ -445,6 +449,10 @@ var vue_instance = {
 				// console.log(this.layout.shapes)
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
+			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+			}
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.get_current_polys()
 		},
@@ -452,6 +460,10 @@ var vue_instance = {
 			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			}
+			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
 			}
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
@@ -478,6 +490,10 @@ var vue_instance = {
 			if(this.DCI_computable) {
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
+			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+			}
 			this.layout.shapes[1].y0 = new_y0
 			this.layout.shapes[1].y1 = new_y1
 			this.layout.shapes[1].x0 = this.mouse_x
@@ -491,6 +507,7 @@ var vue_instance = {
 				// console.log(this.layout.shapes)
 				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
 			}
+			
 		},
 		leave_handler() {
 			this.layout.shapes[0].y0 = 0
@@ -563,76 +580,71 @@ var vue_instance = {
 
 		check_metrics_computable(metric, current_flag) {
 			var DCI_line_idx = [3, 4, 6, 7]
-			// var IRP_line_idx = [4, 5, 8, 9]
+			var IRP_line_idx = [4, 5, 8, 9]
 			var current_line_idx = this.MRS_mapping_flag[current_flag]
+			var metric_line_idx = []
 
 			if(metric == 'DCI') {
-				if(DCI_line_idx.includes(current_line_idx)) {
-					var temp = []
-					for(var i=0; i<DCI_line_idx.length; i++) {
-						if(DCI_line_idx[i] != current_line_idx) {
-							temp.push(this.layout.shapes[DCI_line_idx[i]]['is_draw'])
-						}
-					}
-
-					temp = temp.filter(function(val) {
-						return val == false
-					})
-					if(temp.length == 0) {
-						return true
-					}
-					return false
-				}
+				metric_line_idx = DCI_line_idx
+			}
+			else if(metric == 'IRP') {
+				metric_line_idx = IRP_line_idx
 			}
 
+			if(metric_line_idx.includes(current_line_idx)) {
+				var temp = []
+				for(var i=0; i<metric_line_idx.length; i++) {
+					if(metric_line_idx[i] != current_line_idx) {
+						temp.push(this.layout.shapes[metric_line_idx[i]]['is_draw'])
+					}
+				}
+
+				temp = temp.filter(function(val) {
+					return val == false
+				})
+				if(temp.length == 0) {
+					return true
+				}
+				return false
+			}
 		},
 
-		compute_4IRP() {
-			var IRP_raw_data = this.get_raw_data_4IRP()
-			console.log(IRP_raw_data)
-		},
-		get_raw_data_4IRP() {
-			var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			var line_lst = [[], []]
+		compute_IRP() {
+			var x_line_lst = ['MRS_IRP_left', 'MRS_IRP_right']
+			var y_line_lst = ['MRS_LES_upper', 'MRS_LES_lower']
+
+			var IRP_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
+			var IRP = 0
 			
-			for(var i=0; i<pic_lst.length; i++) {
-				if(pic_lst[i]['flag']=='horizontal') {
-					line_lst[1].push(pic_lst[i]['y0'])
-				}
-				else if(pic_lst[i]['flag']=='vertical') {
-					line_lst[0].push(pic_lst[i]['x0'])
-				}
-			}
+			var transpose = IRP_raw_data => IRP_raw_data[0].map((x,i) => IRP_raw_data.map(x => x[i]))
+		
+			IRP_raw_data = transpose(IRP_raw_data)
+			IRP_raw_data = IRP_raw_data.sort(function(a, b) { 
+				return Math.max(...a) - Math.max(...b)
+			});
 
-			var max_x = Math.max(...line_lst[0])
-			var min_x = Math.min(...line_lst[0])
-			var max_y = Math.ceil(Math.max(...line_lst[1]))
-			var min_y = Math.floor(Math.min(...line_lst[1]))
-
-			max_y = this.get_y_index(max_y, 'max')
-			min_y = this.get_y_index(min_y, 'min')
-
-			var x_lst = []
-
-			for(i=0; i<4; i++){
-				x_lst.push(this.get_x_index(min_x + (max_x - min_x) * i * 0.25, 'min'))
-			}
-			x_lst.push(this.get_x_index(max_x, 'max'))
-
-			var IRP_data = [[], [], [], []]
-
-			// 從max開始，因為坐標軸有reversed過
-			for(i=max_y; i<=min_y; i+=1) {
-				for(var j=0, k=1; j<x_lst.length-1; j++, k++) {
-					IRP_data[j].push(this.raw_data[i].slice(x_lst[j], x_lst[k]+1))
+			// 4(sec) * 20(sample rate) = 80(samples)
+			for(var i=0; i<80; i++) {
+				// for(var j=0; j<IRP_raw_data[i].length; j++) {
 					
-				}
+				// }
+				//IRP += IRP_raw_data[i][j]
+				IRP += Math.max(...IRP_raw_data[i])
 			}
+			console.log(Math.max(...IRP_raw_data[79]))
+			console.log('sum of IRP : ', IRP)
+			var denominator = 80 
+			// * IRP_raw_data[0].length
+			IRP /= denominator
 
-			return IRP_data
+			return IRP
 		},
+		
 		compute_DCI() {
-			var DCI_raw_data = this.get_raw_data_DCI()
+			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
+			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
+
+			var DCI_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
 
 			var over20 = 0
 			var ct = 0
@@ -649,27 +661,10 @@ var vue_instance = {
 			console.log("Amplitude : ", over20 / ct)
 			console.log('ct : ', ct)
 
-			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
-			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
-			var x_lst = []
-			var y_lst = []
+			var temp = this.get_xy_lst(x_line_lst, y_line_lst)
+			var x_lst = temp[0]
+			var y_lst = temp[1]
 
-			for(i=0; i<x_line_lst.length; i++) {
-				if(this.flag == x_line_lst[i]) {
-					x_lst.push(this.mouse_x)
-				}
-				else {
-					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
-				}
-
-				if(this.flag == y_line_lst[i]) {
-					y_lst.push(this.mouse_y)
-				}
-				else {
-					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
-				}
-			}
-			
 			var duration = Math.abs(x_lst[0] - x_lst[1])
 			var length = Math.abs(y_lst[0] - y_lst[1])
 
@@ -694,33 +689,11 @@ var vue_instance = {
 			
 			return DCI
 		},
-		get_raw_data_DCI() {
-			// var pic_lst = this.layout.shapes.slice(3, this.layout.shapes.length)
-			// // 坑R
-			// var flag = this.flag
-			// var box = pic_lst.filter(function(obj){
-			// 	return obj['flag'] === flag
-			// })[0]
-			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
-			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
-			var x_lst = []
-			var y_lst = []
 
-			for(var i=0; i<x_line_lst.length; i++) {
-				if(this.flag == x_line_lst[i]) {
-					x_lst.push(this.mouse_x)
-				}
-				else {
-					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
-				}
-
-				if(this.flag == y_line_lst[i]) {
-					y_lst.push(this.mouse_y)
-				}
-				else {
-					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
-				}
-			}
+		get_raw_data(x_line_lst, y_line_lst) {
+			var temp = this.get_xy_lst(x_line_lst, y_line_lst)
+			var x_lst = temp[0]
+			var y_lst = temp[1]
 
 			// max_x、min_x、max_y、min_y 皆為catheter scale 的 index
 			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
@@ -730,14 +703,14 @@ var vue_instance = {
 
 			console.log('sensor_idx : ', max_y, min_y)
 
-			var DCI_data = []
+			var return_raw_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
-			for(i=max_y; i<=min_y; i+=1) {
-				DCI_data.push(this.raw_data[i].slice(min_x, max_x+1))
+			for(var i=max_y; i<=min_y; i+=1) {
+				return_raw_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
 			// console.log('DCI', DCI_data)
-			return DCI_data
+			return return_raw_data
 		},
 
 		get_y_index(y, type) {
@@ -766,6 +739,29 @@ var vue_instance = {
 				}
 			}
 		},
+
+		get_xy_lst(x_line_lst, y_line_lst) {
+			var x_lst = []
+			var y_lst = []
+
+			for(var i=0; i<x_line_lst.length; i++) {
+				if(this.flag == x_line_lst[i]) {
+					x_lst.push(this.mouse_x)
+				}
+				else {
+					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
+				}
+
+				if(this.flag == y_line_lst[i]) {
+					y_lst.push(this.mouse_y)
+				}
+				else {
+					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
+				}
+			}
+
+			return [x_lst, y_lst]
+		},
 	}
 }
 
@@ -785,7 +781,4 @@ export default vue_instance
 }
 
 
-.cursor_change {
-	cursor: pointer;
-}
 </style>
