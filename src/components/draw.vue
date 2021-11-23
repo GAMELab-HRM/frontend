@@ -6,7 +6,7 @@
 			</el-col>
 		</el-row>
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
-			<VuePlotly id='plt2' ref="plotly"  :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
+			<VuePlotly id='plt2' ref="plotly" :style="plotly_style" :data="data" :layout="layout" :options='options' @click="click_handler"  @hover='hover_handler' />
 		</div>
 	</div>
 </template>
@@ -41,6 +41,7 @@ var vue_instance = {
 			rehorizontal: false,
 			DCI_computable: false,
 			IRP_computable: false,
+			plotly_style: '',
 			MRS_mapping_flag: {
 				'MRS_TZ': 3,
 				'MRS_LES_upper': 4,
@@ -294,7 +295,10 @@ var vue_instance = {
 				}
 			}
 		},
-		hover_handler() {
+		hover_handler(evt) {
+			// this.$event.event.target.classList.toggle('cursor_change')
+			console.log(this.$event)
+			console.log(evt)
 			if(this.draw_type == 'vertical') {
 				this.hover_vertical()
 			}
@@ -355,6 +359,7 @@ var vue_instance = {
 		draw_vertical() {
 			var new_y0 = 0
 			var new_y1 = 0
+			var color = ''
 
 			if(this.flag.includes('DCI')) {
 				// TZ
@@ -362,6 +367,9 @@ var vue_instance = {
 
 				// LES upper
 				new_y1 = this.layout.shapes[4].y0
+
+				// set color
+				color = 'rgb(255, 0, 0)'
 			}
 			else if(this.flag.includes('IRP')) {
 				// LES lower
@@ -369,6 +377,9 @@ var vue_instance = {
 
 				// LES upper
 				new_y1 = this.layout.shapes[5].y0
+
+				// set color
+				color = 'rgb(136, 32, 240)'
 			}
 			
 			var new_line = {
@@ -378,7 +389,7 @@ var vue_instance = {
 				x1: this.mouse_x,
 				y1: new_y1,
 				line: {
-					color: 'rgb(255, 255, 255)',
+					color: color,
 					width: 3,
 					dash: 'solid'
 				},
@@ -627,7 +638,7 @@ var vue_instance = {
 			var ct = 0
 			for(var i=0; i<DCI_raw_data.length; i++) {
 				for(var j=0; j<DCI_raw_data[i].length; j++) {
-					if(DCI_raw_data[i][j] >= 20) {
+					if(DCI_raw_data[i][j] > 20) {
 						over20 += DCI_raw_data[i][j]
 					}
 					ct+=1
@@ -665,8 +676,8 @@ var vue_instance = {
 			var DCI = Math.floor((over20 / ct) * length * duration)
 			console.log('x0 : ', x_lst[0], 'x1 : ', x_lst[1])
 			console.log('y0 : ', y_lst[0], 'y1 : ', y_lst[1])
-			// console.log('new length : ', length)
-			// console.log('new duration : ', duration)
+			console.log('new length : ', length)
+			console.log('new duration : ', duration)
 
 			// var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			// var min_y = this.get_y_index(Math.min(...y_lst), 'min')
@@ -771,5 +782,10 @@ export default vue_instance
 
 #btn_container {
 	display: block
+}
+
+
+.cursor_change {
+	cursor: pointer;
 }
 </style>
