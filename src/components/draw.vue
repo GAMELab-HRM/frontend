@@ -622,6 +622,7 @@ var vue_instance = {
 		},
 		compute_DCI() {
 			var DCI_raw_data = this.get_raw_data_DCI()
+
 			var over20 = 0
 			var ct = 0
 			for(var i=0; i<DCI_raw_data.length; i++) {
@@ -632,7 +633,50 @@ var vue_instance = {
 					ct+=1
 				}
 			}
-			var DCI = Math.floor((over20 / ct) * DCI_raw_data.length * (DCI_raw_data[0].length / 20))
+			console.log('s_len : ', DCI_raw_data[0].length)
+			console.log('s_dur : ', DCI_raw_data.length)
+			console.log("Amplitude : ", over20 / ct)
+			console.log('ct : ', ct)
+
+			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
+			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
+			var x_lst = []
+			var y_lst = []
+
+			for(i=0; i<x_line_lst.length; i++) {
+				if(this.flag == x_line_lst[i]) {
+					x_lst.push(this.mouse_x)
+				}
+				else {
+					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
+				}
+
+				if(this.flag == y_line_lst[i]) {
+					y_lst.push(this.mouse_y)
+				}
+				else {
+					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
+				}
+			}
+			
+			var duration = Math.abs(x_lst[0] - x_lst[1])
+			var length = Math.abs(y_lst[0] - y_lst[1])
+
+			var DCI = Math.floor((over20 / ct) * length * duration)
+			console.log('x0 : ', x_lst[0], 'x1 : ', x_lst[1])
+			console.log('y0 : ', y_lst[0], 'y1 : ', y_lst[1])
+			// console.log('new length : ', length)
+			// console.log('new duration : ', duration)
+
+			// var max_y = this.get_y_index(Math.max(...y_lst), 'max')
+			// var min_y = this.get_y_index(Math.min(...y_lst), 'min')
+
+			// var old_length = this.catheter_scale[max_y] - this.catheter_scale[min_y]
+
+			// console.log('old length', old_length)
+			// console.log('old duration', DCI_raw_data[0].length / 20)
+			// console.log('old DCI', old_length * (DCI_raw_data[0].length / 20 ) * (over20 / ct))
+
 			// console.log('Amplitude : ', (over20 / ct))
 			// console.log('length', DCI_raw_data.length)
 			// console.log('second', (DCI_raw_data[0].length / 20))
@@ -673,6 +717,8 @@ var vue_instance = {
 			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
 
+			console.log('sensor_idx : ', max_y, min_y)
+
 			var DCI_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
@@ -687,10 +733,10 @@ var vue_instance = {
 			for(var i=0; i<this.catheter_scale.length; i++) {
 				if(this.catheter_scale[i] <= y) {
 					if(type == 'max') {
-						return i-1
+						return i
 					}
 					else {
-						return i
+						return i-1
 					}
 					
 				}
@@ -698,15 +744,14 @@ var vue_instance = {
 		},
 
 		get_x_index(x, type) {
-			if(type == 'max') {
-				x += 0.05
-			}
-			else if(type == 'min'){
-				x -= 0.05
-			}
 			for(var i=0; i<this.time_scale.length; i++) {
 				if(this.time_scale[i] >= x) {
-					return i
+					if(type == 'max') {
+						return i-1
+					}
+					else {
+						return i
+					}
 				}
 			}
 		},

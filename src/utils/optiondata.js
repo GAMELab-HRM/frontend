@@ -155,4 +155,24 @@ export let mrs_subtest_options = [
         value: 5,
         label: 'MRS5'
     },
+    {
+        value: 6,
+        label: 'MRS6'
+    },
+    {
+        value: 7,
+        label: 'MRS7'
+    },
+    {
+        value: 8,
+        label: 'MRS8'
+    },
+    {
+        value: 9,
+        label: 'MRS9'
+    },
+    {
+        value: 10,
+        label: 'MRS10'
+    },
 ]

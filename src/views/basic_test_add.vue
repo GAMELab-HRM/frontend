@@ -56,13 +56,14 @@
 					<el-button type="primary" @click="draw_rerender+=1,clear_all('MRS', true)" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>
 			</el-row>
-			<el-row>
+			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
 					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' @get_polys='get_polys' />
 				</el-col>
-				<el-col :span="7" :offset='3'>
+				<el-col :span="7" >
 					<div style="margin-top: 50px">
-						<h2>繪圖工具</h2>
+						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
 						<el-table :data='MRS_metrics_table_data' style="width: 80%">
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
@@ -73,17 +74,13 @@
 							</el-table-column>
 						</el-table>
 					</div>
-					<el-row style="margin-top: 30px">
-						<el-col :span="16" :offset="4">
-							<el-table :data='MRS_draw_data' style="width: 100%">
-								<el-table-column prop="flag" label="參數"/>
-								<el-table-column prop="value"  label="值"/>
-							</el-table>
-						</el-col>
-					</el-row>
+					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+						<el-table-column prop="flag" label="參數"/>
+						<el-table-column prop="value"  label="值"/>
+					</el-table>
 				</el-col>
 			</el-row>
-			<div style="text-align:right; ">
+			<div style="text-align:right; padding-right: 90px">
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
 				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
