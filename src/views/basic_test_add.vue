@@ -58,7 +58,7 @@
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' @get_polys='get_polys' />
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' @get_polys='get_polys' @get_IRP='get_IRP' />
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -602,6 +602,13 @@ export default {
 			// 	this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
 			// 	this.MRS_draw_data[1]['value'] = obj['DCI']
 			// }
+		},
+
+		get_IRP(obj) {
+			if(obj['flag'].includes('IRP') || obj['flag']=='MRS_LES_upper' || obj['flag']=='MRS_LES_lower') {
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP'] = obj['IRP']
+				this.MRS_draw_data[2]['value'] = obj['IRP']
+			}
 		},
 		clear_all(test, if_clean_line) {
 			if(test == 'MRS') {
