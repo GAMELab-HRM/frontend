@@ -161,8 +161,8 @@ var vue_instance = {
 	},
 	mounted() {
 		var update_layout = {
-			height: window.innerHeight * 0.7,
 			width: window.innerWidth * 0.5,
+			height: window.innerHeight * 0.658,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
@@ -625,17 +625,17 @@ var vue_instance = {
 
 			// 4(sec) * 20(sample rate) = 80(samples)
 			for(var i=0; i<80; i++) {
-				// for(var j=0; j<IRP_raw_data[i].length; j++) {
-					
-				// }
-				//IRP += IRP_raw_data[i][j]
-				IRP += Math.max(...IRP_raw_data[i])
+				for(var j=0; j<IRP_raw_data[i].length; j++) {
+					IRP += IRP_raw_data[i][j]
+				}
+				
+				// IRP += Math.max(...IRP_raw_data[i])
 			}
 			console.log(Math.max(...IRP_raw_data[79]))
 			console.log('sum of IRP : ', IRP)
 			var denominator = 80 
-			// * IRP_raw_data[0].length
-			IRP /= denominator
+			// 
+			IRP /= denominator * IRP_raw_data[0].length
 
 			return IRP
 		},
@@ -645,52 +645,81 @@ var vue_instance = {
 			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
 
 			var DCI_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
-
+			console.log(DCI_raw_data)
 			var over20 = 0
 			var ct = 0
-			for(var i=0; i<DCI_raw_data.length; i++) {
+			var duration = 0
+			var DCI = 0
+
+
+			// for(var i=0; i<DCI_raw_data.length; i++) {
+			// 	for(var j=0; j<DCI_raw_data[i].length; j++) {
+			// 		if(DCI_raw_data[i][j] > 40) {
+			// 			over20 += DCI_raw_data[i][j]
+			// 		}
+			// 		ct+=1
+			// 	}
+			// }
+
+			// var temp = this.get_xy_lst(x_line_lst, y_line_lst)
+			// var x_lst = temp[0]
+			// var y_lst = temp[1]
+			// duration = Math.abs(x_lst[0] - x_lst[1])
+			// var length = Math.abs(y_lst[0] - y_lst[1])
+			// DCI = (over20 / ct) * length * duration
+
+
+			// new DCI
+			duration = 0.05
+			var length_lst = []
+			var y_lst = this.get_xy_lst(x_line_lst, y_line_lst)[1]
+			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
+			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
+
+			for(var i=max_y-1; i<=min_y; i++) {
+				length_lst.push((this.catheter_scale[i] - this.catheter_scale[i+1]) * 0.5)
+			}
+
+			for(i=0; i<DCI_raw_data.length; i++) {
+				var len = length_lst[i] + length_lst[i+1]
 				for(var j=0; j<DCI_raw_data[i].length; j++) {
 					if(DCI_raw_data[i][j] > 20) {
-						over20 += DCI_raw_data[i][j]
+						over20 = DCI_raw_data[i][j]
+						over20 -= 20
+						DCI += over20 * duration * len
+						ct+=1
 					}
-					ct+=1
+					
 				}
 			}
-			console.log('s_len : ', DCI_raw_data[0].length)
-			console.log('s_dur : ', DCI_raw_data.length)
-			console.log("Amplitude : ", over20 / ct)
-			console.log('ct : ', ct)
+			console.log(ct)
 
-			var temp = this.get_xy_lst(x_line_lst, y_line_lst)
-			var x_lst = temp[0]
-			var y_lst = temp[1]
+			// console.log('s_len : ', DCI_raw_data[0].length)
+			// console.log('s_dur : ', DCI_raw_data.length)
+			// console.log("Amplitude : ", over20 / ct)
+			// console.log('ct : ', ct)
 
-			var duration = Math.abs(x_lst[0] - x_lst[1])
-			var length = Math.abs(y_lst[0] - y_lst[1])
+			// var temp = this.get_xy_lst(x_line_lst, y_line_lst)
+			// var x_lst = temp[0]
+			// var y_lst = temp[1]
 
-			var DCI = Math.floor((over20 / ct) * length * duration)
-			console.log('x0 : ', x_lst[0], 'x1 : ', x_lst[1])
-			console.log('y0 : ', y_lst[0], 'y1 : ', y_lst[1])
-			console.log('new length : ', length)
-			console.log('new duration : ', duration)
+			// var duration = Math.abs(x_lst[0] - x_lst[1])
+			// var length = Math.abs(y_lst[0] - y_lst[1])
 
-			// var max_y = this.get_y_index(Math.max(...y_lst), 'max')
-			// var min_y = this.get_y_index(Math.min(...y_lst), 'min')
-
-			// var old_length = this.catheter_scale[max_y] - this.catheter_scale[min_y]
-
-			// console.log('old length', old_length)
-			// console.log('old duration', DCI_raw_data[0].length / 20)
-			// console.log('old DCI', old_length * (DCI_raw_data[0].length / 20 ) * (over20 / ct))
-
-			// console.log('Amplitude : ', (over20 / ct))
-			// console.log('length', DCI_raw_data.length)
-			// console.log('second', (DCI_raw_data[0].length / 20))
+			// var DCI = Math.floor((over20 / ct) * length * duration)
+			// console.log('x0 : ', x_lst[0], 'x1 : ', x_lst[1])
+			// console.log('y0 : ', y_lst[0], 'y1 : ', y_lst[1])
+			// console.log('new length : ', length)
+			// console.log('new duration : ', duration)
 			
+			DCI = Math.floor(DCI)
+
 			return DCI
 		},
 
 		get_raw_data(x_line_lst, y_line_lst) {
+			// raw_data[0] 是從壓力圖下面開始， raw_data[length] 是 0 公分位置處
+
 			var temp = this.get_xy_lst(x_line_lst, y_line_lst)
 			var x_lst = temp[0]
 			var y_lst = temp[1]
@@ -701,14 +730,15 @@ var vue_instance = {
 			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
 
-			console.log('sensor_idx : ', max_y, min_y)
+
 
 			var return_raw_data = []
 			
 			// 從max開始，因為坐標軸有reversed過
-			for(var i=max_y; i<=min_y; i+=1) {
+			for(var i=max_y; i<=min_y; i++) {
 				return_raw_data.push(this.raw_data[i].slice(min_x, max_x+1))
 			}
+
 			// console.log('DCI', DCI_data)
 			return return_raw_data
 		},
@@ -722,7 +752,6 @@ var vue_instance = {
 					else {
 						return i-1
 					}
-					
 				}
 			}
 		},
