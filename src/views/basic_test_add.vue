@@ -280,7 +280,7 @@ export default {
 
 		// 因為要先確認有幾個mrs_subtest所以放這裡
 		var mrs_subtest_num = JSON.parse(this.draw_obj_lst).length;
-		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
+		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length+1)
 		this.mrs_subtest_options = mrs_subtest_options
 
 		// initial all subtest all metrics data
