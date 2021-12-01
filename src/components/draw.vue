@@ -691,9 +691,9 @@ var vue_instance = {
 						DCI_old += over20 * duration * len
 						ct+=1
 					}
-					if(DCI_raw_data[i][j] > 20 && DCI_raw_data[i][j+1] > 20) {
+					if(DCI_raw_data[i][j] > 23 && DCI_raw_data[i][j+1] > 23) {
 						var mean_p = (DCI_raw_data[i][j] + DCI_raw_data[i][j+1]) / 2
-						mean_p -= 22
+						mean_p -= 23
 						DCI += mean_p * duration * len
 						ct2+=1
 					}
