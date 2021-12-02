@@ -648,6 +648,7 @@ var vue_instance = {
 			console.log(DCI_raw_data)
 			var over20 = 0
 			var ct = 0
+			var ct2 = 0
 			var duration = 0
 			var DCI = 0
 
@@ -668,7 +669,7 @@ var vue_instance = {
 			// var length = Math.abs(y_lst[0] - y_lst[1])
 			// DCI = (over20 / ct) * length * duration
 
-
+			var DCI_old=0
 			// new DCI
 			duration = 0.05
 			var length_lst = []
@@ -679,25 +680,34 @@ var vue_instance = {
 			for(var i=max_y-1; i<=min_y; i++) {
 				length_lst.push((this.catheter_scale[i] - this.catheter_scale[i+1]) * 0.5)
 			}
-
+			console.log(length_lst)
 			for(i=0; i<DCI_raw_data.length; i++) {
+				console.log(DCI_raw_data[i].length)
 				var len = length_lst[i] + length_lst[i+1]
-				for(var j=0; j<DCI_raw_data[i].length; j++) {
+				for(var j=0; j<DCI_raw_data[i].length-1; j++) {
 					if(DCI_raw_data[i][j] > 20) {
 						over20 = DCI_raw_data[i][j]
 						over20 -= 20
-						DCI += over20 * duration * len
+						DCI_old += over20 * duration * len
 						ct+=1
 					}
-					
+					if(DCI_raw_data[i][j] > 23 && DCI_raw_data[i][j+1] > 23) {
+						var mean_p = (DCI_raw_data[i][j] + DCI_raw_data[i][j+1]) / 2
+						mean_p -= 23
+						DCI += mean_p * duration * len
+						ct2+=1
+					}
 				}
+
 			}
-			console.log(ct)
+
 
 			// console.log('s_len : ', DCI_raw_data[0].length)
 			// console.log('s_dur : ', DCI_raw_data.length)
 			// console.log("Amplitude : ", over20 / ct)
-			// console.log('ct : ', ct)
+			console.log('ct : ', ct)
+			console.log('ct2 : ', ct2)
+			console.log('old_DCI: ', DCI_old)
 
 			// var temp = this.get_xy_lst(x_line_lst, y_line_lst)
 			// var x_lst = temp[0]
