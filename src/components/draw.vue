@@ -162,7 +162,8 @@ var vue_instance = {
 	mounted() {
 		var update_layout = {
 			width: window.innerWidth * 0.5,
-			height: window.innerHeight * 0.658,
+			// 0.658
+			height: window.innerHeight * 0.72,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
@@ -614,6 +615,21 @@ var vue_instance = {
 			var y_line_lst = ['MRS_LES_upper', 'MRS_LES_lower']
 
 			var IRP_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
+			
+			var x_lst = this.get_xy_lst(x_line_lst, y_line_lst)[0]
+			
+			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
+			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
+
+			// 1 for p2 sensor
+			var gastric_pressure = this.raw_data[1].slice(min_x, max_x+1)
+
+			for(var i=0; i<IRP_raw_data.length; i++) {
+				for(var j=0; j<IRP_raw_data[0].length; j++) {
+					IRP_raw_data[i][j] -= gastric_pressure[j]
+				}
+			}
+
 			var IRP = 0
 			
 			var transpose = IRP_raw_data => IRP_raw_data[0].map((x,i) => IRP_raw_data.map(x => x[i]))
@@ -624,18 +640,18 @@ var vue_instance = {
 			});
 
 			// 4(sec) * 20(sample rate) = 80(samples)
-			for(var i=0; i<80; i++) {
-				for(var j=0; j<IRP_raw_data[i].length; j++) {
-					IRP += IRP_raw_data[i][j]
-				}
+			for(i=0; i<80; i++) {
+				// for(var j=0; j<IRP_raw_data[i].length; j++) {
+				// 	IRP += IRP_raw_data[i][j]
+				// }
 				
-				// IRP += Math.max(...IRP_raw_data[i])
+				IRP += Math.max(...IRP_raw_data[i])
 			}
 			console.log(Math.max(...IRP_raw_data[79]))
 			console.log('sum of IRP : ', IRP)
 			var denominator = 80 
-			// 
-			IRP /= denominator * IRP_raw_data[0].length
+			//  * IRP_raw_data[0].length
+			IRP /= denominator
 
 			return IRP
 		},
@@ -648,6 +664,7 @@ var vue_instance = {
 			console.log(DCI_raw_data)
 			var over20 = 0
 			var ct = 0
+			var ct2 = 0
 			var duration = 0
 			var DCI = 0
 
@@ -668,7 +685,7 @@ var vue_instance = {
 			// var length = Math.abs(y_lst[0] - y_lst[1])
 			// DCI = (over20 / ct) * length * duration
 
-
+			var DCI_old=0
 			// new DCI
 			duration = 0.05
 			var length_lst = []
@@ -679,25 +696,34 @@ var vue_instance = {
 			for(var i=max_y-1; i<=min_y; i++) {
 				length_lst.push((this.catheter_scale[i] - this.catheter_scale[i+1]) * 0.5)
 			}
-
+			console.log(length_lst)
 			for(i=0; i<DCI_raw_data.length; i++) {
+				console.log(DCI_raw_data[i].length)
 				var len = length_lst[i] + length_lst[i+1]
-				for(var j=0; j<DCI_raw_data[i].length; j++) {
+				for(var j=0; j<DCI_raw_data[i].length-1; j++) {
 					if(DCI_raw_data[i][j] > 20) {
 						over20 = DCI_raw_data[i][j]
 						over20 -= 20
-						DCI += over20 * duration * len
+						DCI_old += over20 * duration * len
 						ct+=1
 					}
-					
+					if(DCI_raw_data[i][j] > 23 && DCI_raw_data[i][j+1] > 23) {
+						var mean_p = (DCI_raw_data[i][j] + DCI_raw_data[i][j+1]) / 2
+						mean_p -= 23
+						DCI += mean_p * duration * len
+						ct2+=1
+					}
 				}
+
 			}
-			console.log(ct)
+
 
 			// console.log('s_len : ', DCI_raw_data[0].length)
 			// console.log('s_dur : ', DCI_raw_data.length)
 			// console.log("Amplitude : ", over20 / ct)
-			// console.log('ct : ', ct)
+			console.log('ct : ', ct)
+			console.log('ct2 : ', ct2)
+			console.log('old_DCI: ', DCI_old)
 
 			// var temp = this.get_xy_lst(x_line_lst, y_line_lst)
 			// var x_lst = temp[0]
