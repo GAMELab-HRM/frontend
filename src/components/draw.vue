@@ -634,8 +634,8 @@ var vue_instance = {
 			console.log(Math.max(...IRP_raw_data[79]))
 			console.log('sum of IRP : ', IRP)
 			var denominator = 80 
-			// 
-			IRP /= denominator * IRP_raw_data[0].length
+			//  * IRP_raw_data[0].length
+			IRP /= denominator
 
 			return IRP
 		},
@@ -691,9 +691,9 @@ var vue_instance = {
 						DCI_old += over20 * duration * len
 						ct+=1
 					}
-					if(DCI_raw_data[i][j] > 23 && DCI_raw_data[i][j+1] > 23) {
+					if(DCI_raw_data[i][j] > 20 && DCI_raw_data[i][j+1] > 20) {
 						var mean_p = (DCI_raw_data[i][j] + DCI_raw_data[i][j+1]) / 2
-						mean_p -= 23
+						mean_p -= 20
 						DCI += mean_p * duration * len
 						ct2+=1
 					}
