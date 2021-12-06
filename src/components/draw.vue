@@ -162,7 +162,8 @@ var vue_instance = {
 	mounted() {
 		var update_layout = {
 			width: window.innerWidth * 0.5,
-			height: window.innerHeight * 0.658,
+			// 0.658
+			height: window.innerHeight * 0.72,
 			plot_bgcolor:"transparent",
 			paper_bgcolor:"transparent",
 			margin: {
@@ -614,6 +615,21 @@ var vue_instance = {
 			var y_line_lst = ['MRS_LES_upper', 'MRS_LES_lower']
 
 			var IRP_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
+			
+			var x_lst = this.get_xy_lst(x_line_lst, y_line_lst)[0]
+			
+			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
+			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
+
+			// 1 for p2 sensor
+			var gastric_pressure = this.raw_data[1].slice(min_x, max_x+1)
+
+			for(var i=0; i<IRP_raw_data.length; i++) {
+				for(var j=0; j<IRP_raw_data[0].length; j++) {
+					IRP_raw_data[i][j] -= gastric_pressure[j]
+				}
+			}
+
 			var IRP = 0
 			
 			var transpose = IRP_raw_data => IRP_raw_data[0].map((x,i) => IRP_raw_data.map(x => x[i]))
@@ -624,12 +640,12 @@ var vue_instance = {
 			});
 
 			// 4(sec) * 20(sample rate) = 80(samples)
-			for(var i=0; i<80; i++) {
-				for(var j=0; j<IRP_raw_data[i].length; j++) {
-					IRP += IRP_raw_data[i][j]
-				}
+			for(i=0; i<80; i++) {
+				// for(var j=0; j<IRP_raw_data[i].length; j++) {
+				// 	IRP += IRP_raw_data[i][j]
+				// }
 				
-				// IRP += Math.max(...IRP_raw_data[i])
+				IRP += Math.max(...IRP_raw_data[i])
 			}
 			console.log(Math.max(...IRP_raw_data[79]))
 			console.log('sum of IRP : ', IRP)
