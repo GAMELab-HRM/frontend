@@ -191,6 +191,8 @@ export default {
 
 			// 繪圖的變數
 			raw_data:[],
+			// raw_data_max: 0,
+			// raw_data
 			x_size: 0,
 			draw_rerender: 0,
 			draw_obj_lst: [],
@@ -455,7 +457,6 @@ export default {
 		// set new raw data to draw
 		set_contour_data(obj_lst, idx) {
 			this.raw_data = JSON.parse(obj_lst)[idx]
-			// 不知道為啥，但他的y軸會突出去，所以先-1 
 			this.x_size = this.raw_data[0].length
 			this.time_scale = [...Array(this.x_size).keys()].map(function(val){
 				return val / 20
