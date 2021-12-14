@@ -56,13 +56,31 @@ var vue_instance = {
 				x: this.time_scale,
 				y: this.catheter_scale, 
 				type: 'contour',
+				autocontour: false,
 				contours:{
-                    coloring:"heatmap"
+                    coloring:"heatmap",
+					start: -15,
+					end: 150,
+					size: 20
                 },
 				line: {
 					color: 'black',
 				},
-				colorscale:"Jet",
+				colorscale:[
+					[0, 'rgb(15, 23, 255)'], // -15
+					[0.091, 'rgb(10, 124, 253)'], // 0
+					[0.21, 'rgb(6, 252, 236)'], // 20
+					[0.33, 'rgb(67, 251, 3)'], // 40
+					[0.45, 'rgb(191, 241, 3)'], // 60
+					[0.58, 'rgb(253, 165, 2)'], // 80
+					[0.7, 'rgb(255, 30, 0)'], // 100
+					[0.82, 'rgb(198, 2, 45)'], // 120
+					[0.94, 'rgb(131, 4, 99)'], // 140
+					[1, 'rgb(92, 3, 131)'], // 150
+				],
+				colorbar: {
+					dtick: 20
+				},
 				hoverinfo: 'none',
 				flag: 'contour',
 			}, ],
@@ -622,7 +640,7 @@ var vue_instance = {
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
 
 			// 1 for p2 sensor
-			var gastric_pressure = this.raw_data[1].slice(min_x, max_x+1)
+			var gastric_pressure = this.raw_data[0].slice(min_x, max_x+1)
 
 			for(var i=0; i<IRP_raw_data.length; i++) {
 				for(var j=0; j<IRP_raw_data[0].length; j++) {
