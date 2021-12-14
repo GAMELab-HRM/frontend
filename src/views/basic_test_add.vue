@@ -53,12 +53,12 @@
 					</h1>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="primary" @click="draw_rerender+=1,clear_all('MRS', true)" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					<el-button type="primary" @click="draw_rerender+=1,clear_all('MRS')" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @clear_last='clear_last' @get_polys='get_polys' @get_IRP='get_IRP' />
+					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -191,8 +191,6 @@ export default {
 
 			// 繪圖的變數
 			raw_data:[],
-			// raw_data_max: 0,
-			// raw_data
 			x_size: 0,
 			draw_rerender: 0,
 			draw_obj_lst: [],
@@ -202,10 +200,14 @@ export default {
 				'MRS_TZ': false,
 				'MRS_LES_upper': false,
 				'MRS_LES_lower': false,
-				'MRS_DCI_left': true,
-				'MRS_DCI_right': true,
-				'MRS_IRP_left': true,
-				'MRS_IRP_right': true,
+				'MRS_DCI1_left': true,
+				'MRS_DCI1_right': true,
+				'MRS_DCI2_left': true,
+				'MRS_DCI2_right': true,
+				'MRS_IRP1_left': true,
+				'MRS_IRP1_right': true,
+				'MRS_IRP2_left': true,
+				'MRS_IRP2_right': true,
 			},
 			MRS_disable_dict: {},
 			MRS_metrics_table_data:[{
@@ -215,30 +217,39 @@ export default {
 			}, {
 				'metrics': 'LES lower line'
 			}, {
-				'metrics': 'DCI left line'
+				'metrics': 'DCI1 left line'
 			}, {
-				'metrics': 'DCI right line'
+				'metrics': 'DCI1 right line'
+			},  {
+				'metrics': 'DCI2 left line'
+			},  {
+				'metrics': 'DCI2 right line'
 			}, {
-				'metrics': 'IRP left line'
+				'metrics': 'IRP1 left line'
 			}, {
-				'metrics': 'IRP right line'
+				'metrics': 'IRP1 right line'
+			}, {
+				'metrics': 'IRP2 left line'
+			}, {
+				'metrics': 'IRP2 right line'
 			}],
-			MRS_DCI_disable: false,
-			MRS_DCI_after_MRS_disable: false,
-			MRS_IRP_disable: false,
 			MRS_metrics: {},
 			MRS_polys:{},
 			MRS_draw_data: [
 			{
-				flag: 'MRS DCI',
+				flag: 'MRS DCI1',
 				value: 0
 			}, 
 			{
-				flag: 'MRS DCI after MRS',
+				flag: 'MRS DCI2',
 				value: 0
 			},
 			{
-				flag: 'MRS IRP4',
+				flag: 'MRS IRP1',
+				value: 0
+			},
+			{
+				flag: 'MRS IRP2',
 				value: 0
 			}],
 			// param delete disable
@@ -289,9 +300,10 @@ export default {
 		// initial all subtest all metrics data
 		for(var i=0; i<mrs_subtest_num; i++) {
 			var temp = {
-				'MRS_DCI': 0,
-				'MRS_DCI_after_MRS': 0,
-				'MRS_IRP': 0,
+				'MRS_DCI1': 0,
+				'MRS_DCI2': 0,
+				'MRS_IRP1': 0,
+				'MRS_IRP2': 0,
 			}
 			this.MRS_metrics['MRS'+(i+1).toString()] = temp
 			this.MRS_polys['MRS'+(i+1).toString()] = []
@@ -301,10 +313,14 @@ export default {
 				MRS_TZ: false,
 				MRS_LES_upper: false,
 				MRS_LES_lower: false,
-				MRS_DCI_left: true,
-				MRS_DCI_right: true,
-				MRS_IRP_left: true,
-				MRS_IRP_right: true,
+				MRS_DCI1_left: true,
+				MRS_DCI1_right: true,
+				MRS_DCI2_left: true,
+				MRS_DCI2_right: true,
+				MRS_IRP1_left: true,
+				MRS_IRP1_right: true,
+				MRS_IRP2_left: true,
+				MRS_IRP2_right: true,
 			}
 		}
 
@@ -375,6 +391,8 @@ export default {
 				temp.shift()
 				dic[ws_10_object_col[i]] = temp
 			}
+
+			// ???這是啥???
 			dic['pressure_max'] = 0
 			dic['pressure_min'] = 0
 
@@ -472,23 +490,10 @@ export default {
 			this.draw_rerender += 1
 
 			// rerender draw table data 
-			this.MRS_draw_data[0]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI']
-			this.MRS_draw_data[1]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS']
-			this.MRS_draw_data[2]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP']
-			this.clear_all('MRS', false)
-
-			for(var i=0; i<this.MRS_polys['MRS'+this.mrs_subtest.toString()].length; i++) {
-				var flag = this.MRS_polys['MRS'+this.mrs_subtest.toString()][i]['flag']
-				if(flag == 'MRS_DCI') {
-					this.MRS_DCI_disable = true
-				}
-				else if(flag == 'MRS_DCI_after_MRS') {
-					this.MRS_DCI_after_MRS_disable = true
-				}
-				else if(flag == 'MRS_IRP') {
-					this.MRS_IRP_disable = true
-				}
-			}
+			this.MRS_draw_data[0]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
+			this.MRS_draw_data[1]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
+			this.MRS_draw_data[2]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+			this.MRS_draw_data[3]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 		},
 
 		MRS_draw_btn(draw_type, metrics) {
@@ -499,10 +504,14 @@ export default {
 			this.MRS_disable_dict[current_subtest][obj['flag']] = obj['status']
 			if(Object.keys(this.MRS_disable_dict[current_subtest]).slice(0, 3).includes(obj['flag'])) {
 				if(!Object.values(this.MRS_disable_dict[current_subtest]).slice(0, 3).includes(false) && !obj['rehorizontal']) {
-					this.MRS_disable_dict[current_subtest]['MRS_DCI_left'] = false
-					this.MRS_disable_dict[current_subtest]['MRS_DCI_right'] = false
-					this.MRS_disable_dict[current_subtest]['MRS_IRP_left'] = false
-					this.MRS_disable_dict[current_subtest]['MRS_IRP_right'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_DCI1_left'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_DCI1_right'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_DCI2_left'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_DCI2_right'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_IRP1_left'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_IRP1_right'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_IRP2_left'] = false
+					this.MRS_disable_dict[current_subtest]['MRS_IRP2_right'] = false
 				}
 			}
 			this.draw_btn_rerender += 1
@@ -510,7 +519,7 @@ export default {
 		draw_handler(test, idx) {
 			this.MRS_ini["MRS"+this.mrs_subtest.toString()] = false
 			var horizontal_lst = [0, 1, 2]
-			var vertical_lst = [3, 4, 5, 6]
+			var vertical_lst = [3, 4, 5, 6, 7, 8, 9, 10]
 			// var box = []
 			var draw_type = ''
 
@@ -520,9 +529,9 @@ export default {
 			else if(vertical_lst.includes(idx)) {
 				draw_type = 'vertical'
 			}
-			else {
-				draw_type = 'box'
-			}
+			// else {
+			// 	draw_type = 'box'
+			// }
 			if(test=='MRS') {
 				// 借用key而已
 				var metrics = Object.keys(this.MRS_disable_dict['MRS1'])[idx]
@@ -535,25 +544,31 @@ export default {
 
 			if(idx == 0 || idx == 1 || idx == 2){
 				// force button update status
-				this.MRS_disable_dict[current_subtest]['MRS_DCI_left'] = true
-				this.MRS_disable_dict[current_subtest]['MRS_DCI_right'] = true
-				this.MRS_disable_dict[current_subtest]['MRS_IRP_left'] = true
-				this.MRS_disable_dict[current_subtest]['MRS_IRP_right'] = true
-			
+				this.MRS_disable_dict[current_subtest]['MRS_DCI1_left'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_DCI1_right'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_DCI2_left'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_DCI2_right'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_IRP1_left'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_IRP1_right'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_IRP2_left'] = true
+				this.MRS_disable_dict[current_subtest]['MRS_IRP2_right'] = true
+
+
 				//  delete TZ
 				if(idx == 0) {
-					idx_lst.push(3, 4)
+					idx_lst.push(3, 4, 5, 6)
 				}
 				// delete LES upper
 				else if(idx == 1) {
-					idx_lst.push(3, 4, 5, 6)
+					idx_lst.push(3, 4, 5, 6, 7, 8, 9, 10)
 				}
 				// delete LES lower
 				else if (idx == 2) {
-					idx_lst.push(5, 6)
+					idx_lst.push(7, 8, 9, 10)
 				}
 			}
 
+			// 0, 1, 2 for hover lines
 			idx_lst = idx_lst.map(function(val) {
 				return val + 3
 			})
@@ -594,71 +609,49 @@ export default {
 			}
 			
 		},
-		
 		get_DCI(obj) {
-			if(obj['flag'].includes('DCI') || obj['flag']=='MRS_TZ' || obj['flag']=='MRS_LES_upper') {
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = obj['DCI']
+			if(obj['seq']==1) {
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI1'] = obj['DCI']
 				this.MRS_draw_data[0]['value'] = obj['DCI']
 			}
-			// if(obj['flag']=='MRS_DCI_after_MRS') {
-			// 	this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = obj['DCI']
-			// 	this.MRS_draw_data[1]['value'] = obj['DCI']
-			// }
+			else if(obj['seq']==2) {
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI2'] = obj['DCI']
+				this.MRS_draw_data[1]['value'] = obj['DCI']
+			}
 		},
 
 		get_IRP(obj) {
-			if(obj['flag'].includes('IRP') || obj['flag']=='MRS_LES_upper' || obj['flag']=='MRS_LES_lower') {
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP'] = obj['IRP']
+			if(obj['seq']==1) {
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = obj['IRP']
 				this.MRS_draw_data[2]['value'] = obj['IRP']
 			}
+			if(obj['seq']==2) {
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = obj['IRP']
+				this.MRS_draw_data[3]['value'] = obj['IRP']
+			}
+
 		},
-		clear_all(test, if_clean_line) {
+		clear_all(test) {
 			if(test == 'MRS') {
-				if(if_clean_line) {
-					this.$refs.MRS_draw.clear_all()
-					this.MRS_ini["MRS"+this.mrs_subtest.toString()] = true
+				this.$refs.MRS_draw.clear_all()
+				this.MRS_ini["MRS"+this.mrs_subtest.toString()] = true
 
-					// MRS DCI
-					this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = 0
-					this.MRS_draw_data[0]['value'] = 0
-					
-					// MRS DCI_after_MRS
-					this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = 0
-					this.MRS_draw_data[1]['value'] = 0
-					
-					// MRS IRP
-					this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP'] = 0
-					this.MRS_draw_data[2]['value'] = 0
-				} else {
-					this.MRS_draw_data[0]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI']
-					this.MRS_draw_data[1]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS']
-					this.MRS_draw_data[2]['value'] = this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP']
-				}
-				// draw btn disable
-				this.MRS_DCI_disable = false
-				this.MRS_DCI_after_MRS_disable = false
-				this.MRS_IRP_disable = false
-			}
-		},
-		clear_last(flag) {
-			if(flag == 'MRS_DCI') {
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI'] = 0
+				// MRS DCI1
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI1'] = 0
 				this.MRS_draw_data[0]['value'] = 0
-				this.MRS_DCI_disable = false
-			}
-			else if(flag=='MRS_DCI_after_MRS') {
-
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI_after_MRS'] = 0
+				
+				// MRS DCI2
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_DCI2'] = 0
 				this.MRS_draw_data[1]['value'] = 0
-				this.MRS_DCI_after_MRS_disable = false
-
-			}
-			else if(flag == 'MRS_IRP') {
-
-				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP'] = 0
+				
+				// MRS IRP1
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = 0
 				this.MRS_draw_data[2]['value'] = 0
-				this.MRS_IRP_disable = false
 
+				// MRS IRP2
+				this.MRS_metrics['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
+				this.MRS_draw_data[3]['value'] = 0
+				
 			}
 		},
 	}
