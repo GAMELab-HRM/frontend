@@ -82,7 +82,7 @@ var vue_instance = {
 					[1, 'rgb(92, 3, 131)'], // 150
 				],
 				colorbar: {
-					dtick: 20
+					dtick: 20,
 				},
 				hoverinfo: 'none',
 				flag: 'contour',

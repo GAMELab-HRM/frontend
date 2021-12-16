@@ -58,13 +58,13 @@
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
+					<draw :raw_data='MRS_raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
-						<el-table :data='MRS_metrics_table_data' style="width: 80%">
+						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
@@ -97,10 +97,10 @@
 			<!-- section2 end -->
 
 			<!-- section3 start -->
-			<!-- <el-row :gutter="1">
+			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
-						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="hh_selected_update">
+						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('hh')">
 							<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
@@ -108,18 +108,53 @@
 				</el-col>
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
-						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="rip_selected_update">
+						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('rip')">
 							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
 				</el-col>
 			</el-row>
-			<paint v-if="hiatal_paint_render" :x_size="hiatal_xsize" :y_size="hiatal_ysize" :raw_data="hiatal_rawdata"></paint>
+
+			<el-row type="flex" class="row-bg" justify="space-between">
+				<el-col :span="14">
+					<draw :raw_data='HH_raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
+				</el-col>
+				<el-col :span="7" >
+					<div style="margin-top: 50px">
+						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
+						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column label='Operation'>
+								<template slot-scope="scope">
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+									<el-button type="danger" @click="delete_handler(scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+						<el-table-column prop="flag" label="參數"/>
+						<el-table-column prop="value"  label="值"/>
+					</el-table>
+				</el-col>
+			</el-row>
+
 			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="send(1)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出 </el-button>
-				<el-button type="primary" icon="el-icon-check" @click="send(2)" style="margin-top: 30px; margin-bottom: 50px" :disabled="send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div> -->
+				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+			</div>
+
+			<!-- section3 dialog start -->
+			<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
+				<span><h2> 確認送出? </h2></span>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'hh'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'hh'})"> 返回 </el-button>
+				</span>
+			</el-dialog>
+			<!-- section3 dialog end -->
 			<!-- section3 end -->
 
 
@@ -155,6 +190,7 @@ export default {
 			// basic test send btn 是否可以點擊
 			ws_10_send_disable: true,
 			mrs_send_disable: true,
+			hh_send_disable: true,
 
 			// ws_10 table data是否可傳送(是否全部填完)
 			ws_10_table_send_disable: true,
@@ -174,6 +210,8 @@ export default {
 			// listen basic test result has value
 			ws_10_selected: false,
 			mrs_selected: false,
+			hh_selected: false,
+			rip_selected: false,
 
 			// 上傳時送出診斷的醫生數量
 			send_doctor_num: 0,
@@ -185,12 +223,16 @@ export default {
 			// basic test 二次確認 dialogVisible
 			ws_10_confirm: false,
 			mrs_confirm: false,
+			hh_confirm: false,
 
 			//basic test final data to send backend
 			ws_10_object:0,
 
 			// 繪圖的變數
-			raw_data:[],
+			// raw data
+			MRS_raw_data:[],
+			HH_raw_data:[],
+
 			x_size: 0,
 			draw_rerender: 0,
 			draw_obj_lst: [],
@@ -293,7 +335,6 @@ export default {
 
 		// 因為要先確認有幾個mrs_subtest所以放這裡
 		var mrs_subtest_num = JSON.parse(this.draw_obj_lst).length;
-		console.log(mrs_subtest_num)
 		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length+1)
 		this.mrs_subtest_options = mrs_subtest_options
 
@@ -335,6 +376,9 @@ export default {
 			else if(test_type == 'mrs') {
 				this.mrs_confirm = true
 			}
+			else if(test_type == 'hh') {
+				this.hh_confirm = true
+			}
 			
 		},
 
@@ -355,6 +399,14 @@ export default {
 				this.mrs_selected = true
 				this.update_mrs_send_btn()
 			}
+			else if(test_type == 'hh') {
+				this.hh_selected = true
+				this.update_hh_send_btn()
+			}
+			else if(test_type == 'rip') {
+				this.rip_selected = true
+				this.update_hh_send_btn()
+			}
 			
 		},
 
@@ -369,9 +421,18 @@ export default {
 		},
 
 		// update mrs send btn status
+		// [Future work]還需要加入畫圖的檢測
 		update_mrs_send_btn: function() {
 			this.mrs_send_disable = false
 			// this.mrs_send_disable = true
+		},
+
+		// update hh send btn status
+		// [Future work]還需要加入畫圖的檢測
+		update_hh_send_btn: function() {
+			if(this.hh_selected && this.rip_selected) {
+				this.hh_send_disable = false
+			}
 		},
 		
 		// get ws_10 table data
@@ -451,6 +512,12 @@ export default {
 					console.log('mrs can send to backend')
 				}
 			}
+			if(type == 'hh'){
+				this.hh_confirm = false
+				if(confirm_result) {
+					console.log('hh can send to backend')
+				}
+			}
 		},
 
 
@@ -474,11 +541,13 @@ export default {
 
 		// set new raw data to draw
 		set_contour_data(obj_lst, idx) {
-			this.raw_data = JSON.parse(obj_lst)[idx]
-			this.x_size = this.raw_data[0].length
+
+			this.MRS_raw_data = JSON.parse(obj_lst)[idx]
+			this.x_size = this.MRS_raw_data[0].length
 			this.time_scale = [...Array(this.x_size).keys()].map(function(val){
 				return val / 20
 			})
+
 		},
 
 		get_polys(poly_lst) {
