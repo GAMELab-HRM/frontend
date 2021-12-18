@@ -58,7 +58,7 @@
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
+					<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw" @update_draw_btn_status='update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -69,7 +69,7 @@
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
 									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler(scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -97,7 +97,7 @@
 			<!-- section2 end -->
 
 			<!-- section3 start -->
-			<!-- <el-row :gutter="1">
+			<el-row :gutter="1">
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
 						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('hh')">
@@ -114,37 +114,40 @@
 						</el-select>
 					</h1>
 				</el-col>
+				<el-col :span="2">
+					<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH')" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+				</el-col>
 			</el-row>
 
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='HH_raw_data' :time_scale='time_scale' :catheter_scale='catheter_scale' :polys="MRS_polys['MRS'+mrs_subtest.toString()]" :key='HH_draw_rerender' ref="MRS_draw" @update_draw_btn_status='mrs_update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
+					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD'/>
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
-						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+						<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler(scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+									<el-button type="primary" @click="draw_handler('HH', scope.$index)" :disabled="draw_disable('HH', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+									<el-button type="danger" @click="delete_handler('HH', scope.$index)" :disabled="delete_disable('HH', scope.$index)">刪除</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
 					</div>
-					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+					<el-table :data='HH_draw_data' style="width: 80%; margin-top:30px">
 						<el-table-column prop="flag" label="參數"/>
 						<el-table-column prop="value"  label="值"/>
 					</el-table>
 				</el-col>
-			</el-row> -->
+			</el-row>
 
-			<!-- <div style="text-align:right; ">
+			<div style="text-align:right; ">
 				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
 				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
-			</div> -->
+			</div>
 
 			<!-- section3 dialog start -->
 			<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
@@ -241,6 +244,17 @@ export default {
 				ini: {},
 			},
 
+			HH_draw_param: {
+				raw_data: [],
+				x_size: 0,
+				draw_obj_lst: [],
+				catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				time_scale: [],
+				disable_dict: {},
+				metrics: {},
+				polys: {},
+			},
+
 			MRS_draw_rerender: 0,
 			HH_draw_rerender: 0,
 			MRS_metrics_table_data:[{
@@ -267,6 +281,20 @@ export default {
 				'metrics': 'IRP2 right line'
 			}],
 
+			HH_metrics_table_data:[{
+				'metrics': 'UES upper line'
+			},{
+				'metrics': 'UES lower line'
+			}, {
+				'metrics': 'LES upper line'
+			}, {
+				'metrics': 'LES lower line'
+			}, {
+				'metrics': 'RIP line'
+			}, {
+				'metrics': 'CD line'
+			}],
+
 			MRS_draw_data: [
 			{
 				flag: 'MRS DCI1',
@@ -282,6 +310,16 @@ export default {
 			},
 			{
 				flag: 'MRS IRP2',
+				value: 0
+			}],
+
+			HH_draw_data:[
+			{
+				flag: 'LES-CD',
+				value: 0
+			},
+			{
+				flag: 'seperate',
 				value: 0
 			}],
 
@@ -317,10 +355,16 @@ export default {
 			console.log(err)
 		})
 
+		// MRS
 		// 繪圖initial data
 		this.MRS_draw_param['draw_obj_lst'] = str_data['rawdata']
 		// 預設繪製 mrs subtest1
-		this.set_contour_data(this.MRS_draw_param['draw_obj_lst'], 0)
+		this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
+
+		// HH
+		// 繪圖initial data
+		this.HH_draw_param['draw_obj_lst'] = str_data['rawdata']
+		this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 
 		// 因為要先確認有幾個mrs_subtest所以放這裡
 		var mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
@@ -328,7 +372,7 @@ export default {
 		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
 		this.mrs_subtest_options = mrs_subtest_options
 
-		// initial all subtest all metrics data
+		// initial MRS all subtest all metrics data
 		for(var i=0; i<mrs_subtest_num; i++) {
 			var temp = {
 				'MRS_DCI1': 0,
@@ -355,6 +399,20 @@ export default {
 			}
 		}
 
+		// initial HH all metrics data
+		this.HH_draw_param['metrics'] = {
+			'LES-CD': 0,
+			'seperate': 0
+		}
+		this.HH_draw_param['polys'] = []
+		this.HH_draw_param['disable_dict'] = {
+			'HH_UES_upper': false,
+			'HH_UES_lower': false,
+			'HH_LES_upper': false,
+			'HH_LES_lower': false,
+			'HH_RIP': false,
+			'HH_CD': false,
+		}
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -465,7 +523,6 @@ export default {
 			}
 			console.log(this.ws_10_object)
 
-			
 			UpdateWetSwallow(this.ws_10_object).then((res)=>{
                 console.log("Call update WS API successed!")
 				console.log(res)
@@ -510,14 +567,23 @@ export default {
 			}
 		},
 
-		set_contour_data(obj_lst, idx) {
-
-			this.MRS_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
-			this.MRS_draw_param['x_size'] = this.MRS_draw_param['raw_data'][0].length
-			this.MRS_draw_param['time_scale'] = [...Array(this.MRS_draw_param['x_size']).keys()].map(function(val){
-				return val / 20
-			})
-
+		set_contour_data(test, obj_lst, idx) {
+			if(test=='MRS') {
+				this.MRS_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
+				this.MRS_draw_param['x_size'] = this.MRS_draw_param['raw_data'][0].length
+				this.MRS_draw_param['time_scale'] = [...Array(this.MRS_draw_param['x_size']).keys()].map(function(val){
+					return val / 20
+				})
+			}
+			else if(test=='HH') {
+				// 先預設拿0來繪製(因為HH只有一張圖)
+				this.HH_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
+				this.HH_draw_param['x_size'] = this.HH_draw_param['raw_data'][0].length
+				this.HH_draw_param['time_scale'] = [...Array(this.HH_draw_param['x_size']).keys()].map(function(val){
+					return val / 20
+				})
+			}
+			
 		},
 
 		get_polys(poly_lst) {
@@ -525,7 +591,7 @@ export default {
 		},
 
 		mrs_subtest_selected_update() {
-			this.set_contour_data(this.MRS_draw_param['draw_obj_lst'], this.mrs_subtest-1)
+			this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], this.mrs_subtest-1)
 			this.MRS_draw_rerender += 1
 
 			// rerender draw table data 
@@ -535,90 +601,111 @@ export default {
 			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 		},
 
-		mrs_update_draw_btn(obj) {
-			var current_subtest = "MRS"+this.mrs_subtest.toString()
-			this.MRS_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
-			if(Object.keys(this.MRS_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
-				if(!Object.values(this.MRS_disable_dict[current_subtest]).slice(0, 3).includes(false) && !obj['rehorizontal']) {
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_left'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_right'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_left'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_right'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_left'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_right'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_left'] = false
-					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_right'] = false
+		update_draw_btn(obj) {
+			if(obj['flag'].includes('MRS')) {
+				var current_subtest = "MRS"+this.mrs_subtest.toString()
+				this.MRS_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
+				if(Object.keys(this.MRS_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
+					if(!Object.values(this.MRS_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(false) && !obj['rehorizontal']) {
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_left'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_right'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_left'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_right'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_left'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_right'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_left'] = false
+						this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_right'] = false
+					}
 				}
+			}
+			else if(obj['flag'].includes('HH')) {
+				this.HH_draw_param['disable_dict'][obj['flag']] = obj['status']
 			}
 			this.draw_btn_rerender += 1
 		},
 		draw_handler(test, idx) {
-			this.MRS_draw_param['ini']["MRS"+this.mrs_subtest.toString()] = false
-			var horizontal_lst = [0, 1, 2]
-			var vertical_lst = [3, 4, 5, 6, 7, 8, 9, 10]
+			var metrics = []
 			var draw_type = ''
-
-			if(horizontal_lst.includes(idx)) {
-				draw_type = 'horizontal'
-			}
-			else if(vertical_lst.includes(idx)) {
-				draw_type = 'vertical'
-			}
-
 			if(test=='MRS') {
+				this.MRS_draw_param['ini']["MRS"+this.mrs_subtest.toString()] = false
+				var horizontal_lst = [0, 1, 2]
+				var vertical_lst = [3, 4, 5, 6, 7, 8, 9, 10]
+				
+
+				if(horizontal_lst.includes(idx)) {
+					draw_type = 'horizontal'
+				}
+				else if(vertical_lst.includes(idx)) {
+					draw_type = 'vertical'
+				}
 				// 借用key而已
-				var metrics = Object.keys(this.MRS_draw_param['disable_dict']['MRS1'])[idx]
+				metrics = Object.keys(this.MRS_draw_param['disable_dict']['MRS1'])[idx]
 				this.$refs.MRS_draw.set_draw_data(draw_type, metrics)
 			}
+			else if(test=='HH') {
+				// HH 都是水平線
+				draw_type = 'horizontal'
+				metrics = Object.keys(this.HH_draw_param['disable_dict'])[idx]
+				this.$refs.HH_draw.set_draw_data(draw_type, metrics)
+			}
 		},
-		delete_handler(idx) {
-			var current_subtest = "MRS"+this.mrs_subtest.toString()
+		delete_handler(test, idx) {
 			var idx_lst = [idx]
+			if(test=='MRS') {
+				var current_subtest = "MRS"+this.mrs_subtest.toString()
 
-			if(idx == 0 || idx == 1 || idx == 2){
-				// force button update status
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_left'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_right'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_left'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_right'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_left'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_right'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_left'] = true
-				this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_right'] = true
+				if(idx == 0 || idx == 1 || idx == 2){
+					// force button update status
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_left'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI1_right'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_left'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_DCI2_right'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_left'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP1_right'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_left'] = true
+					this.MRS_draw_param['disable_dict'][current_subtest]['MRS_IRP2_right'] = true
 
 
-				//  delete TZ
-				if(idx == 0) {
-					idx_lst.push(3, 4, 5, 6)
+					//  delete TZ
+					if(idx == 0) {
+						idx_lst.push(3, 4, 5, 6)
+					}
+					// delete LES upper
+					else if(idx == 1) {
+						idx_lst.push(3, 4, 5, 6, 7, 8, 9, 10)
+					}
+					// delete LES lower
+					else if (idx == 2) {
+						idx_lst.push(7, 8, 9, 10)
+					}
 				}
-				// delete LES upper
-				else if(idx == 1) {
-					idx_lst.push(3, 4, 5, 6, 7, 8, 9, 10)
-				}
-				// delete LES lower
-				else if (idx == 2) {
-					idx_lst.push(7, 8, 9, 10)
-				}
+				// 0, 1, 2 for hover lines
+				idx_lst = idx_lst.map(function(val) {
+					return val + 3
+				})
+
+				this.$refs.MRS_draw.clear_target(idx_lst)
+				// 借用key而已
+				this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_draw_param['disable_dict']["MRS1"])[idx])
+			}
+			else if(test=='HH') {
+				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
+				idx_lst = idx_lst.map(function(val) {
+					return val + 14
+				})
+				this.$refs.HH_draw.clear_target(idx_lst)
+				// 借用key而已
+				this.$refs.HH_draw.delete_line_title(Object.keys(this.HH_draw_param['disable_dict'])[idx])
+
 			}
 
-			// 0, 1, 2 for hover lines
-			idx_lst = idx_lst.map(function(val) {
-				return val + 3
-			})
-
-			this.$refs.MRS_draw.clear_target(idx_lst)
-			// 借用key而已
-			this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_draw_param['disable_dict']["MRS1"])[idx])
-
-			// force DCI table to 0
-			// 似乎暫時可以刪除
-			// if([0, 1, 3, 4].includes(idx)) {
-			// 	this.MRS_draw_data[0]['value']=0
-			// }
 		},
 		draw_disable(test, idx) {
 			if(test=='MRS') {
 				return Object.values(this.MRS_draw_param['disable_dict']["MRS"+this.mrs_subtest.toString()])[idx]
+			}
+			else if(test=='HH') {
+				return Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
 		},
 		delete_disable(test, idx) {
@@ -640,6 +727,9 @@ export default {
 						return true
 					}
 				}
+			}
+			else if(test=='HH') {
+				return !Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
 			
 		},
@@ -669,9 +759,14 @@ export default {
 			}
 
 		},
+		get_LES_CD(obj) {
+			console.log(obj)
+			this.HH_draw_data[0]['value'] = obj['LES_CD']
+			this.HH_draw_data[1]['value'] = obj['seperate'].toString()
+		},
 		clear_all(test) {
 			if(test == 'MRS') {
-				this.$refs.MRS_draw.clear_all()
+				this.$refs.MRS_draw.clear_all(test)
 				this.MRS_draw_param['ini']["MRS"+this.mrs_subtest.toString()] = true
 
 				// MRS DCI1
@@ -694,6 +789,11 @@ export default {
 				// force table data change
 				this.MRS_draw_data[3]['value'] = 0
 				
+			}
+			else if(test=='HH') {
+				this.$refs.HH_draw.clear_all(test)
+				this.HH_draw_data[0]['value'] = 0
+				this.HH_draw_data[1]['value'] = 0
 			}
 		},
 	}
