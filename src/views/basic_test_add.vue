@@ -78,12 +78,10 @@
 						<el-table-column prop="flag" label="參數"/>
 						<el-table-column prop="value"  label="值"/>
 					</el-table>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
 				</el-col>
 			</el-row>
-			<div style="text-align:right; padding-right: 90px">
-				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-				<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
-			</div>
 
 			<!-- section2 dialog start -->
 			<el-dialog title="提示" :visible.sync="mrs_confirm" width="30%" center>
@@ -127,6 +125,8 @@
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
+						<el-slider v-model="HH_draw_param['dtick']" :step="20" @change="dtick_change" style="padding-right: 100px"/>
+						<br>
 						<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
@@ -141,13 +141,10 @@
 						<el-table-column prop="flag" label="參數"/>
 						<el-table-column prop="value"  label="值"/>
 					</el-table>
+					<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+					<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
 				</el-col>
 			</el-row>
-
-			<div style="text-align:right; ">
-				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
-				<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
-			</div>
 
 			<!-- section3 dialog start -->
 			<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
@@ -253,6 +250,7 @@ export default {
 				disable_dict: {},
 				metrics: {},
 				polys: {},
+				dtick: 45,
 			},
 
 			MRS_draw_rerender: 0,
@@ -795,6 +793,9 @@ export default {
 				this.HH_draw_data[0]['value'] = 0
 				this.HH_draw_data[1]['value'] = 0
 			}
+		},
+		dtick_change(val) {
+			this.$refs.HH_draw.change_dtick(val)
 		},
 	}
 }

@@ -323,6 +323,11 @@ var vue_instance = {
 				}
 			}
 		},
+
+		change_dtick(val) {
+			this.data[0]['colorbar']['dtick'] = val
+			this.$refs.plotly.redraw(this.data)
+		},
 		click_handler() {
 			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
 			for(var i=13; i>5; i--) {
