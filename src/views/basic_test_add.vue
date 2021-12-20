@@ -125,7 +125,7 @@
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
-						<el-slider v-model="HH_draw_param['dtick']" :step="20" @change="dtick_change" style="padding-right: 100px"/>
+						<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="contour_size_change" style="padding-right: 100px"/>
 						<br>
 						<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
@@ -250,7 +250,7 @@ export default {
 				disable_dict: {},
 				metrics: {},
 				polys: {},
-				dtick: 45,
+				contour_size: 30
 			},
 
 			MRS_draw_rerender: 0,
@@ -794,8 +794,8 @@ export default {
 				this.HH_draw_data[1]['value'] = 0
 			}
 		},
-		dtick_change(val) {
-			this.$refs.HH_draw.change_dtick(val)
+		contour_size_change(val) {
+			this.$refs.HH_draw.contour_size_change(val)
 		},
 	}
 }

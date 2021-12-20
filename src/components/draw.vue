@@ -74,7 +74,8 @@ var vue_instance = {
                     coloring:"heatmap",
 					start: -15,
 					end: 150,
-					size: 20
+					// size can be changed by slider
+					size: 30
                 },
 				line: {
 					color: 'black',
@@ -92,7 +93,8 @@ var vue_instance = {
 					[1, 'rgb(92, 3, 131)'], // 150
 				],
 				colorbar: {
-					dtick: 20,
+					dtick: 30,
+					tick0: -15,
 				},
 				hoverinfo: 'none',
 				flag: 'contour',
@@ -324,7 +326,8 @@ var vue_instance = {
 			}
 		},
 
-		change_dtick(val) {
+		contour_size_change(val) {
+			this.data[0]['contours']['size'] = val
 			this.data[0]['colorbar']['dtick'] = val
 			this.$refs.plotly.redraw(this.data)
 		},
