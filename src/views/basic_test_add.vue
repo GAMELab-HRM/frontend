@@ -53,7 +53,7 @@
 					</h1>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS')" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
@@ -63,6 +63,8 @@
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
+						<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
 						<br>
 						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
@@ -125,7 +127,7 @@
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
-						<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="contour_size_change" style="padding-right: 100px"/>
+						<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
 						<br>
 						<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 							<el-table-column prop="metrics" label='Metrics'/>
@@ -239,6 +241,7 @@ export default {
 				metrics: {},
 				polys: {},
 				ini: {},
+				contour_size: 30,
 			},
 
 			HH_draw_param: {
@@ -794,8 +797,13 @@ export default {
 				this.HH_draw_data[1]['value'] = 0
 			}
 		},
-		contour_size_change(val) {
-			this.$refs.HH_draw.contour_size_change(val)
+		contour_size_change(test, val) {
+			if(test=='MRS') {
+				this.$refs.MRS_draw.contour_size_change(val)
+			}
+			else if(test=='HH') {
+				this.$refs.HH_draw.contour_size_change(val)
+			}
 		},
 	}
 }
