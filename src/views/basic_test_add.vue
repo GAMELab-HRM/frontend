@@ -113,7 +113,7 @@
 					</h1>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH')" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>
 			</el-row>
 

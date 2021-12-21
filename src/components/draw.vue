@@ -70,16 +70,18 @@ var vue_instance = {
 				y: this.catheter_scale, 
 				type: 'contour',
 				autocontour: false,
+				showlegend: false,
 				contours:{
                     coloring:"heatmap",
 					start: -15,
 					end: 150,
 					// size can be changed by slider
-					size: 30
+					size: 20
                 },
 				line: {
 					color: 'black',
 				},
+				autocolorscale: false,
 				colorscale:[
 					[0, 'rgb(15, 23, 255)'], // -15
 					[0.091, 'rgb(10, 124, 253)'], // 0
@@ -96,6 +98,29 @@ var vue_instance = {
 					dtick: 30,
 					tick0: -15,
 				},
+				hoverinfo: 'none',
+				flag: 'contour',
+			}, {
+				z: this.raw_data,
+				x: this.time_scale,
+				y: this.catheter_scale, 
+				type: 'contour',
+				showlegend: false,
+				contours:{
+                    coloring:"heatmap",
+					// start: -15,
+					// end: 150,
+					// // size can be changed by slider
+					// size: 30
+					type: 'constraint',
+					value: 30,
+					operation: '='
+                },
+				line: {
+					color: 'black',
+				},
+				autocolorscale: false,
+				
 				hoverinfo: 'none',
 				flag: 'contour',
 			}, ],
@@ -327,8 +352,8 @@ var vue_instance = {
 		},
 
 		contour_size_change(val) {
-			this.data[0]['contours']['size'] = val
-			this.data[0]['colorbar']['dtick'] = val
+			this.data[1]['contours']['value'] = val
+			// this.data[0]['colorbar']['dtick'] = val
 			this.$refs.plotly.redraw(this.data)
 		},
 		click_handler() {
