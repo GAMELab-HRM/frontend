@@ -120,7 +120,6 @@ var vue_instance = {
 					color: 'black',
 				},
 				autocolorscale: false,
-				
 				hoverinfo: 'none',
 				flag: 'contour',
 			}, ],

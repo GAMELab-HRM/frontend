@@ -171,6 +171,7 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
+import {horizontal_template, vertical_template_red, vertical_template_purple} from '@/utils/metrics_poly'
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -312,6 +313,10 @@ export default {
 			{
 				flag: 'MRS IRP2',
 				value: 0
+			},
+			{
+				flag: 'contour threshold',
+				value: 30
 			}],
 
 			HH_draw_data:[
@@ -322,6 +327,10 @@ export default {
 			{
 				flag: 'seperate',
 				value: 0
+			}, 
+			{
+				flag: 'contour threshold',
+				value: 30
 			}],
 
 			draw_btn_rerender: 0,
@@ -358,12 +367,14 @@ export default {
 
 		// MRS
 		// 繪圖initial data
+		// [for 品峰 請將所有subtest的raw data放在這]
 		this.MRS_draw_param['draw_obj_lst'] = str_data['rawdata']
 		// 預設繪製 mrs subtest1
 		this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
 
 		// HH
 		// 繪圖initial data
+		// [for 品峰 Hiatal hernia的raw data放在這]
 		this.HH_draw_param['draw_obj_lst'] = str_data['rawdata']
 		this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 
@@ -414,6 +425,23 @@ export default {
 			'HH_RIP': false,
 			'HH_CD': false,
 		}
+
+		// [for 品峰] 
+		var mrs_polys={}
+		var hh_polys={}
+		var mrs_metrics={}
+		var hh_metrics={}
+
+		// [for 品峰] mrs_polys由api取得
+		this.set_draw_param('MRS', mrs_polys)
+		// [for 品峰] hh_polys由api取得
+		this.set_draw_param('HH', hh_polys)
+
+		// [for 品峰] mrs_metrics由api取得
+		this.set_backend_metrics('MRS', mrs_metrics)
+		// [for 品峰] hh_metrics由api取得
+		this.set_backend_metrics('HH', hh_metrics)
+
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -557,7 +585,7 @@ export default {
 			if(type == 'mrs'){
 				this.mrs_confirm = false
 				if(confirm_result) {
-					console.log('mrs can send to backend')
+					console.log('MRS can send to backend')
 				}
 			}
 			if(type == 'hh'){
@@ -567,6 +595,58 @@ export default {
 				}
 			}
 		},
+
+
+		// [TODO]
+		// add json parse
+		set_draw_param(test, polys) {
+			this.get_backend_polys(test, polys)
+			
+			// update btn status
+			// key=MRS1、MRS2、...
+			var key=''
+			for(var i=0; i<polys.length; i++) {
+				key = Object.keys(polys)[i]
+				if(test=="MRS") {
+					for(var j=0; j<polys[key].length; j++) {
+						this.MRS_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
+					}
+					if(polys[key].length>0) {
+						this.MRS_draw_param['ini'][key] = false
+					}
+				}
+				// 目前HH不會有subtest，所以poly_dict長度應為1
+				else if(test=='HH') {
+					for(j=0; j<polys[key].length; j++) {
+						this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
+					}
+				}
+			}
+			this.draw_btn_rerender += 1
+		},
+
+		//[TODO]
+		// set metrics
+		// add json parse
+		set_backend_metrics(test, metrics) {
+			// key=MRS1、MRS2、...
+			var key=''
+			for(var i=0; i<metrics.length; i++) {
+				key = Object.keys(metrics)[i]
+				if(test=="MRS") {
+					this.MRS_draw_param['metrics'][key] = metrics[key]
+				}
+				// 目前HH不會有subtest，所以poly_dict長度應為1
+				else if(test=='HH') {
+					this.HH_draw_param['metrics'] = metrics[key]
+				}
+			}
+			
+		},
+				
+
+
+
 
 		set_contour_data(test, obj_lst, idx) {
 			if(test=='MRS') {
@@ -587,6 +667,43 @@ export default {
 			
 		},
 
+		// get polys from backend
+		get_backend_polys(test, poly_dict) {
+			var key=''
+			var flag = ''
+			// 把純位置與flag轉換成畫線所有需要的參數
+			for(var i=0; i<poly_dict.length; i++) {
+				key = Object.keys(poly_dict)[i]
+				for(var j=0; j<poly_dict[key].length; j++) {
+					flag = poly_dict[key][j]['flag']
+					if(flag.includes('upper') || flag.includes('lower') || ['MRS_TZ', 'HH_RIP', 'HH_CD'].includes(flag)) {
+						
+						poly_dict[key][j] = Object.assign({}, horizontal_template, poly_dict[key][j]['position'])
+					}
+					else if(flag.includes('DCI')) {
+						poly_dict[key][j] = Object.assign({}, vertical_template_red, poly_dict[key][j]['position'])
+					}
+					else if(flag.includes('IRP')) {
+						poly_dict[key][j] = Object.assign({}, vertical_template_purple, poly_dict[key][j]['position'])
+					}
+					poly_dict[key][j]['flag'] = flag
+				}
+			}
+
+			// 把轉換好的線加入繪圖的參數
+			for(i=0; i<poly_dict.length; i++) {
+				key = Object.keys(poly_dict)[i]
+				if(test=="MRS") {
+					this.MRS_draw_param['polys'][key] = poly_dict[key]
+				}
+				// 目前HH不會有subtest，所以poly_dict長度應為1
+				else if(test=='HH') {
+					this.HH_draw_param['polys'] = poly_dict[key]
+				}
+			}
+		},
+
+		// get polys from contour plots
 		get_polys(poly_lst) {
 			this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
 		},
@@ -799,9 +916,11 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
+				this.MRS_draw_data[4]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
+				this.HH_draw_data[2]['value'] = val
 				this.$refs.HH_draw.contour_size_change(val)
 			}
 		},

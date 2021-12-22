@@ -20,11 +20,11 @@ export let ws_10_options = [
 export let mrs_options = [
     {
         value: 'CR',
-        label: 'Contractile Reverse'
+        label: 'Contractile Reserve'
     },
     {
         value: 'not_CR',
-        label: 'Not Contractile Reverse'
+        label: 'Not Contractile Reserve'
     }
 ]
 
