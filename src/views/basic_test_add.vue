@@ -58,7 +58,10 @@
 			</el-row>
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw" @update_draw_btn_status='update_draw_btn' @get_DCI='get_DCI' @get_polys='get_polys' @get_IRP='get_IRP' />
+					<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+
+					<!-- @change='changed=>splendid_change(scope.$index, changed)' -->
+
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -121,7 +124,7 @@
 
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD'/>
+					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -253,7 +256,9 @@ export default {
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
-				polys: {},
+				polys: {
+					'landmark': []
+				},
 				contour_size: 30
 			},
 
@@ -416,7 +421,6 @@ export default {
 			'LES-CD': 0,
 			'seperate': 0
 		}
-		this.HH_draw_param['polys'] = []
 		this.HH_draw_param['disable_dict'] = {
 			'HH_UES_upper': false,
 			'HH_UES_lower': false,
@@ -427,20 +431,20 @@ export default {
 		}
 
 		// [for 品峰] 
-		var mrs_polys={}
-		var hh_polys={}
-		var mrs_metrics={}
-		var hh_metrics={}
+		// var mrs_polys={}
+		// var hh_polys={}
+		// var mrs_metrics={}
+		// var hh_metrics={}
 
 		// [for 品峰] mrs_polys由api取得
-		this.set_draw_param('MRS', mrs_polys)
+		// this.set_draw_param('MRS', mrs_polys)
 		// [for 品峰] hh_polys由api取得
-		this.set_draw_param('HH', hh_polys)
+		// this.set_draw_param('HH', hh_polys)
 
 		// [for 品峰] mrs_metrics由api取得
-		this.set_backend_metrics('MRS', mrs_metrics)
+		// this.set_backend_metrics('MRS', mrs_metrics)
 		// [for 品峰] hh_metrics由api取得
-		this.set_backend_metrics('HH', hh_metrics)
+		// this.set_backend_metrics('HH', hh_metrics)
 
 	},
 	methods: {
@@ -585,13 +589,16 @@ export default {
 			if(type == 'mrs'){
 				this.mrs_confirm = false
 				if(confirm_result) {
+					// [for 品峰 call send backend]
 					console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
 				}
 			}
 			if(type == 'hh'){
 				this.hh_confirm = false
 				if(confirm_result) {
+					// [for 品峰 call send backend]
 					console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+					
 				}
 			}
 		},
@@ -698,14 +705,20 @@ export default {
 				}
 				// 目前HH不會有subtest，所以poly_dict長度應為1
 				else if(test=='HH') {
-					this.HH_draw_param['polys'] = poly_dict[key]
+					this.HH_draw_param['polys'] = poly_dict
 				}
 			}
 		},
 
 		// get polys from contour plots
-		get_polys(poly_lst) {
-			this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
+		get_polys(test, poly_lst) {
+			if(test=='MRS') {
+				this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
+			}
+			else if(test=='HH') {
+				this.HH_draw_param['polys']['landmark'] = poly_lst
+				console.log(typeof(this.HH_draw_param['polys']))
+			}
 		},
 
 		mrs_subtest_selected_update() {
@@ -878,7 +891,6 @@ export default {
 
 		},
 		get_LES_CD(obj) {
-			console.log(obj)
 			this.HH_draw_data[0]['value'] = obj['LES_CD']
 			this.HH_draw_data[1]['value'] = obj['seperate'].toString()
 		},
