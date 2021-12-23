@@ -585,13 +585,13 @@ export default {
 			if(type == 'mrs'){
 				this.mrs_confirm = false
 				if(confirm_result) {
-					console.log('MRS can send to backend')
+					console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
 				}
 			}
 			if(type == 'hh'){
 				this.hh_confirm = false
 				if(confirm_result) {
-					console.log('hh can send to backend')
+					console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
 				}
 			}
 		},
