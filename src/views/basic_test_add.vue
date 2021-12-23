@@ -536,6 +536,27 @@ export default {
 
 			return dic
 		},
+		preprocess_mrs_data() {
+			var temp_dict = {}
+			var temp_lst = []
+			var MRS_draw_object = {}
+			for(var i=1; i<Object.keys(this.MRS_draw_param['polys']).length+1; i++) {
+				temp_lst = []
+				for(var j=0; j<this.MRS_draw_param['polys']['MRS'+i.toString()].length; j++) {
+					temp_dict = {'position': {}}
+					temp_dict['position']['x0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x0']
+					temp_dict['position']['x1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x1']
+					temp_dict['position']['y0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y0']
+					temp_dict['position']['y1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y1']
+					temp_dict['flag'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['flag']
+					temp_lst.push(temp_dict)
+				}
+				MRS_draw_object['MRS'+i.toString()] = temp_lst
+			}
+
+			return MRS_draw_object
+
+		},
 
 		// doctor_id 目前是"0"，不是0
 		send_backend: function(test_type) {
@@ -585,7 +606,10 @@ export default {
 			if(type == 'mrs'){
 				this.mrs_confirm = false
 				if(confirm_result) {
-					console.log('MRS can send to backend')
+					// [for 品峰]
+					// 這兩個是要輸出給後端的物件
+					console.log(this.preprocess_mrs_data())
+					console.log(this.MRS_draw_param['metrics'])
 				}
 			}
 			if(type == 'hh'){
