@@ -12,6 +12,7 @@
     "axios": "^0.21.4",
     "core-js": "^3.19.1",
     "element-ui": "^2.15.6",
+    "fs": "^0.0.1-security",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",
     "vue-csv-import": "^4.1.2",
