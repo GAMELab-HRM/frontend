@@ -174,8 +174,10 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {GetMRSDrawInfo, UpdateMRSDrawInfo, GetMRSMetrics, UpdateMRSMetrics} from "@/apis/mrs.js"
-import {GetHHDrawInfo, UpdateHHDrawInfo, GetHHMetrics, UpdateHHMetrics} from "@/apis/hh.js"
+import {GetMRSDrawInfo, UpdateMRSDrawInfo} from "@/apis/mrs.js"
+// , GetMRSMetrics, UpdateMRSMetrics
+import {GetHHDrawInfo, UpdateHHDrawInfo} from "@/apis/hh.js"
+// , GetHHMetrics, UpdateHHMetrics
 // import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
@@ -615,9 +617,10 @@ export default {
 				// [for 品峰] call UpdateMRSDrawInfo
 				// 我不確定後端那邊要怎麼設計，你再修改UpdateMRSDrawInfo(in apis/mrs.js)
 
-				// 可刪
+				// 測試，用不到的話可刪
 				// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
 
+				// 把圖的資料傳到後端
 				UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 					console.log("Call update MRSDrawInfo API successed!")
 					console.log(res)
@@ -627,12 +630,14 @@ export default {
 					console.log(err)
 					this.$message.error('更新失敗!');
 				})
+				// 把metrics傳到後端
+				console.log(this.MRS_draw_param['metrics'])
 			}
 			else if(test_type == 'HH') {
 				// [for 品峰] call UpdateHHDrawInfo
 				// 我不確定後端那邊要怎麼設計，你再修改UpdateHHDrawInfo(in apis/hh.js)
 
-				// 可刪
+				// 測試，用不到的話可刪
 				// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
 
 				UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
