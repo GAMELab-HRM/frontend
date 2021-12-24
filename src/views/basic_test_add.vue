@@ -174,11 +174,11 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-// import {GetMRSDrawInfo, UpdateMRSDrawInfo} from "@/apis/mrs.js"
-// , GetMRSMetrics, UpdateMRSMetrics
-// import {GetHHDrawInfo, UpdateHHDrawInfo} from "@/apis/hh.js"
-// , GetHHMetrics, UpdateHHMetrics
-import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
+import {UpdateMRSDrawInfo, UpdateMRSMetrics} from "@/apis/mrs.js"
+//GetMRSDrawInfo,  , GetMRSMetrics, 
+import {UpdateHHDrawInfo, UpdateHHMetrics} from "@/apis/hh.js"
+//GetHHDrawInfo,  , GetHHMetrics
+import {MRS_draw_info, HH_draw_info, MRS_metrics, HH_metrics} from '@/utils/fake_backend.js'
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -334,7 +334,7 @@ export default {
 			},
 			{
 				flag: 'seperate',
-				value: 0
+				value: false.toString()
 			}, 
 			{
 				flag: 'contour threshold',
@@ -394,13 +394,13 @@ export default {
 
 		// initial MRS all subtest all metrics data from backend
 		for(var i=0; i<mrs_subtest_num; i++) {
-			var temp = {
-				'MRS_DCI1': 0,
-				'MRS_DCI2': 0,
-				'MRS_IRP1': 0,
-				'MRS_IRP2': 0,
-			}
-			this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
+			// var temp = {
+			// 	'MRS_DCI1': 0,
+			// 	'MRS_DCI2': 0,
+			// 	'MRS_IRP1': 0,
+			// 	'MRS_IRP2': 0,
+			// }
+			// this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
 			
 			// 移到最後統一對所有subtest set
 			// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
@@ -430,9 +430,6 @@ export default {
 		// 測試用，確認api可用後，請刪掉此行
 		this.HH_draw_param['polys'] = HH_draw_info
 
-		// this.MRS_draw_rerender+=1
-		// this.HH_draw_rerender+=1
-
 		// [for 品峰]
 		// retv 由api取得，或是可以用MRS_draw_info(in fake_backend.js)測試
 
@@ -460,9 +457,9 @@ export default {
 		// })
 
 		// initial HH all metrics data
-		this.HH_draw_param['metrics'] = {
+		this.HH_draw_param['metrics']['landmark'] = {
 			'LES-CD': 0,
-			'seperate': 0
+			'seperate': false
 		}
 		this.HH_draw_param['disable_dict'] = {
 			'HH_UES_upper': false,
@@ -473,14 +470,36 @@ export default {
 			'HH_CD': false,
 		}
 
-		// [for 品峰]
-		// var mrs_metrics={}
-		// var hh_metrics={}
+		// [for 品峰] call GetMRSMetrics(in apis/mrs.js)
 
-		// [for 品峰] mrs_metrics由api取得
-		// this.set_backend_metrics('MRS', mrs_metrics)
-		// [for 品峰] hh_metrics由api取得
-		// this.set_backend_metrics('HH', hh_metrics)
+		// 測試，用不到的話可刪
+		this.set_backend_metrics('MRS', MRS_metrics)
+
+		// 把MRS的數值傳到前端
+		// GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+        //     console.log("Call get MRS Metrics API successed!")
+		// 	let retv = res.data
+		// 	this.set_backend_metrics('MRS', retv)
+		// }).catch((err)=>{
+        //     console.log("Call get MRS Metrics API Failed!")
+		// 	console.log(err)
+		// })
+
+
+		// [for 品峰] call GetHHMetrics(in apis/hh.js)
+
+		// 測試，用不到的話可刪
+		this.set_backend_metrics('HH', HH_metrics)
+
+		// 把HH的數值傳到前端
+		// GetHHMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+        //     console.log("Call get HH Metrics API successed!")
+		// 	let retv = res.data
+		// 	this.set_backend_metrics('HH', retv)
+		// }).catch((err)=>{
+        //     console.log("Call get HH Metrics API Failed!")
+		// 	console.log(err)
+		// })
 
 	},
 	methods: {
@@ -625,47 +644,73 @@ export default {
 					this.$message.error('更新失敗!');
 				})
 			}
-			// else if(test_type == 'MRS') {
-			// 	// [for 品峰] call UpdateMRSDrawInfo
-			// 	// 我不確定後端那邊要怎麼設計，你再修改UpdateMRSDrawInfo(in apis/mrs.js)
+			else if(test_type == 'MRS') {
+				// [for 品峰] call UpdateMRSDrawInfo(in apis/mrs.js)
 
-			// 	// 測試，用不到的話可刪
-			// 	// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
+				// 測試，用不到的話可刪
+				// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
 
-			// 	// 把圖的資料傳到後端
-			// 	UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-			// 		console.log("Call update MRSDrawInfo API successed!")
-			// 		console.log(res)
-			// 		this.$message({message: '更新成功!',type: 'success'});
-			// 	}).catch((err)=>{
-			// 		console.log("Call update MRSDrawInfo API successed!")
-			// 		console.log(err)
-			// 		this.$message.error('更新失敗!');
-			// 	})
-			// 	// 把metrics傳到後端
-			// 	console.log(this.MRS_draw_param['metrics'])
-			// }
-			// else if(test_type == 'HH') {
-			// 	// [for 品峰] call UpdateHHDrawInfo
-			// 	// 我不確定後端那邊要怎麼設計，你再修改UpdateHHDrawInfo(in apis/hh.js)
+				// 把MRS圖的資料傳到後端
+				UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update MRSDrawInfo API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update MRSDrawInfo API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
 
-			// 	// 測試，用不到的話可刪
-			// 	// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+				// [for 品峰] call UpdateMRSMetrics(in apis/mrs.js)
 
-			// 	UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-			// 		console.log("Call update HHDrawInfo API successed!")
-			// 		console.log(res)
-			// 		this.$message({message: '更新成功!',type: 'success'});
-			// 	}).catch((err)=>{
-			// 		console.log("Call update HHDrawInfo API successed!")
-			// 		console.log(err)
-			// 		this.$message.error('更新失敗!');
-			// 	})
-			// }
+				// 測試，用不到的話可刪
+				// console.log(JSON.stringify(this.MRS_draw_param['metrics'], null, 4))
 
-			
+				// 把MRS的數值傳到後端
+				UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update MRSMetrics API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update MRSMetrics API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+			}
+			else if(test_type == 'HH') {
+				// [for 品峰] call UpdateHHDrawInfo(in apis/hh.js)
 
-			
+				// 測試，用不到的話可刪
+				// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+
+				// 把HH圖的資料傳到後端
+				UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update HHDrawInfo API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update HHDrawInfo API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+
+				// [for 品峰] call UpdateHHMertics(in apis/hh.js)
+
+				// 測試，用不到的話可刪
+				// console.log(JSON.stringify(this.HH_draw_param['metrics'], null, 4))
+
+				// 把HH的數值傳到後端
+				UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update HHMetrics API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update HHMetrics API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+			}
+
 			// if(this.send_doctor_num==1) {
 			// 	console.log("send 1 doctor's data")
 			// }
@@ -735,23 +780,25 @@ export default {
 			// this.draw_btn_rerender += 1
 		},
 
-		//[TODO]
+		// [TODO]
 		// set metrics
-		// add json parse
 		set_backend_metrics(test, metrics) {
-			// key=MRS1、MRS2、...
-			var key=''
-			for(var i=0; i<metrics.length; i++) {
-				key = Object.keys(metrics)[i]
-				if(test=="MRS") {
-					this.MRS_draw_param['metrics'][key] = metrics[key]
-				}
-				// 目前HH不會有subtest，所以poly_dict長度應為1
-				else if(test=='HH') {
-					this.HH_draw_param['metrics'] = metrics[key]
-				}
+			if(test=="MRS") {
+				this.MRS_draw_param['metrics'] = metrics
+
+				// rerender draw table data 
+				this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
+				this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
+				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 			}
-			
+			else if(test=='HH') {
+				this.HH_draw_param['metrics'] = metrics
+
+				// rerender draw table data 
+				this.HH_draw_data[0]['value'] = this.HH_draw_param['metrics']['landmark']['LES-CD']
+				this.HH_draw_data[1]['value'] = this.HH_draw_param['metrics']['landmark']['seperate'].toString()
+			}
 		},
 		
 		set_contour_data(test, obj_lst, idx) {
@@ -990,7 +1037,11 @@ export default {
 		},
 		get_LES_CD(obj) {
 			this.HH_draw_data[0]['value'] = obj['LES_CD']
+			this.HH_draw_param['metrics']['landmark']['LES-CD'] = obj['LES_CD']
+
+			// table 需要String才能顯示
 			this.HH_draw_data[1]['value'] = obj['seperate'].toString()
+			this.HH_draw_param['metrics']['landmark']['seperate'] = obj['seperate']
 		},
 		clear_all(test) {
 			if(test == 'MRS') {

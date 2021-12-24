@@ -214,3 +214,73 @@ export let HH_draw_info = {
         }
     ]
 }
+
+export let MRS_metrics = {
+    "MRS1": {
+        "MRS_DCI1": 12,
+        "MRS_DCI2": 13,
+        "MRS_IRP1": 1,
+        "MRS_IRP2": 2
+    },
+    "MRS2": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS3": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS4": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS5": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS6": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS7": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS8": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS9": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    },
+    "MRS10": {
+        "MRS_DCI1": 0,
+        "MRS_DCI2": 0,
+        "MRS_IRP1": 0,
+        "MRS_IRP2": 0
+    }
+}
+
+export let HH_metrics = {
+    "landmark": {
+        "LES-CD": 12,
+        "seperate": true
+    }
+}
