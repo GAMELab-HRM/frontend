@@ -174,7 +174,7 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {horizontal_template, vertical_template_red, vertical_template_purple} from '@/utils/metrics_poly'
+import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -256,9 +256,7 @@ export default {
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
-				polys: {
-					'landmark': []
-				},
+				polys: {},
 				contour_size: 30
 			},
 
@@ -389,7 +387,7 @@ export default {
 		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
 		this.mrs_subtest_options = mrs_subtest_options
 
-		// initial MRS all subtest all metrics data
+		// initial MRS all subtest all metrics data from backend
 		for(var i=0; i<mrs_subtest_num; i++) {
 			var temp = {
 				'MRS_DCI1': 0,
@@ -398,7 +396,10 @@ export default {
 				'MRS_IRP2': 0,
 			}
 			this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
-			this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
+			
+			// 移到最後統一對所有subtest set
+			// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
+			
 			this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
 			// for deep copy
 			this.MRS_draw_param['disable_dict']['MRS'+(i+1).toString()] = {
@@ -415,6 +416,15 @@ export default {
 				MRS_IRP2_right: true,
 			}
 		}
+		// [for 品峰]
+		// MRS_draw_info、HH_draw_info 由api取得
+		this.set_draw_param('MRS', MRS_draw_info)
+		this.set_draw_param('HH', HH_draw_info)
+
+		console.log(MRS_draw_info)
+		console.log(this.MRS_draw_param['polys'])
+		console.log(this.HH_draw_param['polys'])
+
 
 		// initial HH all metrics data
 		this.HH_draw_param['metrics'] = {
@@ -429,17 +439,11 @@ export default {
 			'HH_RIP': false,
 			'HH_CD': false,
 		}
+		// 123
 
-		// [for 品峰] 
-		// var mrs_polys={}
-		// var hh_polys={}
+		// [for 品峰]
 		// var mrs_metrics={}
 		// var hh_metrics={}
-
-		// [for 品峰] mrs_polys由api取得
-		// this.set_draw_param('MRS', mrs_polys)
-		// [for 品峰] hh_polys由api取得
-		// this.set_draw_param('HH', hh_polys)
 
 		// [for 品峰] mrs_metrics由api取得
 		// this.set_backend_metrics('MRS', mrs_metrics)
@@ -540,29 +544,33 @@ export default {
 
 			return dic
 		},
-		preprocess_mrs_data() {
-			var temp_dict = {}
-			var temp_lst = []
-			var MRS_draw_object = {}
-			for(var i=1; i<Object.keys(this.MRS_draw_param['polys']).length+1; i++) {
-				temp_lst = []
-				for(var j=0; j<this.MRS_draw_param['polys']['MRS'+i.toString()].length; j++) {
-					temp_dict = {'position': {}}
-					temp_dict['position']['x0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x0']
-					temp_dict['position']['x1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x1']
-					temp_dict['position']['y0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y0']
-					temp_dict['position']['y1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y1']
-					temp_dict['flag'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['flag']
-					temp_lst.push(temp_dict)
-				}
-				MRS_draw_object['MRS'+i.toString()] = temp_lst
-			}
 
-			return MRS_draw_object
+		
+		// 轉換mrs polys 格式(deprecated)
 
-		},
+		// preprocess_mrs_data() {
+		// 	var temp_dict = {}
+		// 	var temp_lst = []
+		// 	var MRS_draw_object = {}
+		// 	for(var i=1; i<Object.keys(this.MRS_draw_param['polys']).length+1; i++) {
+		// 		temp_lst = []
+		// 		for(var j=0; j<this.MRS_draw_param['polys']['MRS'+i.toString()].length; j++) {
+		// 			temp_dict = {'position': {}}
+		// 			temp_dict['position']['x0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x0']
+		// 			temp_dict['position']['x1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['x1']
+		// 			temp_dict['position']['y0'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y0']
+		// 			temp_dict['position']['y1'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['y1']
+		// 			temp_dict['flag'] = this.MRS_draw_param['polys']['MRS'+i.toString()][j]['flag']
+		// 			temp_lst.push(temp_dict)
+		// 		}
+		// 		MRS_draw_object['MRS'+i.toString()] = temp_lst
+		// 	}
+
+		// 	return MRS_draw_object
+		// },
 
 		// doctor_id 目前是"0"，不是0
+		
 		send_backend: function(test_type) {
 			// call api here
 			// ws_10_object is ready send to backend
@@ -628,29 +636,36 @@ export default {
 		// [TODO]
 		// add json parse
 		set_draw_param(test, polys) {
-			this.get_backend_polys(test, polys)
+			// get_backend_poly is deprecated
+			// this.get_backend_polys(test, polys)
 			
+			if(test=='MRS') {
+				this.MRS_draw_param['polys'] = polys
+			}
+			else if(test=='HH') {
+				this.HH_draw_param['polys'] = polys
+			}
 			// update btn status
 			// key=MRS1、MRS2、...
-			var key=''
-			for(var i=0; i<polys.length; i++) {
-				key = Object.keys(polys)[i]
-				if(test=="MRS") {
-					for(var j=0; j<polys[key].length; j++) {
-						this.MRS_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
-					}
-					if(polys[key].length>0) {
-						this.MRS_draw_param['ini'][key] = false
-					}
-				}
-				// 目前HH不會有subtest，所以poly_dict長度應為1
-				else if(test=='HH') {
-					for(j=0; j<polys[key].length; j++) {
-						this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
-					}
-				}
-			}
-			this.draw_btn_rerender += 1
+			// var key=''
+			// for(var i=0; i<polys.length; i++) {
+			// 	key = Object.keys(polys)[i]
+			// 	if(test=="MRS") {
+			// 		for(var j=0; j<polys[key].length; j++) {
+			// 			this.MRS_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
+			// 		}
+			// 		if(polys[key].length>0) {
+			// 			this.MRS_draw_param['ini'][key] = false
+			// 		}
+			// 	}
+			// 	// 目前HH不會有subtest，所以poly_dict長度應為1
+			// 	else if(test=='HH') {
+			// 		for(j=0; j<polys[key].length; j++) {
+			// 			this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
+			// 		}
+			// 	}
+			// }
+			// this.draw_btn_rerender += 1
 		},
 
 		//[TODO]
@@ -692,53 +707,52 @@ export default {
 					return val / 20
 				})
 			}
-			
 		},
 
-		// get polys from backend
-		get_backend_polys(test, poly_dict) {
-			var key=''
-			var flag = ''
-			// 把純位置與flag轉換成畫線所有需要的參數
-			for(var i=0; i<poly_dict.length; i++) {
-				key = Object.keys(poly_dict)[i]
-				for(var j=0; j<poly_dict[key].length; j++) {
-					flag = poly_dict[key][j]['flag']
-					if(flag.includes('upper') || flag.includes('lower') || ['MRS_TZ', 'HH_RIP', 'HH_CD'].includes(flag)) {
+
+		// get_backend_polys(test, poly_dict) {
+		// 	var key=''
+		// 	var flag = ''
+		// 	// 把純位置與flag轉換成畫線所有需要的參數
+		// 	for(var i=0; i<poly_dict.length; i++) {
+		// 		key = Object.keys(poly_dict)[i]
+		// 		for(var j=0; j<poly_dict[key].length; j++) {
+		// 			flag = poly_dict[key][j]['flag']
+		// 			if(flag.includes('upper') || flag.includes('lower') || ['MRS_TZ', 'HH_RIP', 'HH_CD'].includes(flag)) {
 						
-						poly_dict[key][j] = Object.assign({}, horizontal_template, poly_dict[key][j]['position'])
-					}
-					else if(flag.includes('DCI')) {
-						poly_dict[key][j] = Object.assign({}, vertical_template_red, poly_dict[key][j]['position'])
-					}
-					else if(flag.includes('IRP')) {
-						poly_dict[key][j] = Object.assign({}, vertical_template_purple, poly_dict[key][j]['position'])
-					}
-					poly_dict[key][j]['flag'] = flag
-				}
-			}
+		// 				poly_dict[key][j] = Object.assign({}, horizontal_template, poly_dict[key][j]['position'])
+		// 			}
+		// 			else if(flag.includes('DCI')) {
+		// 				poly_dict[key][j] = Object.assign({}, vertical_template_red, poly_dict[key][j]['position'])
+		// 			}
+		// 			else if(flag.includes('IRP')) {
+		// 				poly_dict[key][j] = Object.assign({}, vertical_template_purple, poly_dict[key][j]['position'])
+		// 			}
+		// 			poly_dict[key][j]['flag'] = flag
+		// 		}
+		// 	}
 
-			// 把轉換好的線加入繪圖的參數
-			for(i=0; i<poly_dict.length; i++) {
-				key = Object.keys(poly_dict)[i]
-				if(test=="MRS") {
-					this.MRS_draw_param['polys'][key] = poly_dict[key]
-				}
-				// 目前HH不會有subtest，所以poly_dict長度應為1
-				else if(test=='HH') {
-					this.HH_draw_param['polys'] = poly_dict
-				}
-			}
-		},
+		// 	// 把轉換好的線加入繪圖的參數
+		// 	for(i=0; i<poly_dict.length; i++) {
+		// 		key = Object.keys(poly_dict)[i]
+		// 		if(test=="MRS") {
+		// 			this.MRS_draw_param['polys'][key] = poly_dict[key]
+		// 		}
+		// 		// 目前HH不會有subtest，所以poly_dict長度應為1
+		// 		else if(test=='HH') {
+		// 			this.HH_draw_param['polys'] = poly_dict
+		// 		}
+		// 	}
+		// },
 
-		// get polys from contour plots
+		// get polys from draw.vue
+		// set poly to draw_param
 		get_polys(test, poly_lst) {
 			if(test=='MRS') {
 				this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
 			}
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
-				console.log(typeof(this.HH_draw_param['polys']))
 			}
 		},
 
