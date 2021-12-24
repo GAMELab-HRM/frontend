@@ -174,8 +174,8 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {GetMRSDrawInfo, UpdateMRSDrawInfo} from "@/apis/mrs.js"
-import {GetHHDrawInfo, UpdateHHDrawInfo} from "@/apis/hh.js"
+import {GetMRSDrawInfo, UpdateMRSDrawInfo, GetMRSMetrics, UpdateMRSMetrics} from "@/apis/mrs.js"
+import {GetHHDrawInfo, UpdateHHDrawInfo, GetHHMetrics, UpdateHHMetrics} from "@/apis/hh.js"
 // import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
@@ -736,11 +736,7 @@ export default {
 			}
 			
 		},
-				
-
-
-
-
+		
 		set_contour_data(test, obj_lst, idx) {
 			if(test=='MRS') {
 				this.MRS_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]

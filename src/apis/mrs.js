@@ -25,3 +25,31 @@ export function UpdateMRSDrawInfo(obj, record_id, d_id) {
     }
     return request(config)
 }
+
+// 缺GetMRSRawData的api
+
+export function GetMRSMetrics(record_id, d_id) {
+    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/metrics'
+    let config = {
+        url: sample_url + "/" + record_id,
+        method: 'GET',
+        params: {
+            doctor_id: d_id
+        },
+    }
+
+    return request(config)
+}
+
+export function UpdateMRSMetrics(obj, record_id, d_id) {
+    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/metrics'
+    let config = {
+        url: sample_url + '/' + record_id,
+        method: 'PUT',
+        params: {
+            doctor_id: d_id
+        },
+        data: obj
+    }
+    return request(config)
+}
