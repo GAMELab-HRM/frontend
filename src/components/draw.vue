@@ -280,9 +280,12 @@ var vue_instance = {
 		for(i=0; i<this.polys.length; i++) {
 			this.layout.shapes[this.MRS_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
 			if(this.polys[i]['draw_type'] == 'horizontal') {
+				this.flag = this.polys[i]['flag']
 				this.add_line_title(this.polys[i]['flag'], this.polys[i]['y0'])
 			}
 		}
+		// reset flag
+		this.flag = ''
 		console.log('created')
 
 		this.$refs.plotly.relayout(update_layout)
