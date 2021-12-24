@@ -678,7 +678,6 @@ export default {
 				this.hh_confirm = false
 				if(confirm_result) {
 					this.send_backend('HH')
-					
 				}
 			}
 		},
