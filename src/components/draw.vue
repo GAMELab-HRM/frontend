@@ -29,40 +29,97 @@ var vue_instance = {
 		return {
 			mouse_x: 0,
 			mouse_y: 0,
-			if_horizontal: false,
-			if_vertical: false,
-			if_box: false,
-			vertical_count: 0,
-			horizontal_count: 0,
-			box_count: 0,
-			box_first_point: false,
+			// box_first_point: false,
 			flag: '',
 			draw_type:'',
+
+			// 是否移動水平線(不是刪除)
 			rehorizontal: false,
+			
 			DCI_computable: false,
 			IRP_computable: false,
+			LES_CD_computable: false,
 			plotly_style: '',
 			MRS_mapping_flag: {
 				'MRS_TZ': 3,
 				'MRS_LES_upper': 4,
 				'MRS_LES_lower': 5,
-				"MRS_DCI_left": 6,
-				'MRS_DCI_right': 7,
-				'MRS_IRP_left': 8,
-				'MRS_IRP_right': 9
+				"MRS_DCI1_left": 6,
+				'MRS_DCI1_right': 7,
+				'MRS_DCI2_left': 8,
+				'MRS_DCI2_right': 9,
+				'MRS_IRP1_left': 10,
+				'MRS_IRP1_right': 11,
+				'MRS_IRP2_left': 12,
+				'MRS_IRP2_right': 13
 			},
+
+			HH_mapping_flag: {
+				'HH_UES_upper': 14,
+				'HH_UES_lower': 15,
+				'HH_LES_upper': 16,
+				'HH_LES_lower': 17,
+				'HH_RIP': 18,
+				'HH_CD': 19,
+			},
+
+			// plotly data
 			data: [{
 				z: this.raw_data,
 				x: this.time_scale,
 				y: this.catheter_scale, 
 				type: 'contour',
+				autocontour: false,
+				showlegend: false,
 				contours:{
-                    coloring:"heatmap"
+                    coloring:"heatmap",
+					start: -15,
+					end: 150,
+					// size can be changed by slider
+					size: 20
                 },
 				line: {
 					color: 'black',
 				},
-				colorscale:"Jet",
+				autocolorscale: false,
+				colorscale:[
+					[0, 'rgb(15, 23, 255)'], // -15
+					[0.091, 'rgb(10, 124, 253)'], // 0
+					[0.21, 'rgb(6, 252, 236)'], // 20
+					[0.33, 'rgb(67, 251, 3)'], // 40
+					[0.45, 'rgb(191, 241, 3)'], // 60
+					[0.58, 'rgb(253, 165, 2)'], // 80
+					[0.7, 'rgb(255, 30, 0)'], // 100
+					[0.82, 'rgb(198, 2, 45)'], // 120
+					[0.94, 'rgb(131, 4, 99)'], // 140
+					[1, 'rgb(92, 3, 131)'], // 150
+				],
+				colorbar: {
+					dtick: 30,
+					tick0: -15,
+				},
+				hoverinfo: 'none',
+				flag: 'contour',
+			}, {
+				z: this.raw_data,
+				x: this.time_scale,
+				y: this.catheter_scale, 
+				type: 'contour',
+				showlegend: false,
+				contours:{
+                    coloring:"heatmap",
+					// start: -15,
+					// end: 150,
+					// // size can be changed by slider
+					// size: 30
+					type: 'constraint',
+					value: 30,
+					operation: '='
+                },
+				line: {
+					color: 'black',
+				},
+				autocolorscale: false,
 				hoverinfo: 'none',
 				flag: 'contour',
 			}, ],
@@ -114,25 +171,55 @@ var vue_instance = {
 					// 如果只是 '{}' 做初始化的話，plotly會自動補上黑色長方形的圖(WTF)
 					// 改成dict更新資料會很麻煩(且噴一堆錯)所以先暫時這樣
 
-					// for TZ
+					// for MRS TZ
 					initial_line,
 
-					//for LES upper
+					//for MRS LES upper
 					initial_line,
 
-					//for Les lower
+					//for MRS Les lower
 					initial_line,
 
-					//for DCI left
+					//for MRS DCI1 left
 					initial_line,
 
-					//for DCI right
+					//for MRS DCI1 right
 					initial_line,
 
-					//for IRP left
+					//for MRS DCI2 left
 					initial_line,
 
-					//for IRP right
+					//for MRS DCI2 right
+					initial_line,
+
+					//for MRS IRP1 left
+					initial_line,
+
+					//for MRS IRP1 right
+					initial_line,
+
+					//for MRS IRP2 left
+					initial_line,
+
+					//for MRS IRP2 right
+					initial_line,
+
+					//for HH UES upper
+					initial_line,
+
+					//for HH UES lower
+					initial_line,
+
+					//for HH LES upper
+					initial_line,
+
+					//for HH LES lower
+					initial_line,
+
+					//for HH RIP
+					initial_line,
+
+					//for HH CD
 					initial_line,
 				]
 			},
@@ -231,12 +318,19 @@ var vue_instance = {
 					offset = max_x-2
 				}
 			}
+			var title_text=''
+			if(this.flag.includes('MRS')) {
+				title_text=flag.slice(4, flag.length)
+			}
+			else if(this.flag.includes('HH')) {
+				title_text=flag.slice(3, flag.length)
+			}
 
 			var new_line_title={
 				x: [offset],
 				y: [line_y-1],
 				mode: 'text',
-				text: [flag.slice(4, flag.length)],
+				text: [title_text],
 				showlegend: false,
 				hoverinfo: 'none',
 				textfont: {
@@ -255,9 +349,15 @@ var vue_instance = {
 				}
 			}
 		},
+
+		contour_size_change(val) {
+			this.data[1]['contours']['value'] = val
+			// this.data[0]['colorbar']['dtick'] = val
+			this.$refs.plotly.redraw(this.data)
+		},
 		click_handler() {
-			// for vertical line (DCI left、right, IRP left、right)
-			for(var i=this.layout.shapes.length-1; i>5; i--) {
+			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
+			for(var i=13; i>5; i--) {
 				if(this.mouse_x >= this.layout.shapes[i].x0 - 0.5 && this.mouse_x <= this.layout.shapes[i].x1 + 0.5 && this.mouse_y >= this.layout.shapes[i].y0 - 0.1 && this.mouse_y <= this.layout.shapes[i].y1 + 0.1) {
 					this.flag = this.layout.shapes[i]['flag']
 					this.draw_type = this.layout.shapes[i]['draw_type']
@@ -267,12 +367,13 @@ var vue_instance = {
 			}
 
 			// for horizontal line (TZ, LES upper、lower)
-			for(i=5; i>2; i--) {
-				if(this.mouse_x >= this.layout.shapes[i].x0 && this.mouse_x <= this.layout.shapes[i].x1 && this.mouse_y >= this.layout.shapes[i].y0-0.1 && this.mouse_y <= this.layout.shapes[i].y1+0.1) {
-					this.flag = this.layout.shapes[i]['flag']
-					this.draw_type = this.layout.shapes[i]['draw_type']
+			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19]
+			for(i=0; i<horizontal_lst.length; i++) {
+				if(this.mouse_x >= this.layout.shapes[horizontal_lst[i]].x0 && this.mouse_x <= this.layout.shapes[horizontal_lst[i]].x1 && this.mouse_y >= this.layout.shapes[horizontal_lst[i]].y0-0.2 && this.mouse_y <= this.layout.shapes[horizontal_lst[i]].y1+0.2) {
+					this.flag = this.layout.shapes[horizontal_lst[i]]['flag']
+					this.draw_type = this.layout.shapes[horizontal_lst[i]]['draw_type']
 					this.delete_line_title(this.flag)
-					this.clear_target([i])
+					this.clear_target([horizontal_lst[i]])
 					this.rehorizontal = true
 					
 					return
@@ -286,14 +387,14 @@ var vue_instance = {
 			if(this.draw_type == 'horizontal') {
 				this.draw_horizontal()
 			}
-			if(this.draw_type == 'box') {
-				if(this.box_first_point) {
-					this.draw_box_second()
-				}
-				else {
-					this.draw_box_first()
-				}
-			}
+			// if(this.draw_type == 'box') {
+			// 	if(this.box_first_point) {
+			// 		this.draw_box_second()
+			// 	}
+			// 	else {
+			// 		this.draw_box_first()
+			// 	}
+			// }
 		},
 		hover_handler() {
 			if(this.draw_type == 'vertical') {
@@ -302,9 +403,9 @@ var vue_instance = {
 			if(this.draw_type == 'horizontal') {
 				this.hover_horizontal()
 			}
-			if(this.draw_type == 'box' && this.box_first_point) {
-				this.hover_box()
-			}
+			// if(this.draw_type == 'box' && this.box_first_point) {
+			// 	this.hover_box()
+			// }
 		},
 		draw_horizontal() {
 			var new_line = {
@@ -322,37 +423,78 @@ var vue_instance = {
 				flag: this.flag,
 				is_draw: true,
 			}
-			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+			if(this.flag.includes('MRS')) {
+				this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
 
-			if(this.rehorizontal) {
-				if(this.flag == 'MRS_TZ') {
-					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_left']].y0 = this.mouse_y
-					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_right']].y0 = this.mouse_y
+				if(this.rehorizontal) {
+					if(this.flag == 'MRS_TZ') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_right']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_right']].y0 = this.mouse_y
+					}
+					else if(this.flag == 'MRS_LES_upper') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_right']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_right']].y0 = this.mouse_y
+					}
+					else if(this.flag == 'MRS_LES_lower') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_right']].y1 = this.mouse_y
+					}
 				}
-				else if(this.flag == 'MRS_LES_upper') {
-					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_left']].y1 = this.mouse_y
-					this.layout.shapes[this.MRS_mapping_flag['MRS_DCI_right']].y1 = this.mouse_y
-					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_left']].y0 = this.mouse_y
-					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_right']].y0 = this.mouse_y
-				}
-				else if(this.flag == 'MRS_LES_lower') {
-					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_left']].y1 = this.mouse_y
-					this.layout.shapes[this.MRS_mapping_flag['MRS_IRP_right']].y1 = this.mouse_y
-				}
+			}
+			else if(this.flag.includes('HH')) {
+				this.layout.shapes[this.HH_mapping_flag[this.flag]] = new_line
 			}
 
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
+			console.log(this.flag)
 			this.add_line_title(this.flag, this.mouse_y)
 			this.get_current_polys()
-			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+
+			if(this.flag.includes('MRS')) {
+				// line index [3, 4, 6, 7] for DCI1
+				this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
+				}
+
+				// line index [3, 4, 8, 9] for DCI2
+				this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+				}
+
+				// line index [4, 5, 10, 11] for IRP1
+				this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
+				}
+
+				// line index [4, 5, 12, 13] for IRP2
+				this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				}
 			}
-			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+			else if(this.flag.includes('HH')) {
+				this.LES_CD_computable = this.check_metrics_computable([16, 17, 19], this.flag)
+				if(this.LES_CD_computable) {
+					var lst = this.compute_LES_CD([16, 17, 19])
+					this.$emit("get_LES_CD", {'LES_CD': lst[0], 'seperate': lst[1]})
+				}
 			}
+
+			// reset
 			this.draw_type=''
 			this.flag = ''
 			this.rehorizontal = false
@@ -362,6 +504,7 @@ var vue_instance = {
 			var new_y1 = 0
 			var color = ''
 
+			// 設定DCI與IRP的兩端點至水平線
 			if(this.flag.includes('DCI')) {
 				// TZ
 				new_y0 = this.layout.shapes[3].y0
@@ -403,69 +546,141 @@ var vue_instance = {
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.get_current_polys()
-			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
+
+			// line index [3, 4, 6, 7] for DCI1
+			this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
 			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+				this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
 			}
-			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+
+			// line index [3, 4, 8, 9] for DCI2
+			this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+			if(this.DCI_computable) {
+				this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+			}
+
+			// line index [4, 5, 10, 11] for IRP1
+			this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
 			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+				this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
 			}
+
+			// line index [4, 5, 12, 13] for IRP2
+			this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+			}
+
 			this.draw_type=''
 			this.flag = ''
 		},
-		draw_box_first() {
-			this.layout.shapes[2].x0 = this.mouse_x
-			this.layout.shapes[2].y0 = this.mouse_y
-			this.layout.shapes[2].x1 = this.mouse_x
-			this.layout.shapes[2].y1 = this.mouse_y
-			this.$refs.plotly.relayout(this.layout)
-			this.box_first_point = true
-		},
-		draw_box_second() {
-			this.layout.shapes[2].x1 = this.mouse_x
-			this.layout.shapes[2].y1 = this.mouse_y
-			this.box_first_point = false
+		// draw_box_first() {
+		// 	this.layout.shapes[2].x0 = this.mouse_x
+		// 	this.layout.shapes[2].y0 = this.mouse_y
+		// 	this.layout.shapes[2].x1 = this.mouse_x
+		// 	this.layout.shapes[2].y1 = this.mouse_y
+		// 	this.$refs.plotly.relayout(this.layout)
+		// 	this.box_first_point = true
+		// },
+		// draw_box_second() {
+		// 	this.layout.shapes[2].x1 = this.mouse_x
+		// 	this.layout.shapes[2].y1 = this.mouse_y
+		// 	this.box_first_point = false
 
-			var new_box = {
-				type: 'rect',
-				x0: this.layout.shapes[2].x0,
-				y0: this.layout.shapes[2].y0,
-				x1: this.layout.shapes[2].x1,
-				y1: this.layout.shapes[2].y1,
-				line: {
-					color: 'rgb(255, 255, 255)',
-					width: 3,
-					dash: 'solid'
-				},
-				flag: this.flag,
-				draw_type: 'box',
-				is_draw: true,
-			}
-			this.layout.shapes.push(new_box)
-			this.$refs.plotly.relayout(this.layout)
-			this.box_count += 1
-			this.draw_type = ''
-			if(this.flag.slice(4, 7) == 'DCI') {
-				// console.log(this.layout.shapes)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
-			}
-			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
-			}
-			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
-			this.get_current_polys()
-		},
+		// 	var new_box = {
+		// 		type: 'rect',
+		// 		x0: this.layout.shapes[2].x0,
+		// 		y0: this.layout.shapes[2].y0,
+		// 		x1: this.layout.shapes[2].x1,
+		// 		y1: this.layout.shapes[2].y1,
+		// 		line: {
+		// 			color: 'rgb(255, 255, 255)',
+		// 			width: 3,
+		// 			dash: 'solid'
+		// 		},
+		// 		flag: this.flag,
+		// 		draw_type: 'box',
+		// 		is_draw: true,
+		// 	}
+		// 	this.layout.shapes.push(new_box)
+		// 	this.$refs.plotly.relayout(this.layout)
+		// 	this.box_count += 1
+		// 	this.draw_type = ''
+		// 	if(this.flag.slice(4, 7) == 'DCI') {
+		// 		// console.log(this.layout.shapes)
+		// 		this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+		// 	}
+		// 	this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+		// 	if(this.IRP_computable) {
+		// 		this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+		// 	}
+		// 	this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
+		// 	this.get_current_polys()
+		// },
 		hover_horizontal() {
-			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+			if(this.flag.includes('MRS')) {
+				// 不確定要不要換成用來hover的線
+				if(this.rehorizontal) {
+					if(this.flag == 'MRS_TZ') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_right']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_right']].y0 = this.mouse_y
+					}
+					else if(this.flag == 'MRS_LES_upper') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI1_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_DCI2_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_right']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_left']].y0 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_right']].y0 = this.mouse_y
+					}
+					else if(this.flag == 'MRS_LES_lower') {
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP1_right']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_left']].y1 = this.mouse_y
+						this.layout.shapes[this.MRS_mapping_flag['MRS_IRP2_right']].y1 = this.mouse_y
+					}
+				}
+
+				// 不確定要不要加，等等試試看
+				//this.$refs.plotly.relayout(this.layout)
+
+				// line index [3, 4, 6, 7] for DCI1
+				this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
+				}
+
+				// line index [3, 4, 8, 9] for DCI2
+				this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+				}
+
+				// line index [4, 5, 10, 11] for IRP1
+				this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
+				}
+
+				// line index [4, 5, 12, 13] for IRP2
+				this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				}
 			}
-			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+			else if(this.flag.includes('HH')) {
+				this.LES_CD_computable = this.check_metrics_computable([16, 17, 19], this.flag)
+				if(this.LES_CD_computable) {
+					var lst = this.compute_LES_CD([16, 17, 19])
+					this.$emit("get_LES_CD", {'LES_CD': lst[0], 'seperate': lst[1]})
+				}
 			}
+			
+
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
 		},
@@ -473,6 +688,7 @@ var vue_instance = {
 			var new_y0 = 0
 			var new_y1 = 0
 
+			// 設定DCI與IRP的兩端點至水平線
 			if(this.flag.includes('DCI')) {
 				// TZ
 				new_y0 = this.layout.shapes[3].y0
@@ -487,29 +703,46 @@ var vue_instance = {
 				// LES upper
 				new_y1 = this.layout.shapes[5].y0
 			}
-			this.DCI_computable = this.check_metrics_computable('DCI', this.flag)
+			
+			// line index [3, 4, 6, 7] for DCI1
+			this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
 			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+				this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
 			}
-			this.IRP_computable = this.check_metrics_computable('IRP', this.flag)
+
+			// line index [3, 4, 8, 9] for DCI2
+			this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+			if(this.DCI_computable) {
+				this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+			}
+
+			// line index [4, 5, 10, 11] for IRP1
+			this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
 			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'flag': this.flag, 'IRP': this.compute_IRP()})
+				this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
 			}
+
+			// line index [4, 5, 12, 13] for IRP2
+			this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+			if(this.IRP_computable) {
+				this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+			}
+			
 			this.layout.shapes[1].y0 = new_y0
 			this.layout.shapes[1].y1 = new_y1
 			this.layout.shapes[1].x0 = this.mouse_x
 			this.layout.shapes[1].x1 = this.mouse_x
 		},
-		hover_box() {
-			this.layout.shapes[2].x1 = this.mouse_x
-			this.layout.shapes[2].y1 = this.mouse_y
-			this.$refs.plotly.relayout(this.layout)
-			if(this.flag.slice(4, 7) == 'DCI') {
-				// console.log(this.layout.shapes)
-				this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
-			}
+		// hover_box() {
+		// 	this.layout.shapes[2].x1 = this.mouse_x
+		// 	this.layout.shapes[2].y1 = this.mouse_y
+		// 	this.$refs.plotly.relayout(this.layout)
+		// 	if(this.flag.slice(4, 7) == 'DCI') {
+		// 		// console.log(this.layout.shapes)
+		// 		this.$emit("get_DCI", {'flag': this.flag, 'DCI': this.compute_DCI()})
+		// 	}
 			
-		},
+		// },
 		leave_handler() {
 			this.layout.shapes[0].y0 = 0
 			this.layout.shapes[0].y1 = 0
@@ -522,54 +755,61 @@ var vue_instance = {
 				this.layout.shapes[2].y1 = 0
 			}
 		},
+
 		clear_target(idx_lst) {
 			var flag = this.layout.shapes[idx_lst[0]]['flag']
 			for(var i=0; i<idx_lst.length; i++) {
-				this.DCI_computable = this.check_metrics_computable('DCI', this.layout.shapes[idx_lst[i]]['flag'])
-				if(!this.DCI_computable) {
-					this.$emit("get_DCI", {'flag': this.flag, 'DCI': 0})
-				}
 				this.layout.shapes[idx_lst[i]] = initial_line
+				if([3, 4, 6, 7].includes(idx_lst[i])) {
+					this.$emit("get_DCI", {'seq': 1, 'DCI': 0})
+				}
+				if([3, 4, 8, 9].includes(idx_lst[i])) {
+					this.$emit("get_DCI", {'seq': 2, 'DCI': 0})
+				}
+				if([4, 5, 10, 11].includes(idx_lst[i])) {
+					this.$emit("get_IRP", {'seq': 1, 'IRP': 0})
+				}
+				if([4, 5, 12, 13].includes(idx_lst[i])) {
+					this.$emit("get_IRP", {'seq': 2, 'IRP': 0})
+				}
+				if([16, 17, 19].includes(idx_lst[i])) {
+					this.$emit('get_LES_CD', {'LES_CD': 0, 'seperate': false})
+				}
 			}
 			
 			this.$refs.plotly.relayout(this.layout)
 			this.get_current_polys()
 			this.$emit('update_draw_btn_status', {'flag': flag, 'status': false})
 		},
-		clear_all() {
-			var flags = Object.keys(this.MRS_mapping_flag)
+		clear_all(test) {
+			var flags = []
+			if(test=='MRS') {
+				flags = Object.keys(this.MRS_mapping_flag)
 
-			for(var i=0; i<flags.length; i++) {
-				// horizontal line can draw but vertical line cant
-				if(i<3) {
+				for(var i=0; i<flags.length; i++) {
+					// set horizontal line can draw but vertical line cant
+					if(i<3) {
+						this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': false})
+					}
+					else {
+						this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': true})
+					}
+					
+					// 0 1 2 for hover line
+					this.layout.shapes[i+3] = initial_line
+				}
+				// this.$refs.plotly.relayout(this.layout)
+				this.get_current_polys()
+			}
+			else if(test=='HH') {
+				flags = Object.keys(this.HH_mapping_flag)
+				for(i=0; i<flags.length; i++) {
 					this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': false})
+
+					// 0 1 2 for hover line 3~13 for MRS lines
+					this.layout.shapes[i+14] = initial_line
 				}
-				else {
-					this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': true})
-				}
-				
-				// 0 1 2 for hover line
-				this.layout.shapes[i+3] = initial_line
 			}
-			// this.$refs.plotly.relayout(this.layout)
-			this.vertical_count = 0
-			this.horizontal_count = 0
-			this.box_count = 0
-			this.get_current_polys()
-		},
-		clear_last() {
-			var delete_line = this.layout.shapes.splice(-1, 1)[0]
-			if(delete_line.draw_type == 'horizontal') {
-				this.horizontal_count -= 1
-			}
-			else if(delete_line.draw_type == 'vertical'){
-				this.vertical_count -= 1
-			}
-			else if(delete_line.draw_type == 'box') {
-				this.box_count -= 1
-				this.$emit('clear_last', delete_line.flag)
-			}
-			this.get_current_polys()
 		},
 		get_current_polys() {
 			var polys = this.layout.shapes.slice(3, this.layout.shapes.length)
@@ -579,18 +819,16 @@ var vue_instance = {
 			this.$emit('get_polys', polys)
 		},
 
-		check_metrics_computable(metric, current_flag) {
-			var DCI_line_idx = [3, 4, 6, 7]
-			var IRP_line_idx = [4, 5, 8, 9]
-			var current_line_idx = this.MRS_mapping_flag[current_flag]
-			var metric_line_idx = []
-
-			if(metric == 'DCI') {
-				metric_line_idx = DCI_line_idx
+		check_metrics_computable(metric_line_idx, current_flag) {
+			var current_line_idx = 0
+			
+			if(current_flag.includes('MRS')) {
+				current_line_idx = this.MRS_mapping_flag[current_flag]
 			}
-			else if(metric == 'IRP') {
-				metric_line_idx = IRP_line_idx
+			else if(current_flag.includes('HH')) {
+				current_line_idx = this.HH_mapping_flag[current_flag]
 			}
+			
 
 			if(metric_line_idx.includes(current_line_idx)) {
 				var temp = []
@@ -608,11 +846,45 @@ var vue_instance = {
 				}
 				return false
 			}
+			return false
+
+		},
+		compute_LES_CD(line_idx) {
+			var param_lst = []
+			for(var i=0; i<line_idx.length; i++) {
+				if(this.HH_mapping_flag[this.flag] == line_idx[i]) {
+					param_lst.push(this.mouse_y)
+				}
+				else {
+					param_lst.push(this.layout.shapes[line_idx[i]].y0)
+				}
+			}
+
+			var les_upper = param_lst[0]
+			var les_lower = param_lst[1]
+			var cd = param_lst[2]
+
+			// *10 /10 for 取到小數點第一位
+			var val = Math.round((cd - (les_upper + les_lower)/2) * 10) / 10
+			var seperate = true
+
+			if(val>1) {
+				seperate = true
+			}
+			else {
+				seperate = false
+			}
+
+			return [val, seperate]
 		},
 
-		compute_IRP() {
-			var x_line_lst = ['MRS_IRP_left', 'MRS_IRP_right']
-			var y_line_lst = ['MRS_LES_upper', 'MRS_LES_lower']
+		compute_IRP(line_idx) {
+			var flags = Object.keys(this.MRS_mapping_flag)
+
+			// -3 : keys的index從0開始，但傳進來的line_idx的前3個是用來hover的線，所以要-3
+			// 前兩個是水平線，後兩個是垂直線
+			var x_line_lst = [flags[line_idx[2]-3], flags[line_idx[3]-3]]
+			var y_line_lst = [flags[line_idx[0]-3], flags[line_idx[1]-3]]
 
 			var IRP_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
 			
@@ -622,7 +894,7 @@ var vue_instance = {
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
 
 			// 1 for p2 sensor
-			var gastric_pressure = this.raw_data[1].slice(min_x, max_x+1)
+			var gastric_pressure = this.raw_data[0].slice(min_x, max_x+1)
 
 			for(var i=0; i<IRP_raw_data.length; i++) {
 				for(var j=0; j<IRP_raw_data[0].length; j++) {
@@ -656,9 +928,13 @@ var vue_instance = {
 			return IRP
 		},
 		
-		compute_DCI() {
-			var x_line_lst = ['MRS_DCI_left', 'MRS_DCI_right']
-			var y_line_lst = ['MRS_TZ', 'MRS_LES_upper']
+		compute_DCI(line_idx) {
+			var flags = Object.keys(this.MRS_mapping_flag)
+			// -3 : keys的index從0開始，但傳進來的line_idx的前3個是用來hover的線，所以要-3
+			// 前兩個是水平線，後兩個是垂直線
+			var x_line_lst = [flags[line_idx[2]-3], flags[line_idx[3]-3]]
+			var y_line_lst = [flags[line_idx[0]-3], flags[line_idx[1]-3]]
+
 
 			var DCI_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
 			console.log(DCI_raw_data)
@@ -707,9 +983,9 @@ var vue_instance = {
 						DCI_old += over20 * duration * len
 						ct+=1
 					}
-					if(DCI_raw_data[i][j] > 23 && DCI_raw_data[i][j+1] > 23) {
+					if(DCI_raw_data[i][j] > 20 && DCI_raw_data[i][j+1] > 20) {
 						var mean_p = (DCI_raw_data[i][j] + DCI_raw_data[i][j+1]) / 2
-						mean_p -= 23
+						mean_p -= 20
 						DCI += mean_p * duration * len
 						ct2+=1
 					}
@@ -769,6 +1045,7 @@ var vue_instance = {
 			return return_raw_data
 		},
 
+		// 將mouse位置映射到資料點的index
 		get_y_index(y, type) {
 			for(var i=0; i<this.catheter_scale.length; i++) {
 				if(this.catheter_scale[i] <= y) {
@@ -782,6 +1059,7 @@ var vue_instance = {
 			}
 		},
 
+		// 將mouse位置映射到資料點的index
 		get_x_index(x, type) {
 			for(var i=0; i<this.time_scale.length; i++) {
 				if(this.time_scale[i] >= x) {
@@ -795,6 +1073,7 @@ var vue_instance = {
 			}
 		},
 
+		// 取得4個邊界確切的位置
 		get_xy_lst(x_line_lst, y_line_lst) {
 			var x_lst = []
 			var y_lst = []
