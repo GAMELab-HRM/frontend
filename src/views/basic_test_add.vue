@@ -375,14 +375,16 @@ export default {
 
 		// MRS
 		// 繪圖initial data
-		// [for 品峰 請將所有subtest的raw data放在這]
+		// [for 品峰]
+		// 請將所有subtest的raw data放在這
 		this.MRS_draw_param['draw_obj_lst'] = str_data['rawdata']
 		// 預設繪製 mrs subtest1
 		this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
 
 		// HH
 		// 繪圖initial data
-		// [for 品峰 Hiatal hernia的raw data放在這]
+		// [for 品峰]
+		// Hiatal hernia的raw data放在這
 		this.HH_draw_param['draw_obj_lst'] = str_data['rawdata']
 		this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 
@@ -422,35 +424,32 @@ export default {
 			}
 		}
 
-		// [for 品峰]
-		// 測試用，確認api可用後，請刪掉此行
-		this.MRS_draw_param['polys'] = MRS_draw_info
+		// [for 品峰] call GetMRSDrawInfo(in apis/mrs.js)
 
-		// [for 品峰]
-		// 測試用，確認api可用後，請刪掉此行
-		this.HH_draw_param['polys'] = HH_draw_info
+		// 測試，用不到的話可刪
+		this.set_backend_draw_param('MRS', MRS_draw_info)
 
-		// [for 品峰]
-		// retv 由api取得，或是可以用MRS_draw_info(in fake_backend.js)測試
-
+		// 把MRS圖的資料傳到前端
 		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-        //     console.log("Call get MRS DrawInfo API successed!")
+		// 	console.log("Call get MRS DrawInfo API successed!")
 		// 	let retv = res.data
-		// 	this.set_draw_param('MRS', retv)
-		// 	// this.set_draw_param('MRS', MRS_draw_info)
+		// 	this.set_backend_draw_param('MRS', retv)
 		// }).catch((err)=>{
-        //     console.log("Call get MRS DrawInfo API Failed!")
+		// 	console.log("Call get MRS DrawInfo API Failed!")
 		// 	console.log(err)
 		// })
 		
-		// [for 品峰]
-		// retv 由api取得，或是可以用HH_draw_info(in fake_backend.js)測試
+		
+		// [for 品峰] call GetHHDrawInfo(in apis/hh.js)
 
+		// 測試，用不到的話可刪
+		this.set_backend_draw_param('HH', HH_draw_info)
+
+		// 把HH圖的資料傳到前端
 		// GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
         //     console.log("Call get HH DrawInfo API successed!")
 		// 	let retv = res.data
-		// 	this.set_draw_param('HH', retv)
-		// 	// this.set_draw_param('HH', HH_draw_info)
+		// 	this.set_backend_draw_param('HH', retv)
 		// }).catch((err)=>{
         //     console.log("Call get HH DrawInfo API Failed!")
 		// 	console.log(err)
@@ -747,7 +746,7 @@ export default {
 
 		// [TODO]
 		// add json parse
-		set_draw_param(test, polys) {
+		set_backend_draw_param(test, polys) {
 			// get_backend_poly is deprecated
 			// this.get_backend_polys(test, polys)
 			
@@ -759,25 +758,24 @@ export default {
 			}
 			// update btn status
 			// key=MRS1、MRS2、...
-			// var key=''
-			// for(var i=0; i<polys.length; i++) {
-			// 	key = Object.keys(polys)[i]
-			// 	if(test=="MRS") {
-			// 		for(var j=0; j<polys[key].length; j++) {
-			// 			this.MRS_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
-			// 		}
-			// 		if(polys[key].length>0) {
-			// 			this.MRS_draw_param['ini'][key] = false
-			// 		}
-			// 	}
-			// 	// 目前HH不會有subtest，所以poly_dict長度應為1
-			// 	else if(test=='HH') {
-			// 		for(j=0; j<polys[key].length; j++) {
-			// 			this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
-			// 		}
-			// 	}
-			// }
-			// this.draw_btn_rerender += 1
+			var key=''
+			for(var i=0; i<polys.length; i++) {
+				key = Object.keys(polys)[i]
+				if(test=="MRS") {
+					for(var j=0; j<polys[key].length; j++) {
+						this.MRS_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
+					}
+					if(polys[key].length>0) {
+						this.MRS_draw_param['ini'][key] = false
+					}
+				}
+				else if(test=='HH') {
+					for(j=0; j<polys[key].length; j++) {
+						this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
+					}
+				}
+			}
+			this.draw_btn_rerender += 1
 		},
 
 		// [TODO]
