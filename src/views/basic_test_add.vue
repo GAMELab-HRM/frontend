@@ -174,7 +174,10 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
+import {GetMRSDrawInfo, UpdateMRSDrawInfo} from "@/apis/mrs.js"
+import {GetHHDrawInfo, UpdateHHDrawInfo} from "@/apis/hh.js"
+// import {MRS_draw_info, HH_draw_info} from '@/utils/fake_backend.js'
+
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -416,15 +419,30 @@ export default {
 				MRS_IRP2_right: true,
 			}
 		}
+
 		// [for 品峰]
-		// MRS_draw_info、HH_draw_info 由api取得
-		this.set_draw_param('MRS', MRS_draw_info)
-		this.set_draw_param('HH', HH_draw_info)
-
-		console.log(MRS_draw_info)
-		console.log(this.MRS_draw_param['polys'])
-		console.log(this.HH_draw_param['polys'])
-
+		// retv 由api取得，或是可以用MRS_draw_info(in fake_backend.js)測試
+		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+            console.log("Call get MRS DrawInfo API successed!")
+			let retv = res.data
+			this.set_draw_param('MRS', retv)
+			// this.set_draw_param('MRS', MRS_draw_info)
+		}).catch((err)=>{
+            console.log("Call get MRS DrawInfo API Failed!")
+			console.log(err)
+		})
+		
+		// [for 品峰]
+		// retv 由api取得，或是可以用HH_draw_info(in fake_backend.js)測試
+		GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+            console.log("Call get HH DrawInfo API successed!")
+			let retv = res.data
+			this.set_draw_param('HH', retv)
+			// this.set_draw_param('HH', HH_draw_info)
+		}).catch((err)=>{
+            console.log("Call get HH DrawInfo API Failed!")
+			console.log(err)
+		})
 
 		// initial HH all metrics data
 		this.HH_draw_param['metrics'] = {
@@ -582,18 +600,53 @@ export default {
 				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
-			}
-			console.log(this.ws_10_object)
 
-			UpdateWetSwallow(this.ws_10_object).then((res)=>{
-                console.log("Call update WS API successed!")
-				console.log(res)
-				this.$message({message: '更新成功!',type: 'success'});
-			}).catch((err)=>{
-                console.log("Call update WS API successed!")
-				console.log(err)
-				this.$message.error('更新失敗!');
-			})
+				UpdateWetSwallow(this.ws_10_object).then((res)=>{
+					console.log("Call update WS API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update WS API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+			}
+			else if(test_type == 'MRS') {
+				// [for 品峰] call UpdateMRSDrawInfo
+				// 我不確定後端那邊要怎麼設計，你再修改UpdateMRSDrawInfo(in apis/mrs.js)
+
+				// 可刪
+				// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
+
+				UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update MRSDrawInfo API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update MRSDrawInfo API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+			}
+			else if(test_type == 'HH') {
+				// [for 品峰] call UpdateHHDrawInfo
+				// 我不確定後端那邊要怎麼設計，你再修改UpdateHHDrawInfo(in apis/hh.js)
+
+				// 可刪
+				// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+
+				UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update HHDrawInfo API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update HHDrawInfo API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+			}
+
+			
 
 			
 			// if(this.send_doctor_num==1) {
@@ -618,15 +671,13 @@ export default {
 			if(type == 'mrs'){
 				this.mrs_confirm = false
 				if(confirm_result) {
-					// [for 品峰 call send backend]
-					console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
+					this.send_backend('MRS')
 				}
 			}
 			if(type == 'hh'){
 				this.hh_confirm = false
 				if(confirm_result) {
-					// [for 品峰 call send backend]
-					console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+					this.send_backend('HH')
 					
 				}
 			}
