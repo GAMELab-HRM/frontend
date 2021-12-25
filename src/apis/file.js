@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 export function uploadFileDemo(obj){
     let config = {
-        url:'http://140.118.157.26:8000/api/v1/files',
+        url:'/api/v1/files',
         method:'POST',
         data: obj,
         headers:{
@@ -15,7 +15,7 @@ export function uploadFileDemo(obj){
 
 export function uploadFile(obj){
     let config = {
-        url: 'http://140.118.157.26:8000/api/v1/files',
+        url: '/api/v1/files',
         method: 'POST',
         data: obj,
         headers:{
