@@ -124,7 +124,7 @@
 
 			<el-row type="flex" class="row-bg" justify="space-between">
 				<el-col :span="14">
-					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
+					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
 				</el-col>
 				<el-col :span="7" >
 					<div style="margin-top: 50px">
@@ -407,7 +407,7 @@ export default {
 			// 移到最後統一對所有subtest set
 			// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
 			
-			this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
+			// this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
 			// for deep copy
 			this.MRS_draw_param['disable_dict']['MRS'+(i+1).toString()] = {
 				MRS_TZ: false,
@@ -749,7 +749,7 @@ export default {
 		set_backend_draw_param(test, polys) {
 			// get_backend_poly is deprecated
 			// this.get_backend_polys(test, polys)
-			
+
 			if(test=='MRS') {
 				this.MRS_draw_param['polys'] = polys
 			}
