@@ -1,11 +1,11 @@
 import request from '../utils/request'
 
 export function GetHHDrawInfo(record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/HH/draw_info'
     let config = {
-        url: sample_url + "/" + record_id,
+        url: '/api/v1/hh/drawinfo',
         method: 'GET',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
     }
@@ -14,11 +14,11 @@ export function GetHHDrawInfo(record_id, d_id) {
 }
 
 export function UpdateHHDrawInfo(obj, record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/HH/draw_info'
     let config = {
-        url: sample_url + '/' + record_id,
+        url: '/api/v1/hh/drawinfo',
         method: 'PUT',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
         data: obj
@@ -27,13 +27,22 @@ export function UpdateHHDrawInfo(obj, record_id, d_id) {
 }
 
 // 缺GetHHRawData的api
-
-export function GetHHMetrics(record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/HH/metrics'
+export function GetHHRawData(record_id) {
     let config = {
-        url: sample_url + "/" + record_id,
+        url: 'api/v1/hh/rawdata',
         method: 'GET',
         params: {
+            record_id: record_id
+        }
+    }
+    return request(config)
+}
+export function GetHHMetrics(record_id, d_id) {
+    let config = {
+        url: '/api/v1/hh/metrics',
+        method: 'GET',
+        params: {
+            record_id: record_id,
             doctor_id: d_id
         },
     }
@@ -42,11 +51,11 @@ export function GetHHMetrics(record_id, d_id) {
 }
 
 export function UpdateHHMetrics(obj, record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/HH/metrics'
     let config = {
-        url: sample_url + '/' + record_id,
+        url: '/api/v1/hh/metrics',
         method: 'PUT',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
         data: obj
