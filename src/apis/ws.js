@@ -11,9 +11,10 @@ export function UpdateWetSwallow(obj){
 
 export function GetWetSwallow(record_id, d_id){
     let config = {
-        url:'/api/v1/swallows/data'+"/"+record_id,
+        url:'/api/v1/swallows/data',
         method:'GET',
         params:{
+            record_id: record_id,
             doctor_id:d_id
         }
     }
