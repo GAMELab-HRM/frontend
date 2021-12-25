@@ -1,11 +1,10 @@
 import request from '../utils/request'
-
 export function GetMRSDrawInfo(record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/draw_info'
     let config = {
-        url: sample_url + "/" + record_id,
+        url: '/api/v1/mrs/drawinfo',
         method: 'GET',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
     }
@@ -14,11 +13,11 @@ export function GetMRSDrawInfo(record_id, d_id) {
 }
 
 export function UpdateMRSDrawInfo(obj, record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/draw_info'
     let config = {
-        url: sample_url + '/' + record_id,
+        url: '/api/v1/mrs/drawinfo',
         method: 'PUT',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
         data: obj
@@ -27,13 +26,23 @@ export function UpdateMRSDrawInfo(obj, record_id, d_id) {
 }
 
 // 缺GetMRSRawData的api
-
-export function GetMRSMetrics(record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/metrics'
+export function GetMRSRawData(record_id) {
     let config = {
-        url: sample_url + "/" + record_id,
+        url: '/api/v1/mrs/rawdata',
         method: 'GET',
         params: {
+            record_id: record_id
+        }
+    }
+    return request(config)
+}
+
+export function GetMRSMetrics(record_id, d_id) {
+    let config = {
+        url: '/api/v1/mrs/metrics',
+        method: 'GET',
+        params: {
+            record_id: record_id,
             doctor_id: d_id
         },
     }
@@ -42,11 +51,11 @@ export function GetMRSMetrics(record_id, d_id) {
 }
 
 export function UpdateMRSMetrics(obj, record_id, d_id) {
-    var sample_url = 'http://140.118.157.26:8000/api/v1/MRS/metrics'
     let config = {
-        url: sample_url + '/' + record_id,
+        url: '/api/v1/mrs/metrics',
         method: 'PUT',
         params: {
+            record_id: record_id,
             doctor_id: d_id
         },
         data: obj
