@@ -278,7 +278,14 @@ var vue_instance = {
 			this.$emit('update_draw_btn_status', {'flag': this.polys[i]['flag'], 'status': true})
 		}
 		for(i=0; i<this.polys.length; i++) {
-			this.layout.shapes[this.MRS_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
+			var f = this.polys[i]['flag']
+			if(f.includes('MRS')) {
+				this.layout.shapes[this.MRS_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
+			}
+			else if(f.includes('HH')) {
+				this.layout.shapes[this.HH_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
+			}
+			
 			if(this.polys[i]['draw_type'] == 'horizontal') {
 				this.flag = this.polys[i]['flag']
 				this.add_line_title(this.polys[i]['flag'], this.polys[i]['y0'])
