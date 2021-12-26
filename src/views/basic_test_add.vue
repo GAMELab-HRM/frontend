@@ -1117,7 +1117,12 @@ export default {
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
-			this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+			if(DCI_lst.length>0) {
+				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+			}
+			else {
+				this.MRS_draw_data[5]['value'] = 0
+			}
 		},
 		set_Mean_DCI() {
 			var DCI_lst = []
@@ -1126,8 +1131,13 @@ export default {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
-
-			this.MRS_draw_data[5]['value'] = average(DCI_lst)
+			if(DCI_lst.length>0) {
+				this.MRS_draw_data[5]['value'] = average(DCI_lst)
+			}
+			else {
+				this.MRS_draw_data[5]['value'] = 0
+			}
+			
 		}
 	}
 }
