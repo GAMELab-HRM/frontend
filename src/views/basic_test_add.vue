@@ -278,56 +278,64 @@ export default {
 			MRS_metrics_table_data:[{
 				'metrics': 'Time Zone'
 			},{
-				'metrics': 'LES upper line'
+				'metrics': 'LES upper'
 			}, {
-				'metrics': 'LES lower line'
+				'metrics': 'LES lower'
 			}, {
-				'metrics': 'DCI1 left line'
+				'metrics': 'during MRS DCI left'
 			}, {
-				'metrics': 'DCI1 right line'
+				'metrics': 'during MRS DCI right'
 			},  {
-				'metrics': 'DCI2 left line'
+				'metrics': 'post MRS DCI left'
 			},  {
-				'metrics': 'DCI2 right line'
+				'metrics': 'post MRS DCI right'
 			}, {
-				'metrics': 'IRP1 left line'
+				'metrics': 'during MRS IRP left'
 			}, {
-				'metrics': 'IRP1 right line'
+				'metrics': 'during MRS IRP right'
 			}, {
-				'metrics': 'IRP2 left line'
+				'metrics': 'post MRS IRP left'
 			}, {
-				'metrics': 'IRP2 right line'
+				'metrics': 'post MRS IRP right'
 			}],
 
 			HH_metrics_table_data:[{
-				'metrics': 'UES upper line'
+				'metrics': 'UES upper'
 			},{
-				'metrics': 'UES lower line'
+				'metrics': 'UES lower'
 			}, {
-				'metrics': 'LES upper line'
+				'metrics': 'LES upper'
 			}, {
-				'metrics': 'LES lower line'
+				'metrics': 'LES lower'
 			}, {
-				'metrics': 'RIP line'
+				'metrics': 'RIP'
 			}, {
-				'metrics': 'CD line'
+				'metrics': 'CD'
 			}],
 
 			MRS_draw_data: [
 			{
-				flag: 'MRS DCI1',
+				flag: 'MRS during DCI',
 				value: 0
 			}, 
 			{
-				flag: 'MRS DCI2',
+				flag: 'MRS post DCI',
 				value: 0
 			},
 			{
-				flag: 'MRS IRP1',
+				flag: 'MRS during IRP',
 				value: 0
 			},
 			{
-				flag: 'MRS IRP2',
+				flag: 'MRS post IRP',
+				value: 0
+			},
+			{
+				flag: 'Max MRS post DCI',
+				value: 0
+			},
+			{
+				flag: 'Mean MRS post DCI',
 				value: 0
 			},
 			{
@@ -535,18 +543,34 @@ export default {
 		},
 
 		// update mrs send btn status
-		// [Future work]還需要加入畫圖的檢測
 		update_mrs_send_btn: function() {
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+					this.mrs_send_disable = true
+					return
+				}
+			}
+			if(this.mrs_selected == false) {
+				this.mrs_send_disable = true
+				return
+			}
+
 			this.mrs_send_disable = false
-			// this.mrs_send_disable = true
 		},
 
 		// update hh send btn status
-		// [Future work]還需要加入畫圖的檢測
 		update_hh_send_btn: function() {
+			if(this.HH_draw_param['polys']['landmark'].length < Object.keys(this.HH_draw_param['disable_dict']).length) {
+				this.hh_send_disable = true
+				return
+			}
+
 			if(this.hh_selected && this.rip_selected) {
 				this.hh_send_disable = false
+				return
 			}
+
+			this.hh_send_disable = false
 		},
 		
 		// get ws_10 table data
@@ -776,6 +800,9 @@ export default {
 				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
 				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
+
 			}
 			else if(test=='HH') {
 				this.HH_draw_param['metrics'] = metrics
@@ -809,9 +836,11 @@ export default {
 		get_polys(test, poly_lst) {
 			if(test=='MRS') {
 				this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
+				this.update_mrs_send_btn()
 			}
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
+				this.update_hh_send_btn()
 			}
 		},
 
@@ -912,6 +941,10 @@ export default {
 				this.$refs.MRS_draw.clear_target(idx_lst)
 				// 借用key而已
 				this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_draw_param['disable_dict']["MRS1"])[idx])
+			
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
+			
 			}
 			else if(test=='HH') {
 				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
@@ -964,16 +997,19 @@ export default {
 				// force table data change
 				this.MRS_draw_data[0]['value'] = obj['DCI']
 				if(obj['DCI']<100) {
-					this.MRS_draw_data[4]['value'] = 'incomplete'
+					this.MRS_draw_data[6]['value'] = 'incomplete'
 				}
 				else {
-					this.MRS_draw_data[4]['value'] = 'complete'
+					this.MRS_draw_data[6]['value'] = 'complete'
 				}
 			}
 			else if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2'] = obj['DCI']
 				// force table data change
 				this.MRS_draw_data[1]['value'] = obj['DCI']
+
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
 			}
 		},
 
@@ -1022,6 +1058,9 @@ export default {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
 				// force table data change
 				this.MRS_draw_data[3]['value'] = 0
+
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
 				
 			}
 			else if(test=='HH') {
@@ -1032,7 +1071,7 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[5]['value'] = val
+				this.MRS_draw_data[7]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
@@ -1071,6 +1110,24 @@ export default {
 				'HH_RIP': false,
 				'HH_CD': false,
 			}
+		},
+		set_Max_DCI() {
+			var DCI_lst = []
+
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
+			}
+			this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+		},
+		set_Mean_DCI() {
+			var DCI_lst = []
+
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
+			}
+			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
+
+			this.MRS_draw_data[5]['value'] = average(DCI_lst)
 		}
 	}
 }
