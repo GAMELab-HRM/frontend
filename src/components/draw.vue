@@ -524,7 +524,12 @@ var vue_instance = {
 				new_y1 = this.layout.shapes[4].y0
 
 				// set color
-				color = 'rgb(255, 0, 0)'
+				if(this.flag.includes('1')) {
+					color = 'rgb(255, 0, 0)'
+				}
+				else if(this.flag.includes('2')) {
+					color = 'rgb(245, 164, 66)'
+				}
 			}
 			else if(this.flag.includes('IRP')) {
 				// LES lower
@@ -534,7 +539,12 @@ var vue_instance = {
 				new_y1 = this.layout.shapes[5].y0
 
 				// set color
-				color = 'rgb(136, 32, 240)'
+				if(this.flag.includes('1')) {
+					color = 'rgb(135, 66, 245)'
+				}
+				else if(this.flag.includes('2')) {
+					color = 'rgb(245, 66, 239)'
+				}
 			}
 			
 			var new_line = {
