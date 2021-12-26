@@ -30,15 +30,15 @@ export let mrs_options = [
 
 export let hh_options = [
     {
-        value: 'no_hh',
+        value: 'no_HH',
         label: 'No Hiatal hernia'
     },
     {
-        value: 'indet_hh',
+        value: 'indeterminant_HH',
         label: 'Hiatal hernia indeterminant'
     },
     {
-        value: 'hh',
+        value: 'HH',
         label: 'Hiatal hernia'
     }
 ]
