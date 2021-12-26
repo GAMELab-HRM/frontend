@@ -853,6 +853,8 @@ export default {
 			this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
 			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+
+			this.set_DI()
 		},
 
 		update_draw_btn(obj) {
@@ -996,12 +998,8 @@ export default {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1'] = obj['DCI']
 				// force table data change
 				this.MRS_draw_data[0]['value'] = obj['DCI']
-				if(obj['DCI']<100) {
-					this.MRS_draw_data[6]['value'] = 'incomplete'
-				}
-				else {
-					this.MRS_draw_data[6]['value'] = 'complete'
-				}
+				
+				this.set_DI()
 			}
 			else if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2'] = obj['DCI']
@@ -1059,6 +1057,7 @@ export default {
 				// force table data change
 				this.MRS_draw_data[3]['value'] = 0
 
+				this.set_DI()
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
 				
@@ -1138,6 +1137,15 @@ export default {
 				this.MRS_draw_data[5]['value'] = 0
 			}
 			
+		},
+
+		set_DI() {
+			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
+				this.MRS_draw_data[6]['value'] = 'incomplete'
+			}
+			else {
+				this.MRS_draw_data[6]['value'] = 'complete'
+			}
 		}
 	}
 }
