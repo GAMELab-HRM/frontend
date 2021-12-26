@@ -335,7 +335,11 @@ export default {
 				value: 0
 			},
 			{
-				flag: 'Mean MRS post DCI',
+				flag: 'Mean MRS post DCI\n*需全部subtest標記完成的值才較可信',
+				value: 0
+			},
+			{
+				flag: 'DCI ratio',
 				value: 0
 			},
 			{
@@ -387,6 +391,7 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
+			this.set_DCI_ratio()
 			this.ws_10_result = retv["ws_result"]
 		}).catch((err)=>{
             console.log("Call get swallow API Failed!")
@@ -802,6 +807,7 @@ export default {
 
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
+				this.set_DCI_ratio()
 
 			}
 			else if(test=='HH') {
@@ -855,6 +861,7 @@ export default {
 			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 			this.set_DI()
+			this.set_DCI_ratio()
 		},
 
 		update_draw_btn(obj) {
@@ -1008,6 +1015,7 @@ export default {
 
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
+				this.set_DCI_ratio()
 			}
 		},
 
@@ -1070,7 +1078,7 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[7]['value'] = val
+				this.MRS_draw_data[8]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
@@ -1141,10 +1149,25 @@ export default {
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[6]['value'] = 'incomplete'
+				this.MRS_draw_data[7]['value'] = 'incomplete'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = 'complete'
+				this.MRS_draw_data[7]['value'] = 'complete'
+			}
+		},
+		set_DCI_ratio() {
+			var lst = Object.values(this.table_data[4])
+			var ws_10_DCI = 0
+			for(var i=1; i<lst.length; i++) {
+				ws_10_DCI+=parseFloat(lst[i])
+			}
+			
+			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
+			if(MRS_DCI == 0) {
+				this.MRS_draw_data[6]['value'] = 'undefine'
+			}
+			else {
+				this.MRS_draw_data[6]['value'] = ws_10_DCI / MRS_DCI
 			}
 		}
 	}
@@ -1183,6 +1206,9 @@ export default {
 .send_btn {
 	margin-top: 30px;
 	margin-bottom: 50px
+}
+::v-deep .el-table .cell {
+	white-space: pre-line;
 }
 
 
