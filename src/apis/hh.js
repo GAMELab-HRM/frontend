@@ -62,3 +62,31 @@ export function UpdateHHMetrics(obj, record_id, d_id) {
     }
     return request(config)
 }
+
+// [for 品峰]
+export function UpdateHHResult(obj, record_id, d_id) {
+    let config = {
+        url: '/api/v1/hh/metrics',
+        method: 'PUT',
+        params: {
+            record_id: record_id,
+            doctor_id: d_id
+        },
+        data: obj
+    }
+    return request(config)
+}
+
+// [for 品峰]
+export function GetHHResult(record_id, d_id) {
+    let config = {
+        url: '/api/v1/hh/metrics',
+        method: 'GET',
+        params: {
+            record_id: record_id,
+            doctor_id: d_id
+        },
+    }
+
+    return request(config)
+}

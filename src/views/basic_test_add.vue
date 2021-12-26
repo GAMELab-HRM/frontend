@@ -99,7 +99,7 @@
 			<!-- section2 dialog end -->
 			<!-- section2 end -->
 
-			<div v-if="hh_drawinfo_show & hh_metric_show & hh_rawdata_show">
+			<div v-if="hh_drawinfo_show & hh_result_show & rip_result_show & hh_metric_show & hh_rawdata_show">
 				<!-- section3 start -->
 				<el-row :gutter="1">
 					<el-col :span="4">
@@ -176,7 +176,7 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
-import {UpdateHHDrawInfo, UpdateHHMetrics, GetHHDrawInfo, GetHHMetrics, GetHHRawData} from "@/apis/hh.js"
+import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -195,6 +195,8 @@ export default {
 			mrs_drawinfo_show: false,
 			mrs_metric_show: false,
 			mrs_rawdata_show: false,
+			hh_result_show: false,
+			rip_result_show: false,
 			hh_drawinfo_show: false,
 			hh_metric_show: false,
 			hh_rawdata_show: false,
@@ -449,9 +451,23 @@ export default {
 			console.log(err)
 		})
 
-		// [for 品峰] call GetHHDrawInfo(in apis/hh.js)
+		GetHHResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get HH Result API successed!")
+			let retv = res.data
+			this.hh_result = retv['hh_result']
+			this.rip_result = retv['rip_result']
+			this.hh_result_show = true 
+			this.rip_result_show = true
+		}).catch((err)=>{
+			console.log("Call get HH Result API Failed!")
+			console.log(err)
+			// API開之前為了測試先這樣寫
+			this.hh_result = ''
+			this.rip_result = ''
+			this.hh_result_show = true
+			this.rip_result_show = true
+		})
 
-		// [for 品峰] call GetHHMetrics(in apis/hh.js)
 		// 把HH圖的資料傳到前端
 		GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get HH DrawInfo API successed!")
@@ -623,10 +639,10 @@ export default {
 
 				// [for 品峰]
 				// 把MRS的結果傳到後端
-				var result_obj = {
+				var mrs_result_obj = {
 					'mrs_result': this.mrs_result
 				}
-				UpdateMRSResult(result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+				UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 					console.log("Call update MRS Result API successed!")
 					console.log(res)
 					this.$message({message: '更新成功!',type: 'success'});
@@ -668,6 +684,20 @@ export default {
 					this.$message({message: '更新成功!',type: 'success'});
 				}).catch((err)=>{
 					console.log("Call update HHMetrics API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+
+				var hh_result_obj = {
+					'hh_result': this.hh_result,
+					'rip_result': this.rip_result
+				}
+				UpdateHHResult(hh_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update HH Result API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update HH Result API successed!")
 					console.log(err)
 					this.$message.error('更新失敗!');
 				})
