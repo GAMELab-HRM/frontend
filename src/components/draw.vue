@@ -463,6 +463,12 @@ var vue_instance = {
 				}
 			}
 			else if(this.flag.includes('HH')) {
+				if(this.flag.includes('CD')) {
+					new_line['line']['color'] = 'rgb(235, 82, 52)'
+				}
+				else if(this.flag.includes('RIP')) {
+										new_line['line']['color'] = 'rgb(52, 95, 235)'
+				}
 				this.layout.shapes[this.HH_mapping_flag[this.flag]] = new_line
 			}
 
