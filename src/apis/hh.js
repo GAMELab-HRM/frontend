@@ -66,7 +66,7 @@ export function UpdateHHMetrics(obj, record_id, d_id) {
 // [for 品峰]
 export function UpdateHHResult(obj, record_id, d_id) {
     let config = {
-        url: '/api/v1/hh/metrics',
+        url: '/api/v1/hh/result',
         method: 'PUT',
         params: {
             record_id: record_id,
@@ -80,7 +80,7 @@ export function UpdateHHResult(obj, record_id, d_id) {
 // [for 品峰]
 export function GetHHResult(record_id, d_id) {
     let config = {
-        url: '/api/v1/hh/metrics',
+        url: '/api/v1/hh/result',
         method: 'GET',
         params: {
             record_id: record_id,

@@ -36,7 +36,7 @@
 
 			<!-- section2 start -->
 			<!-- & mrs_result_show -->
-			<div v-if="mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
+			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
 					<el-col :span="4">
 						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -426,9 +426,6 @@ export default {
 		}).catch((err)=>{
 			console.log("Call get MRS Result API Failed!")
 			console.log(err)
-			// API開之前為了測試先這樣寫
-			this.mrs_result = ''
-			this.mrs_result_show = true 
 		})
 
 		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
@@ -461,11 +458,6 @@ export default {
 		}).catch((err)=>{
 			console.log("Call get HH Result API Failed!")
 			console.log(err)
-			// API開之前為了測試先這樣寫
-			this.hh_result = ''
-			this.rip_result = ''
-			this.hh_result_show = true
-			this.rip_result_show = true
 		})
 
 		// 把HH圖的資料傳到前端
