@@ -80,6 +80,7 @@ var vue_instance = {
                 },
 				line: {
 					color: 'black',
+					width: 0,
 				},
 				autocolorscale: false,
 				colorscale:[
