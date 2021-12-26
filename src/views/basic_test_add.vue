@@ -543,18 +543,34 @@ export default {
 		},
 
 		// update mrs send btn status
-		// [Future work]還需要加入畫圖的檢測
 		update_mrs_send_btn: function() {
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+					this.mrs_send_disable = true
+					return
+				}
+			}
+			if(this.mrs_selected == false) {
+				this.mrs_send_disable = true
+				return
+			}
+
 			this.mrs_send_disable = false
-			// this.mrs_send_disable = true
 		},
 
 		// update hh send btn status
-		// [Future work]還需要加入畫圖的檢測
 		update_hh_send_btn: function() {
+			if(this.HH_draw_param['polys']['landmark'].length < Object.keys(this.HH_draw_param['disable_dict']).length) {
+				this.hh_send_disable = true
+				return
+			}
+
 			if(this.hh_selected && this.rip_selected) {
 				this.hh_send_disable = false
+				return
 			}
+
+			this.hh_send_disable = false
 		},
 		
 		// get ws_10 table data
@@ -817,9 +833,11 @@ export default {
 		get_polys(test, poly_lst) {
 			if(test=='MRS') {
 				this.MRS_draw_param['polys']['MRS'+this.mrs_subtest.toString()] = poly_lst
+				this.update_mrs_send_btn()
 			}
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
+				this.update_hh_send_btn()
 			}
 		},
 
