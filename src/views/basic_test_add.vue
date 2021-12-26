@@ -331,6 +331,14 @@ export default {
 				value: 0
 			},
 			{
+				flag: 'Max MRS post DCI',
+				value: 0
+			},
+			{
+				flag: 'Mean MRS post DCI',
+				value: 0
+			},
+			{
 				flag: 'Deglutitive inhibition',
 				value: 'incomplete'
 			},
@@ -800,6 +808,9 @@ export default {
 				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
 				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
+
 			}
 			else if(test=='HH') {
 				this.HH_draw_param['metrics'] = metrics
@@ -938,6 +949,10 @@ export default {
 				this.$refs.MRS_draw.clear_target(idx_lst)
 				// 借用key而已
 				this.$refs.MRS_draw.delete_line_title(Object.keys(this.MRS_draw_param['disable_dict']["MRS1"])[idx])
+			
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
+			
 			}
 			else if(test=='HH') {
 				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
@@ -990,16 +1005,19 @@ export default {
 				// force table data change
 				this.MRS_draw_data[0]['value'] = obj['DCI']
 				if(obj['DCI']<100) {
-					this.MRS_draw_data[4]['value'] = 'incomplete'
+					this.MRS_draw_data[6]['value'] = 'incomplete'
 				}
 				else {
-					this.MRS_draw_data[4]['value'] = 'complete'
+					this.MRS_draw_data[6]['value'] = 'complete'
 				}
 			}
 			else if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2'] = obj['DCI']
 				// force table data change
 				this.MRS_draw_data[1]['value'] = obj['DCI']
+
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
 			}
 		},
 
@@ -1048,6 +1066,9 @@ export default {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
 				// force table data change
 				this.MRS_draw_data[3]['value'] = 0
+
+				this.set_Max_DCI()
+				this.set_Mean_DCI()
 				
 			}
 			else if(test=='HH') {
@@ -1058,7 +1079,7 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[5]['value'] = val
+				this.MRS_draw_data[7]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
@@ -1097,6 +1118,24 @@ export default {
 				'HH_RIP': false,
 				'HH_CD': false,
 			}
+		},
+		set_Max_DCI() {
+			var DCI_lst = []
+
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
+			}
+			this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+		},
+		set_Mean_DCI() {
+			var DCI_lst = []
+
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
+			}
+			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
+
+			this.MRS_draw_data[5]['value'] = average(DCI_lst)
 		}
 	}
 }
