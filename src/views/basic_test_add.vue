@@ -35,134 +35,136 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
-			<div v-if='mrs_show'>
-			<el-row>
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-						<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
-							<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
-						<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
-							<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-				<el-col :span="2">
-					<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-				</el-col>
-			</el-row>
-			<el-row type="flex" class="row-bg" justify="space-between">
-				<el-col :span="14">
-					<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+			<div v-if="mrs_drawinfo_show & mrs_metric_show & mrs_rawdata_show">
+				<el-row>
+					<el-col :span="4">
+						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+							<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
+								<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					<el-col :span="4">
+						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
+							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
+								<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					<el-col :span="2">
+						<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					</el-col>
+				</el-row>
+				<el-row type="flex" class="row-bg" justify="space-between">
+					<el-col :span="14">
+						<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
 
-					<!-- @change='changed=>splendid_change(scope.$index, changed)' -->
+						<!-- @change='changed=>splendid_change(scope.$index, changed)' -->
 
-				</el-col>
-				<el-col :span="7" >
-					<div style="margin-top: 50px">
-						<h2 style="padding-right: 100px">繪圖工具</h2>
-						<br>
-						<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
-						<br>
-						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
-							<el-table-column prop="metrics" label='Metrics'/>
-							<el-table-column label='Operation'>
-								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
-								</template>
-							</el-table-column>
+					</el-col>
+					<el-col :span="7" >
+						<div style="margin-top: 50px">
+							<h2 style="padding-right: 100px">繪圖工具</h2>
+							<br>
+							<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+							<br>
+							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+								<el-table-column prop="metrics" label='Metrics'/>
+								<el-table-column label='Operation'>
+									<template slot-scope="scope">
+										<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+										<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+									</template>
+								</el-table-column>
+							</el-table>
+						</div>
+						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="value"  label="值"/>
 						</el-table>
-					</div>
-					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-						<el-table-column prop="flag" label="參數"/>
-						<el-table-column prop="value"  label="值"/>
-					</el-table>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
-				</el-col>
-			</el-row>
+						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+					</el-col>
+				</el-row>
 
-			<!-- section2 dialog start -->
-			<el-dialog title="提示" :visible.sync="mrs_confirm" width="30%" center>
-				<span><h2> 確認送出? </h2></span>
-				<span slot="footer" class="dialog-footer">
-					<el-button type="primary" @click="confirm_send({status: true, test_type: 'mrs'})"> 確認 </el-button>
-					<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
-				</span>
-			</el-dialog>
+				<!-- section2 dialog start -->
+				<el-dialog title="提示" :visible.sync="mrs_confirm" width="30%" center>
+					<span><h2> 確認送出? </h2></span>
+					<span slot="footer" class="dialog-footer">
+						<el-button type="primary" @click="confirm_send({status: true, test_type: 'mrs'})"> 確認 </el-button>
+						<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
+					</span>
+				</el-dialog>
 			</div>
 			<!-- section2 dialog end -->
 			<!-- section2 end -->
 
-			<!-- section3 start -->
-			<el-row :gutter="1">
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
-						<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('hh')">
-							<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-				<el-col :span="4">
-					<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
-						<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('rip')">
-							<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-				<el-col :span="2">
-					<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-				</el-col>
-			</el-row>
+			<div v-if="hh_drawinfo_show & hh_metric_show & hh_rawdata_show">
+				<!-- section3 start -->
+				<el-row :gutter="1">
+					<el-col :span="4">
+						<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
+							<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('hh')">
+								<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					<el-col :span="4">
+						<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+							<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('rip')">
+								<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					<el-col :span="2">
+						<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					</el-col>
+				</el-row>
 
-			<el-row type="flex" class="row-bg" justify="space-between">
-				<el-col :span="14">
-					<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
-				</el-col>
-				<el-col :span="7" >
-					<div style="margin-top: 50px">
-						<h2 style="padding-right: 100px">繪圖工具</h2>
-						<br>
-						<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
-						<br>
-						<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
-							<el-table-column prop="metrics" label='Metrics'/>
-							<el-table-column label='Operation'>
-								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('HH', scope.$index)" :disabled="draw_disable('HH', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler('HH', scope.$index)" :disabled="delete_disable('HH', scope.$index)">刪除</el-button>
-								</template>
-							</el-table-column>
+				<el-row type="flex" class="row-bg" justify="space-between">
+					<el-col :span="14">
+						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
+					</el-col>
+					<el-col :span="7" >
+						<div style="margin-top: 50px">
+							<h2 style="padding-right: 100px">繪圖工具</h2>
+							<br>
+							<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
+							<br>
+							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
+								<el-table-column prop="metrics" label='Metrics'/>
+								<el-table-column label='Operation'>
+									<template slot-scope="scope">
+										<el-button type="primary" @click="draw_handler('HH', scope.$index)" :disabled="draw_disable('HH', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+										<el-button type="danger" @click="delete_handler('HH', scope.$index)" :disabled="delete_disable('HH', scope.$index)">刪除</el-button>
+									</template>
+								</el-table-column>
+							</el-table>
+						</div>
+						<el-table :data='HH_draw_data' style="width: 80%; margin-top:30px">
+							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="value"  label="值"/>
 						</el-table>
-					</div>
-					<el-table :data='HH_draw_data' style="width: 80%; margin-top:30px">
-						<el-table-column prop="flag" label="參數"/>
-						<el-table-column prop="value"  label="值"/>
-					</el-table>
-					<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
-					<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
-				</el-col>
-			</el-row>
+						<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+						<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+					</el-col>
+				</el-row>
 
-			<!-- section3 dialog start -->
-			<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
-				<span><h2> 確認送出? </h2></span>
-				<span slot="footer" class="dialog-footer">
-					<el-button type="primary" @click="confirm_send({status: true, test_type: 'hh'})"> 確認 </el-button>
-					<el-button type="danger" @click="confirm_send({status: false, test_type: 'hh'})"> 返回 </el-button>
-				</span>
-			</el-dialog>
-			<!-- section3 dialog end -->
-			<!-- section3 end -->
+				<!-- section3 dialog start -->
+				<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
+					<span><h2> 確認送出? </h2></span>
+					<span slot="footer" class="dialog-footer">
+						<el-button type="primary" @click="confirm_send({status: true, test_type: 'hh'})"> 確認 </el-button>
+						<el-button type="danger" @click="confirm_send({status: false, test_type: 'hh'})"> 返回 </el-button>
+					</span>
+				</el-dialog>
+				<!-- section3 dialog end -->
+				<!-- section3 end -->
+			</div>
 
 
 
@@ -173,14 +175,10 @@
 <script>
 import add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options } from "@/utils/optiondata.js"
-import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {UpdateMRSDrawInfo, UpdateMRSMetrics, GetMRSDrawInfo} from "@/apis/mrs.js"
-//GetMRSDrawInfo,  , GetMRSMetrics, 
-import {UpdateHHDrawInfo, UpdateHHMetrics} from "@/apis/hh.js"
-//GetHHDrawInfo,  , GetHHMetrics
-import {MRS_draw_info, HH_draw_info, MRS_metrics, HH_metrics} from '@/utils/fake_backend.js'
+import {UpdateMRSDrawInfo, UpdateMRSMetrics, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData} from "@/apis/mrs.js"
+import {UpdateHHDrawInfo, UpdateHHMetrics, GetHHDrawInfo, GetHHMetrics, GetHHRawData} from "@/apis/hh.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -195,6 +193,12 @@ export default {
 	data() {
 		return {
 			mrs_show:false,
+			mrs_drawinfo_show: false,
+			mrs_metric_show: false,
+			mrs_rawdata_show: false,
+			hh_drawinfo_show: false,
+			hh_metric_show: false,
+			hh_rawdata_show: false,
 			// basic test selector result
 			ws_10_result:'',
 			mrs_result: '',
@@ -365,7 +369,7 @@ export default {
 			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
 			
 			for(let i=0; i<eptmetric_order.length; i++){
-				console.log(res.data[eptmetric_order[i]])
+				//console.log(res.data[eptmetric_order[i]])
 				for(let j=0; j<10; j++){
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
@@ -376,108 +380,98 @@ export default {
 			console.log(err)
 		})
 
-		// MRS
-		// 繪圖initial data
-		// [for 品峰]
-		// 請將所有subtest的raw data放在這
-		this.MRS_draw_param['draw_obj_lst'] = str_data['rawdata']
-		// 預設繪製 mrs subtest1
-		this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
+		/*
+			[MRS] Raw Data 
+		*/
+		GetMRSRawData(this.current_record_id).then((res)=>{
+			console.log("Call get MRS RawData API successed!")
+			let retv = res.data
+			this.MRS_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
+			let mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
+			mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
+			this.mrs_subtest_options = mrs_subtest_options
+			this.init_mrs(mrs_subtest_num)
+			this.mrs_rawdata_show = true 
+		}).catch((err)=>{
+			console.log("Call get MRS RawData API failed")
+			console.log(err)
+		})
 
-		// HH
-		// 繪圖initial data
-		// [for 品峰]
-		// Hiatal hernia的raw data放在這
-		this.HH_draw_param['draw_obj_lst'] = str_data['rawdata']
-		this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
+		/*
+			[Hiatal Hernia] Raw Data 
+		*/
+		GetHHRawData(this.current_record_id).then((res)=>{
+			console.log("Call get MRS RawData API successed!")
+			let retv = res.data 
+			this.HH_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
+			this.hh_rawdata_show = true 
+		})
+
 
 		// 因為要先確認有幾個mrs_subtest所以放這裡
-		var mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
+		//var mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
 		// 丟棄後面的option(有可能MRS只做3次)
-		mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
-		this.mrs_subtest_options = mrs_subtest_options
+		// mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
+		// this.mrs_subtest_options = mrs_subtest_options
 
 		// initial MRS all subtest all metrics data from backend
-		for(var i=0; i<mrs_subtest_num; i++) {
-			// var temp = {
-			// 	'MRS_DCI1': 0,
-			// 	'MRS_DCI2': 0,
-			// 	'MRS_IRP1': 0,
-			// 	'MRS_IRP2': 0,
-			// }
-			// this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
+		// for(var i=0; i<mrs_subtest_num; i++) {
+		// 	// var temp = {
+		// 	// 	'MRS_DCI1': 0,
+		// 	// 	'MRS_DCI2': 0,
+		// 	// 	'MRS_IRP1': 0,
+		// 	// 	'MRS_IRP2': 0,
+		// 	// }
+		// 	// this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
 			
-			// 移到最後統一對所有subtest set
-			// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
+		// 	// 移到最後統一對所有subtest set
+		// 	// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
 			
-			// this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
-			// for deep copy
-			this.MRS_draw_param['disable_dict']['MRS'+(i+1).toString()] = {
-				MRS_TZ: false,
-				MRS_LES_upper: false,
-				MRS_LES_lower: false,
-				MRS_DCI1_left: true,
-				MRS_DCI1_right: true,
-				MRS_DCI2_left: true,
-				MRS_DCI2_right: true,
-				MRS_IRP1_left: true,
-				MRS_IRP1_right: true,
-				MRS_IRP2_left: true,
-				MRS_IRP2_right: true,
-			}
-		}
+		// 	// this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
+		// 	// for deep copy
+		// 	this.MRS_draw_param['disable_dict']['MRS'+(i+1).toString()] = {
+		// 		MRS_TZ: false,
+		// 		MRS_LES_upper: false,
+		// 		MRS_LES_lower: false,
+		// 		MRS_DCI1_left: true,
+		// 		MRS_DCI1_right: true,
+		// 		MRS_DCI2_left: true,
+		// 		MRS_DCI2_right: true,
+		// 		MRS_IRP1_left: true,
+		// 		MRS_IRP1_right: true,
+		// 		MRS_IRP2_left: true,
+		// 		MRS_IRP2_right: true,
+		// 	}
+		// }
 
 		// [for 品峰] call GetMRSDrawInfo(in apis/mrs.js)
-
-		// 測試，用不到的話可刪
-		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).them((res)=>{
-		// 	console.log("後端回傳")
-		// 	console.log("00000000000000000000000000000000000000000000000000000000000000000000000")
-		// 	console.log(res)
-		// }).catch((err)=>{
-		// 	console.log("err")
-		// 	console.log(err)
-		// })
-		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-		// 	console.log("後端回傳")
-		// 	console.log(res)
-		// })
-		// console.log("record id ")
-		// console.log(this.current_record_id)
-		// console.log(parseInt(this.$store.state.auth_app.login_name))
 		
-
 		// 把MRS圖的資料傳到前端
 		console.log("設定初始值 像後端那樣")
-		//this.set_backend_draw_param('MRS', MRS_draw_info)
 		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS DrawInfo API successed!")
 			let retv = res.data
-			console.log(retv)
-			console.log(MRS_draw_info)
 			this.set_backend_draw_param('MRS', retv)
-			this.mrs_show = true
+			this.mrs_drawinfo_show = true 
 		}).catch((err)=>{
 			console.log("Call get MRS DrawInfo API Failed!")
 			console.log(err)
 		})
 		
-		
-		
+		GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get MRS Metrics API successed!")
+			let retv = res.data 
+			this.set_backend_metrics('MRS', retv)
+			this.mrs_metric_show = true 
+		}).catch((err)=>{
+			console.log("Call get MRS Metrics API Failed!")
+			console.log(err)
+		})
+
 		// [for 品峰] call GetHHDrawInfo(in apis/hh.js)
 
-		// 測試，用不到的話可刪
-		this.set_backend_draw_param('HH', HH_draw_info)
-
-		// 把HH圖的資料傳到前端
-		// GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-        //     console.log("Call get HH DrawInfo API successed!")
-		// 	let retv = res.data
-		// 	this.set_backend_draw_param('HH', retv)
-		// }).catch((err)=>{
-        //     console.log("Call get HH DrawInfo API Failed!")
-		// 	console.log(err)
-		// })
 
 		// initial HH all metrics data
 		this.HH_draw_param['metrics']['landmark'] = {
@@ -492,37 +486,26 @@ export default {
 			'HH_RIP': false,
 			'HH_CD': false,
 		}
-
-		// [for 品峰] call GetMRSMetrics(in apis/mrs.js)
-
-		// 測試，用不到的話可刪
-		this.set_backend_metrics('MRS', MRS_metrics)
-
-		// 把MRS的數值傳到前端
-		// GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-        //     console.log("Call get MRS Metrics API successed!")
-		// 	let retv = res.data
-		// 	this.set_backend_metrics('MRS', retv)
-		// }).catch((err)=>{
-        //     console.log("Call get MRS Metrics API Failed!")
-		// 	console.log(err)
-		// })
-
-
 		// [for 品峰] call GetHHMetrics(in apis/hh.js)
-
-		// 測試，用不到的話可刪
-		this.set_backend_metrics('HH', HH_metrics)
-
-		// 把HH的數值傳到前端
-		// GetHHMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-        //     console.log("Call get HH Metrics API successed!")
-		// 	let retv = res.data
-		// 	this.set_backend_metrics('HH', retv)
-		// }).catch((err)=>{
-        //     console.log("Call get HH Metrics API Failed!")
-		// 	console.log(err)
-		// })
+		// 把HH圖的資料傳到前端
+		GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+            console.log("Call get HH DrawInfo API successed!")
+			let retv = res.data
+			this.set_backend_draw_param('HH', retv)
+			this.hh_drawinfo_show = true
+		}).catch((err)=>{
+            console.log("Call get HH DrawInfo API Failed!")
+			console.log(err)
+		})
+		GetHHMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+            console.log("Call get HH Metrics API successed!")
+			let retv = res.data
+			this.set_backend_metrics('HH', retv)
+			this.hh_metric_show = true
+		}).catch((err)=>{
+            console.log("Call get HH Metrics API Failed!")
+			console.log(err)
+		})
 
 	},
 	methods: {
@@ -1108,6 +1091,39 @@ export default {
 				this.$refs.HH_draw.contour_size_change(val)
 			}
 		},
+		init_mrs(mrs_subtest_num){
+			for(var i=0; i<mrs_subtest_num; i++) {
+				// var temp = {
+				// 	'MRS_DCI1': 0,
+				// 	'MRS_DCI2': 0,
+				// 	'MRS_IRP1': 0,
+				// 	'MRS_IRP2': 0,
+				// }
+				// this.MRS_draw_param['metrics']['MRS'+(i+1).toString()] = temp
+				
+				// 移到最後統一對所有subtest set
+				// this.MRS_draw_param['polys']['MRS'+(i+1).toString()] = []
+				
+				// this.MRS_draw_param['ini']['MRS'+(i+1).toString()] = true
+				// for deep copy
+				this.MRS_draw_param['disable_dict']['MRS'+(i+1).toString()] = {
+					MRS_TZ: false,
+					MRS_LES_upper: false,
+					MRS_LES_lower: false,
+					MRS_DCI1_left: true,
+					MRS_DCI1_right: true,
+					MRS_DCI2_left: true,
+					MRS_DCI2_right: true,
+					MRS_IRP1_left: true,
+					MRS_IRP1_right: true,
+					MRS_IRP2_left: true,
+					MRS_IRP2_right: true,
+				}
+			}
+		},
+		init_hh(){
+
+		}
 	}
 }
 </script>
