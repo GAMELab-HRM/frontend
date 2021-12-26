@@ -62,3 +62,31 @@ export function UpdateMRSMetrics(obj, record_id, d_id) {
     }
     return request(config)
 }
+
+// [for 品峰]
+export function UpdateMRSResult(obj, record_id, d_id) {
+    let config = {
+        url: '/api/v1/mrs/metrics',
+        method: 'PUT',
+        params: {
+            record_id: record_id,
+            doctor_id: d_id
+        },
+        data: obj
+    }
+    return request(config)
+}
+
+// [for 品峰]
+export function GetMRSResult(record_id, d_id) {
+    let config = {
+        url: '/api/v1/mrs/metrics',
+        method: 'GET',
+        params: {
+            record_id: record_id,
+            doctor_id: d_id
+        },
+    }
+
+    return request(config)
+}

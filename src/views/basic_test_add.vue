@@ -35,7 +35,8 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
-			<div v-if="mrs_drawinfo_show & mrs_metric_show & mrs_rawdata_show">
+			<!-- & mrs_result_show -->
+			<div v-if="mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
 					<el-col :span="4">
 						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -60,9 +61,6 @@
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
 						<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
-
-						<!-- @change='changed=>splendid_change(scope.$index, changed)' -->
-
 					</el-col>
 					<el-col :span="7" >
 						<div style="margin-top: 50px">
@@ -177,7 +175,7 @@ import add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {UpdateMRSDrawInfo, UpdateMRSMetrics, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData} from "@/apis/mrs.js"
+import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, GetHHDrawInfo, GetHHMetrics, GetHHRawData} from "@/apis/hh.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
@@ -193,6 +191,7 @@ export default {
 	data() {
 		return {
 			mrs_show:false,
+			mrs_result_show: false,
 			mrs_drawinfo_show: false,
 			mrs_metric_show: false,
 			mrs_rawdata_show: false,
@@ -201,7 +200,7 @@ export default {
 			hh_rawdata_show: false,
 			// basic test selector result
 			ws_10_result:'',
-			mrs_result: '',
+			mrs_result: 'CR',
 			hh_result: '',
 			rip_result: '',
 
@@ -417,7 +416,19 @@ export default {
 		// [for 品峰] call GetMRSDrawInfo(in apis/mrs.js)
 		
 		// 把MRS圖的資料傳到前端
-		console.log("設定初始值 像後端那樣")
+		GetMRSResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get MRS Result API successed!")
+			let retv = res.data
+			this.mrs_result = retv['mrs_result']
+			this.mrs_result_show = true 
+		}).catch((err)=>{
+			console.log("Call get MRS Result API Failed!")
+			console.log(err)
+			// API開之前為了測試先這樣寫
+			this.mrs_result = ''
+			this.mrs_result_show = true 
+		})
+
 		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS DrawInfo API successed!")
 			let retv = res.data
@@ -609,6 +620,24 @@ export default {
 					console.log(err)
 					this.$message.error('更新失敗!');
 				})
+
+				// [for 品峰]
+				// 把MRS的結果傳到後端
+				var result_obj = {
+					'mrs_result': this.mrs_result
+				}
+				UpdateMRSResult(result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+					console.log("Call update MRS Result API successed!")
+					console.log(res)
+					this.$message({message: '更新成功!',type: 'success'});
+				}).catch((err)=>{
+					console.log("Call update MRS Result API successed!")
+					console.log(err)
+					this.$message.error('更新失敗!');
+				})
+
+
+
 			}
 			else if(test_type == 'HH') {
 				// [for 品峰] call UpdateHHDrawInfo(in apis/hh.js)

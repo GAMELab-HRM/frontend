@@ -51,6 +51,10 @@ export let rip_options = [
     {
         value: 'distal',
         label: 'Distal RIP'
+    },
+    {
+        value: 'no_result',
+        label: '無'
     }
 ]
 
