@@ -278,56 +278,56 @@ export default {
 			MRS_metrics_table_data:[{
 				'metrics': 'Time Zone'
 			},{
-				'metrics': 'LES upper line'
+				'metrics': 'LES upper'
 			}, {
-				'metrics': 'LES lower line'
+				'metrics': 'LES lower'
 			}, {
-				'metrics': 'DCI1 left line'
+				'metrics': 'during MRS DCI left'
 			}, {
-				'metrics': 'DCI1 right line'
+				'metrics': 'during MRS DCI right'
 			},  {
-				'metrics': 'DCI2 left line'
+				'metrics': 'post MRS DCI left'
 			},  {
-				'metrics': 'DCI2 right line'
+				'metrics': 'post MRS DCI right'
 			}, {
-				'metrics': 'IRP1 left line'
+				'metrics': 'during MRS IRP left'
 			}, {
-				'metrics': 'IRP1 right line'
+				'metrics': 'during MRS IRP right'
 			}, {
-				'metrics': 'IRP2 left line'
+				'metrics': 'post MRS IRP left'
 			}, {
-				'metrics': 'IRP2 right line'
+				'metrics': 'post MRS IRP right'
 			}],
 
 			HH_metrics_table_data:[{
-				'metrics': 'UES upper line'
+				'metrics': 'UES upper'
 			},{
-				'metrics': 'UES lower line'
+				'metrics': 'UES lower'
 			}, {
-				'metrics': 'LES upper line'
+				'metrics': 'LES upper'
 			}, {
-				'metrics': 'LES lower line'
+				'metrics': 'LES lower'
 			}, {
-				'metrics': 'RIP line'
+				'metrics': 'RIP'
 			}, {
-				'metrics': 'CD line'
+				'metrics': 'CD'
 			}],
 
 			MRS_draw_data: [
 			{
-				flag: 'MRS DCI1',
+				flag: 'MRS during DCI',
 				value: 0
 			}, 
 			{
-				flag: 'MRS DCI2',
+				flag: 'MRS post DCI',
 				value: 0
 			},
 			{
-				flag: 'MRS IRP1',
+				flag: 'MRS during IRP',
 				value: 0
 			},
 			{
-				flag: 'MRS IRP2',
+				flag: 'MRS post IRP',
 				value: 0
 			},
 			{
