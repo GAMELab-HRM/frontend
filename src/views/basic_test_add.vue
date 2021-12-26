@@ -35,6 +35,7 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
+			<div v-if='mrs_show'>
 			<el-row>
 				<el-col :span="4">
 					<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -96,6 +97,7 @@
 					<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
 				</span>
 			</el-dialog>
+			</div>
 			<!-- section2 dialog end -->
 			<!-- section2 end -->
 
@@ -174,7 +176,7 @@ import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format,
 import { str_data } from '@/utils/fakedata.js'
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
-import {UpdateMRSDrawInfo, UpdateMRSMetrics} from "@/apis/mrs.js"
+import {UpdateMRSDrawInfo, UpdateMRSMetrics, GetMRSDrawInfo} from "@/apis/mrs.js"
 //GetMRSDrawInfo,  , GetMRSMetrics, 
 import {UpdateHHDrawInfo, UpdateHHMetrics} from "@/apis/hh.js"
 //GetHHDrawInfo,  , GetHHMetrics
@@ -192,6 +194,7 @@ export default {
 	},
 	data() {
 		return {
+			mrs_show:false,
 			// basic test selector result
 			ws_10_result:'',
 			mrs_result: '',
@@ -427,17 +430,38 @@ export default {
 		// [for 品峰] call GetMRSDrawInfo(in apis/mrs.js)
 
 		// 測試，用不到的話可刪
-		this.set_backend_draw_param('MRS', MRS_draw_info)
-
-		// 把MRS圖的資料傳到前端
-		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-		// 	console.log("Call get MRS DrawInfo API successed!")
-		// 	let retv = res.data
-		// 	this.set_backend_draw_param('MRS', retv)
+		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).them((res)=>{
+		// 	console.log("後端回傳")
+		// 	console.log("00000000000000000000000000000000000000000000000000000000000000000000000")
+		// 	console.log(res)
 		// }).catch((err)=>{
-		// 	console.log("Call get MRS DrawInfo API Failed!")
+		// 	console.log("err")
 		// 	console.log(err)
 		// })
+		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		// 	console.log("後端回傳")
+		// 	console.log(res)
+		// })
+		// console.log("record id ")
+		// console.log(this.current_record_id)
+		// console.log(parseInt(this.$store.state.auth_app.login_name))
+		
+
+		// 把MRS圖的資料傳到前端
+		console.log("設定初始值 像後端那樣")
+		//this.set_backend_draw_param('MRS', MRS_draw_info)
+		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get MRS DrawInfo API successed!")
+			let retv = res.data
+			console.log(retv)
+			console.log(MRS_draw_info)
+			this.set_backend_draw_param('MRS', retv)
+			this.mrs_show = true
+		}).catch((err)=>{
+			console.log("Call get MRS DrawInfo API Failed!")
+			console.log(err)
+		})
+		
 		
 		
 		// [for 品峰] call GetHHDrawInfo(in apis/hh.js)
@@ -776,6 +800,7 @@ export default {
 				}
 			}
 			this.draw_btn_rerender += 1
+			this.MRS_draw_rerender += 1
 		},
 
 		// [TODO]
