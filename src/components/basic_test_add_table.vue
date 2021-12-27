@@ -81,6 +81,10 @@ export default {
         table_data:[]
     },
 
+    mounted() {
+        this.check_table()
+    },
+
     methods: {
         idx_method: function(index) {
             return index
@@ -94,18 +98,14 @@ export default {
         liang_cc_filter_method: function(value, row) {
             return row.liang_cc_result === value;
         },
-        check_table: function() {
-            // for (var i = 0; i < this.table_data.length; i++) {
-            for (var i = 0; i < 1; i++) {
+        check_table() {
+            for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
                 val_lst.shift()
-                // for (var k = 0; k < val_lst.length; k++){
-                for (var k = 0; k < 1; k++){
-                    if (val_lst[k].length === 0) {
-                        this.send_disable = true
-                        this.$emit('update_send', this.send_disable)
-                        return 0
-                    }
+                if(val_lst.length != 10) {
+                    this.send_disable = true
+                    this.$emit('update_send', this.send_disable)
+                    return 0
                 }
             }
             this.send_disable = false

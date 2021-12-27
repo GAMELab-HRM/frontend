@@ -226,12 +226,6 @@ export default {
 			hh_options:0,
 			rip_options:0,
 
-			// listen basic test result has value
-			ws_10_selected: false,
-			mrs_selected: false,
-			hh_selected: false,
-			rip_selected: false,
-
 			// 上傳時送出診斷的醫生數量
 			send_doctor_num: 0,
 
@@ -391,8 +385,16 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-			this.set_DCI_ratio()
+			
 			this.ws_10_result = retv["ws_result"]
+			this.update_ws_10_send_btn()
+
+			// [TODO]
+			var lst = Object.values(this.table_data[4])
+			if(lst.length==10) {
+				this.set_DCI_ratio()
+			}
+			
 		}).catch((err)=>{
             console.log("Call get swallow API Failed!")
 			console.log(err)
@@ -445,7 +447,8 @@ export default {
 			console.log("Call get MRS DrawInfo API successed!")
 			let retv = res.data
 			this.set_backend_draw_param('MRS', retv)
-			this.mrs_drawinfo_show = true 
+			this.mrs_drawinfo_show = true
+			this.update_mrs_send_btn()
 		}).catch((err)=>{
 			console.log("Call get MRS DrawInfo API Failed!")
 			console.log(err)
@@ -455,7 +458,8 @@ export default {
 			console.log("Call get MRS Metrics API successed!")
 			let retv = res.data 
 			this.set_backend_metrics('MRS', retv)
-			this.mrs_metric_show = true 
+			this.mrs_metric_show = true
+			this.update_mrs_send_btn()
 		}).catch((err)=>{
 			console.log("Call get MRS Metrics API Failed!")
 			console.log(err)
@@ -468,6 +472,7 @@ export default {
 			this.rip_result = retv['rip_result']
 			this.hh_result_show = true 
 			this.rip_result_show = true
+			this.update_hh_send_btn()
 		}).catch((err)=>{
 			console.log("Call get HH Result API Failed!")
 			console.log(err)
@@ -479,6 +484,7 @@ export default {
 			let retv = res.data
 			this.set_backend_draw_param('HH', retv)
 			this.hh_drawinfo_show = true
+			this.update_hh_send_btn()
 		}).catch((err)=>{
             console.log("Call get HH DrawInfo API Failed!")
 			console.log(err)
@@ -519,19 +525,15 @@ export default {
 		// trigger when any result selector selected 
 		basic_test_selected_update: function(test_type) {
 			if(test_type == 'ws_10') {
-				this.ws_10_selected = true
 				this.update_ws_10_send_btn()
 			}
 			else if(test_type == 'mrs') {
-				this.mrs_selected = true
 				this.update_mrs_send_btn()
 			}
 			else if(test_type == 'hh') {
-				this.hh_selected = true
 				this.update_hh_send_btn()
 			}
 			else if(test_type == 'rip') {
-				this.rip_selected = true
 				this.update_hh_send_btn()
 			}
 			
@@ -539,7 +541,7 @@ export default {
 
 		// update ws_10 send btn status
 		update_ws_10_send_btn: function() {
-			if(this.ws_10_table_send_disable == false && this.ws_10_selected == true) {
+			if(this.ws_10_table_send_disable == false && this.ws_10_result != '') {
 				this.ws_10_send_disable = false
 			}
 			else {
@@ -555,7 +557,7 @@ export default {
 					return
 				}
 			}
-			if(this.mrs_selected == false) {
+			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
 			}
@@ -570,7 +572,7 @@ export default {
 				return
 			}
 
-			if(this.hh_selected && this.rip_selected) {
+			if(this.hh_result=='' && this.rip_result=='') {
 				this.hh_send_disable = false
 				return
 			}
@@ -609,8 +611,6 @@ export default {
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
-				
-				// 還沒實做送出兩位醫師的診斷(需要討論資料格式)
 				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
@@ -1121,20 +1121,20 @@ export default {
 		set_Max_DCI() {
 			var DCI_lst = []
 
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			for(var i=0; i<Object.keys(this.MRS_draw_param['metrics']).length; i++) {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			if(DCI_lst.length>0) {
 				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[5]['value'] = 0
+				this.MRS_draw_data[4]['value'] = 0
 			}
 		},
 		set_Mean_DCI() {
 			var DCI_lst = []
 
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			for(var i=0; i<Object.keys(this.MRS_draw_param['metrics']).length; i++) {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
