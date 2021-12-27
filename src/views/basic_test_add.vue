@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" :t="'swallow'" />
 			</div>
 
 			<div style="text-align:right; ">
@@ -46,6 +46,8 @@
 							</el-select>
 						</h1>
 					</el-col>
+				</el-row>
+				<el-row>
 					<el-col :span="4">
 						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
 							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
@@ -164,15 +166,43 @@
 				<!-- section3 end -->
 			</div>
 
+			<!-- section4 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
+						<el-select v-model="ws_10_result" placeholder="二度收縮 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
+							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<div id=ws_10_table_container>
+				<add_table :patient_id="current_patient_id" :table_data="ts_table_data" :t="'ab'" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+			</div>
 
-
+			<div style="text-align:right; ">
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			
+			<!-- section4 dialog start -->
+			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
+				<span><h2> 確認送出? </h2></span>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'ws_10'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ws_10'})"> 返回 </el-button>
+				</span>
+			</el-dialog>
+			<!-- section4 dialog end -->
+			<!-- section4 end -->
 		</div>
 	</div>
 	
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ts_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
@@ -216,21 +246,16 @@ export default {
 
 			// basic test table data
 			table_data:[],
-			ws_10_table_data: '', 
-			mrs_table_data:'',
-			hh_table_data:'',
+			ws_10_table_data: '',
+
+			ts_table_data: [],
+
 
 			// basic test selector result 的 options，於created中獲取資料
 			ws_10_options:0,
 			mrs_options:0,
 			hh_options:0,
 			rip_options:0,
-
-			// listen basic test result has value
-			ws_10_selected: false,
-			mrs_selected: false,
-			hh_selected: false,
-			rip_selected: false,
 
 			// 上傳時送出診斷的醫生數量
 			send_doctor_num: 0,
@@ -379,6 +404,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
+		this.ts_table_data = ts_table_data_format
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
@@ -391,8 +417,16 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-			this.set_DCI_ratio()
+			
 			this.ws_10_result = retv["ws_result"]
+			this.update_ws_10_send_btn()
+
+			// [TODO]
+			var lst = Object.values(this.table_data[4])
+			if(lst.length==10) {
+				this.set_DCI_ratio()
+			}
+			
 		}).catch((err)=>{
             console.log("Call get swallow API Failed!")
 			console.log(err)
@@ -445,7 +479,8 @@ export default {
 			console.log("Call get MRS DrawInfo API successed!")
 			let retv = res.data
 			this.set_backend_draw_param('MRS', retv)
-			this.mrs_drawinfo_show = true 
+			this.mrs_drawinfo_show = true
+			this.update_mrs_send_btn()
 		}).catch((err)=>{
 			console.log("Call get MRS DrawInfo API Failed!")
 			console.log(err)
@@ -455,7 +490,8 @@ export default {
 			console.log("Call get MRS Metrics API successed!")
 			let retv = res.data 
 			this.set_backend_metrics('MRS', retv)
-			this.mrs_metric_show = true 
+			this.mrs_metric_show = true
+			this.update_mrs_send_btn()
 		}).catch((err)=>{
 			console.log("Call get MRS Metrics API Failed!")
 			console.log(err)
@@ -468,6 +504,7 @@ export default {
 			this.rip_result = retv['rip_result']
 			this.hh_result_show = true 
 			this.rip_result_show = true
+			this.update_hh_send_btn()
 		}).catch((err)=>{
 			console.log("Call get HH Result API Failed!")
 			console.log(err)
@@ -479,6 +516,7 @@ export default {
 			let retv = res.data
 			this.set_backend_draw_param('HH', retv)
 			this.hh_drawinfo_show = true
+			this.update_hh_send_btn()
 		}).catch((err)=>{
             console.log("Call get HH DrawInfo API Failed!")
 			console.log(err)
@@ -519,19 +557,15 @@ export default {
 		// trigger when any result selector selected 
 		basic_test_selected_update: function(test_type) {
 			if(test_type == 'ws_10') {
-				this.ws_10_selected = true
 				this.update_ws_10_send_btn()
 			}
 			else if(test_type == 'mrs') {
-				this.mrs_selected = true
 				this.update_mrs_send_btn()
 			}
 			else if(test_type == 'hh') {
-				this.hh_selected = true
 				this.update_hh_send_btn()
 			}
 			else if(test_type == 'rip') {
-				this.rip_selected = true
 				this.update_hh_send_btn()
 			}
 			
@@ -539,7 +573,7 @@ export default {
 
 		// update ws_10 send btn status
 		update_ws_10_send_btn: function() {
-			if(this.ws_10_table_send_disable == false && this.ws_10_selected == true) {
+			if(this.ws_10_table_send_disable == false && this.ws_10_result != '') {
 				this.ws_10_send_disable = false
 			}
 			else {
@@ -555,7 +589,7 @@ export default {
 					return
 				}
 			}
-			if(this.mrs_selected == false) {
+			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
 			}
@@ -570,7 +604,7 @@ export default {
 				return
 			}
 
-			if(this.hh_selected && this.rip_selected) {
+			if(this.hh_result=='' && this.rip_result=='') {
 				this.hh_send_disable = false
 				return
 			}
@@ -609,8 +643,6 @@ export default {
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
-				
-				// 還沒實做送出兩位醫師的診斷(需要討論資料格式)
 				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
@@ -1121,20 +1153,20 @@ export default {
 		set_Max_DCI() {
 			var DCI_lst = []
 
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			for(var i=0; i<Object.keys(this.MRS_draw_param['metrics']).length; i++) {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			if(DCI_lst.length>0) {
 				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[5]['value'] = 0
+				this.MRS_draw_data[4]['value'] = 0
 			}
 		},
 		set_Mean_DCI() {
 			var DCI_lst = []
 
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			for(var i=0; i<Object.keys(this.MRS_draw_param['metrics']).length; i++) {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;

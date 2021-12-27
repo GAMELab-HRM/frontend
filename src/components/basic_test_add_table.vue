@@ -3,7 +3,7 @@
         <el-table id=add_teble :data="table_data" height="470" border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
+            <el-table-column v-for="(index) in 10" :label='t + " "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
                     <div v-if="scope.$index < 3">
                         <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
@@ -78,7 +78,12 @@ export default {
     },
     props: {
         patient_id: [String],
-        table_data:[]
+        table_data:[],
+        t: [String]
+    },
+
+    mounted() {
+        this.check_table()
     },
 
     methods: {
@@ -94,18 +99,14 @@ export default {
         liang_cc_filter_method: function(value, row) {
             return row.liang_cc_result === value;
         },
-        check_table: function() {
-            // for (var i = 0; i < this.table_data.length; i++) {
-            for (var i = 0; i < 1; i++) {
+        check_table() {
+            for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
                 val_lst.shift()
-                // for (var k = 0; k < val_lst.length; k++){
-                for (var k = 0; k < 1; k++){
-                    if (val_lst[k].length === 0) {
-                        this.send_disable = true
-                        this.$emit('update_send', this.send_disable)
-                        return 0
-                    }
+                if(val_lst.length != 10) {
+                    this.send_disable = true
+                    this.$emit('update_send', this.send_disable)
+                    return 0
                 }
             }
             this.send_disable = false
