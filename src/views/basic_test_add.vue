@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" :t="'swallow'" />
 			</div>
 
 			<div style="text-align:right; ">
@@ -166,15 +166,43 @@
 				<!-- section3 end -->
 			</div>
 
+			<!-- section4 start -->
+			<el-row :gutter="1">
+				<el-col :span="4">
+					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
+						<el-select v-model="ws_10_result" placeholder="二度收縮 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
+							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<div id=ws_10_table_container>
+				<add_table :patient_id="current_patient_id" :table_data="ts_table_data" :t="'ab'" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+			</div>
 
-
+			<div style="text-align:right; ">
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
+			</div>
+			
+			<!-- section4 dialog start -->
+			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
+				<span><h2> 確認送出? </h2></span>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'ws_10'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ws_10'})"> 返回 </el-button>
+				</span>
+			</el-dialog>
+			<!-- section4 dialog end -->
+			<!-- section4 end -->
 		</div>
 	</div>
 	
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ts_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
@@ -218,9 +246,10 @@ export default {
 
 			// basic test table data
 			table_data:[],
-			ws_10_table_data: '', 
-			mrs_table_data:'',
-			hh_table_data:'',
+			ws_10_table_data: '',
+
+			ts_table_data: [],
+
 
 			// basic test selector result 的 options，於created中獲取資料
 			ws_10_options:0,
@@ -375,6 +404,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
+		this.ts_table_data = ts_table_data_format
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")

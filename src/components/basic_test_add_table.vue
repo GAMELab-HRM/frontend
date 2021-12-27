@@ -3,7 +3,7 @@
         <el-table id=add_teble :data="table_data" height="470" border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
+            <el-table-column v-for="(index) in 10" :label='t + " "+index' :prop='"sw"+index' :key="index">
                 <template slot-scope="scope">
                     <div v-if="scope.$index < 3">
                         <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
@@ -78,7 +78,8 @@ export default {
     },
     props: {
         patient_id: [String],
-        table_data:[]
+        table_data:[],
+        t: [String]
     },
 
     mounted() {
