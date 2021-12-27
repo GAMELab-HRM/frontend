@@ -35,7 +35,6 @@
 			<!-- section1 end -->
 
 			<!-- section2 start -->
-			<!-- & mrs_result_show -->
 			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
 					<el-col :span="4">
@@ -394,10 +393,19 @@ export default {
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
-			mrs_subtest_options: 0
+			mrs_subtest_options: 0,
+
+			loading_options: {
+				lock: true,
+				text: 'loading...',
+				background: 'rgba(0, 0, 0, 0.7)'
+			},
+			loading_instance: {},
 		}
 	},
 	created(){
+		// let loadingInstance = this.$loading(this.loading_options)
+		this.loading_instance = this.$loading(this.loading_options)
 		// load option data
 		this.ws_10_options = ws_10_options
 		this.mrs_options = mrs_options
@@ -444,7 +452,10 @@ export default {
 			mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
 			this.mrs_subtest_options = mrs_subtest_options
 			this.init_mrs(mrs_subtest_num)
-			this.mrs_rawdata_show = true 
+			this.mrs_rawdata_show = true
+			this.loading_instance.close()
+			
+
 		}).catch((err)=>{
 			console.log("Call get MRS RawData API failed")
 			console.log(err)
@@ -460,6 +471,7 @@ export default {
 			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 			this.init_hh()
 			this.hh_rawdata_show = true
+			this.fullscreenLoading = false
 		})
 
 		// [for 品峰] call GetMRSDrawInfo(in apis/mrs.js)
@@ -530,7 +542,6 @@ export default {
             console.log("Call get HH Metrics API Failed!")
 			console.log(err)
 		})
-
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -1201,7 +1212,11 @@ export default {
 			else {
 				this.MRS_draw_data[6]['value'] = ws_10_DCI / MRS_DCI
 			}
-		}
+		},
+
+		// show_loading() {
+		// 	let loadingInstance = this.$loading(this.loading_options)
+		// }
 	}
 }
 </script>
