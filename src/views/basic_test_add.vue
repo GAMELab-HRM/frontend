@@ -46,6 +46,8 @@
 							</el-select>
 						</h1>
 					</el-col>
+				</el-row>
+				<el-row>
 					<el-col :span="4">
 						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
 							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
