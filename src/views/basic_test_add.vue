@@ -594,12 +594,12 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
-				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
-					this.mrs_send_disable = true
-					return
-				}
-			}
+			// for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			// 	if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+			// 		this.mrs_send_disable = true
+			// 		return
+			// 	}
+			// }
 			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
