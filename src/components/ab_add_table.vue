@@ -1,18 +1,18 @@
 <template>
     <div>
-        <el-table id=add_teble :data="table_data" height=520 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
+        <el-table :data="table_data" height=400 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
-            <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
+            <el-table-column v-for="(index) in 10" :label='"ab "+index' :prop='"ab"+index' :key="index">
                 <template slot-scope="scope">
-                    <div v-if="scope.$index < 3">
-                        <el-select v-model="table_data[scope.$index]['sw'+index]" placeholder="請選擇" @change="check_table">
+                    <div v-if="scope.$index < 1">
+                        <el-select v-model="table_data[scope.$index]['ab'+index]" placeholder="請選擇" @change="check_table">
                             <el-option v-for="item in get_options(scope.$index)" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </div>
                     <div v-else>
-                        <el-input v-model="table_data[scope.$index]['sw'+index]" @change="table_text_change(scope)"></el-input>
+                        <el-input v-model="table_data[scope.$index]['ab'+index]" @change="table_text_change(scope)"></el-input>
                     </div>
                 </template>
             </el-table-column> 
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-    name: 'basic_test_add_table',
+    name: 'ab_add_table',
     data() {
         return {
             text:'',
@@ -37,41 +37,6 @@ export default {
             }, {
                 value: 'Normal',
                 label: 'Normal'
-            }, {
-                value: 'Hypercontractile',
-                label: 'Hypercontractile'
-            }],
-            pattern_options: [{
-                value: 'Failed',
-                label: 'Failed'
-            }, {
-                value: 'Premature',
-                label: 'Premature'
-            }, {
-                value: 'Fragmented',
-                label: 'Fragmented'
-            }, {
-                value: 'Intact',
-                label: 'Intact'
-            }],
-            type_options: [{
-                value: 'Normal',
-                label: 'Normal'
-            }, {
-                value: 'Weak',
-                label: 'Weak'
-            }, {
-                value: 'Failed contraction',
-                label: 'Failed contraction'
-            }, {
-                value: 'Premature',
-                label: 'Premature'
-            }, {
-                value: 'Hyper',
-                label: 'Hyper'
-            }, {
-                value: 'Fragmented',
-                label: 'Fragmented'
             }],
         }
     },
@@ -84,7 +49,7 @@ export default {
     mounted() {
         this.check_table()
     },
-
+    
     methods: {
         check_table() {
             for (var i = 0; i < this.table_data.length; i++) {
@@ -101,7 +66,7 @@ export default {
             this.$emit('send_object', this.table_data)
         },
         get_options: function(idx) {
-            var options_lst = [this.vigor_options, this.pattern_options, this.type_options]
+            var options_lst = [this.vigor_options]
             return options_lst[idx]
         },
         table_text_change(scope) {
@@ -125,6 +90,24 @@ export default {
                 }
 
                 row['metrics'] = 'Break'
+
+            } else if(row['metrics'] == 'DCI') {
+                delete row['metrics']
+                var dci_lst = Object.values(row)
+                
+                if(dci_lst.length == 10) {
+                    dci_lst = dci_lst.map(function(val) {
+                        return parseFloat(val)
+                    })
+                    this.set_SPR(dci_lst)
+                    this.set_ER(dci_lst)
+                }
+                else {
+                    this.$emit('set_SPR', '-')
+                    this.$emit('set_ER', '-')
+                }
+
+                row['metrics'] = 'DCI'
             }
             this.check_table()
         },
@@ -137,6 +120,25 @@ export default {
             var max_break = Math.max(...break_lst)
             this.$emit('set_max_break', max_break)
         },
+        set_SPR(dci_lst) {
+            var ct = 0
+            for(var i=0; i<dci_lst.length;i++) {
+                if(dci_lst[i]>=100) {
+                    ct += 10
+                }
+            }
+            console.log(38912738912, ct)
+            this.$emit('set_SPR', ct)
+        },
+        set_ER(dci_lst) {
+            var ct = 0
+            for(var i=0; i<dci_lst.length;i++) {
+                if(dci_lst[i]>=450) {
+                    ct += 10
+                }
+            }
+            this.$emit('set_ER', ct)
+        }
     }
 }
 </script>
