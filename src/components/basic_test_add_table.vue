@@ -125,6 +125,8 @@ export default {
                 }
 
                 row['metrics'] = 'Break'
+            } else if(row['metrics'] == 'DCI') {
+                this.set_vigor(scope)
             }
             this.check_table()
         },
@@ -136,6 +138,19 @@ export default {
         set_max_break(break_lst) {
             var max_break = Math.max(...break_lst)
             this.$emit('set_max_break', max_break)
+        },
+        set_vigor(scope) {
+            var dci = this.table_data[scope.$index][scope.column.property]
+            var vigor=''
+            dci = parseFloat(dci)
+            if(dci<100) {
+                vigor='Failed'
+            } else if(dci>=100 && dci<450) {
+                vigor='Weak'
+            } else {
+                vigor='Normal'
+            }
+            this.table_data[0][scope.column.property] = vigor
         },
     }
 }
