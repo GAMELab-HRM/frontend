@@ -67,7 +67,7 @@
 						<div style="margin-top: 50px">
 							<h2 style="padding-right: 100px">繪圖工具</h2>
 							<br>
-							<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+							<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
 							<br>
 							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
 								<el-table-column prop="metrics" label='Metrics'/>
@@ -136,7 +136,7 @@
 						<div style="margin-top: 50px">
 							<h2 style="padding-right: 100px">繪圖工具</h2>
 							<br>
-							<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
+							<el-slider v-model="HH_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
 							<br>
 							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 								<el-table-column prop="metrics" label='Metrics'/>
@@ -1194,10 +1194,10 @@ export default {
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[7]['value'] = 'incomplete'
+				this.MRS_draw_data[7]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[7]['value'] = 'complete'
+				this.MRS_draw_data[7]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
@@ -1212,7 +1212,7 @@ export default {
 				this.MRS_draw_data[6]['value'] = 'undefine'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = ws_10_DCI / MRS_DCI
+				this.MRS_draw_data[6]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
 
