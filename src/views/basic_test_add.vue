@@ -80,7 +80,11 @@
 							</el-table>
 						</div>
 						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="flag" label="參數">
+								<template slot-scope="scope">
+									<div v-html="scope.row.flag"></div>
+								</template>
+							</el-table-column>
 							<el-table-column prop="value"  label="值"/>
 						</el-table>
 						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
@@ -339,31 +343,31 @@ export default {
 
 			MRS_draw_data: [
 			{
-				flag: 'MRS during DCI',
+				flag: 'DCI(during MRS)',
 				value: 0
 			}, 
 			{
-				flag: 'MRS post DCI',
+				flag: 'DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS during IRP',
+				flag: 'IRP(during MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS post IRP',
+				flag: 'IRP(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Max MRS post DCI',
+				flag: 'Max DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Mean MRS post DCI\n*需全部subtest標記完成的值才較可信',
+				flag: 'Mean DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'DCI ratio',
+				flag: '<b>DCI ratio<b>',
 				value: 0
 			},
 			{
