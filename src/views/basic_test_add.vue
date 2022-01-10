@@ -520,7 +520,6 @@ export default {
 			this.rip_result = retv['rip_result']
 			this.hh_result_show = true 
 			this.rip_result_show = true
-			this.update_hh_send_btn()
 		}).catch((err)=>{
 			console.log("Call get HH Result API Failed!")
 			console.log(err)
@@ -532,7 +531,6 @@ export default {
 			let retv = res.data
 			this.set_backend_draw_param('HH', retv)
 			this.hh_drawinfo_show = true
-			this.update_hh_send_btn()
 		}).catch((err)=>{
             console.log("Call get HH DrawInfo API Failed!")
 			console.log(err)
@@ -598,12 +596,12 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			for(var i=0; i<this.mrs_subtest_options.length; i++) {
-				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
-					this.mrs_send_disable = true
-					return
-				}
-			}
+			// for(var i=0; i<this.mrs_subtest_options.length; i++) {
+			// 	if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+			// 		this.mrs_send_disable = true
+			// 		return
+			// 	}
+			// }
 			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
