@@ -892,6 +892,7 @@ export default {
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
 				this.update_hh_send_btn()
+				this.set_rip_result(poly_lst)
 			}
 		},
 
@@ -1219,6 +1220,35 @@ export default {
 		// show_loading() {
 		// 	let loadingInstance = this.$loading(this.loading_options)
 		// }
+		set_rip_result(poly_lst) {
+			var upper = -1
+			var lower = -1
+			var rip = -1
+
+			for(var i=0; i<poly_lst.length;i++) {
+				switch (poly_lst[i].flag) {
+					case 'HH_LES_upper':
+						upper = poly_lst[i].y0
+						break
+					case 'HH_LES_lower':
+						lower = poly_lst[i].y0
+						break
+					case 'HH_RIP':
+						rip = poly_lst[i].y0
+						break
+				}
+			}
+
+			if(upper >= 0 && rip >= 0 && rip < upper) {
+				this.rip_result = 'proximal'
+			}
+			else if(lower >= 0 && rip >= 0 && rip > lower) {
+				this.rip_result = 'distal'
+			}
+			else {
+				this.rip_result = 'no_result'
+			}
+		},
 	}
 }
 </script>
