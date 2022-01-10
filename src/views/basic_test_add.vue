@@ -15,9 +15,16 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" :t="'swallow'" />
+				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' />
 			</div>
-
+			<div style="text-align:left; color : white; font-size: 20px;">
+				<div>
+					mean break : <span v-text='ws_10_mean_break'/>
+				</div>
+				<div>
+					large break : <span v-text='ws_10_max_break'/>
+				</div>
+			</div>
 			<div style="text-align:right; ">
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -67,7 +74,7 @@
 						<div style="margin-top: 50px">
 							<h2 style="padding-right: 100px">繪圖工具</h2>
 							<br>
-							<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+							<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
 							<br>
 							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
 								<el-table-column prop="metrics" label='Metrics'/>
@@ -80,7 +87,11 @@
 							</el-table>
 						</div>
 						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="flag" label="參數">
+								<template slot-scope="scope">
+									<div v-html="scope.row.flag"></div>
+								</template>
+							</el-table-column>
 							<el-table-column prop="value"  label="值"/>
 						</el-table>
 						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
@@ -132,7 +143,7 @@
 						<div style="margin-top: 50px">
 							<h2 style="padding-right: 100px">繪圖工具</h2>
 							<br>
-							<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
+							<el-slider v-model="HH_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
 							<br>
 							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 								<el-table-column prop="metrics" label='Metrics'/>
@@ -167,19 +178,30 @@
 
 			<!-- section4 start -->
 			<el-row :gutter="1">
-				<el-col :span="4">
+				<el-col :span="10">
 					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
-						<el-select v-model="ws_10_result" placeholder="二度收縮 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
-							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
+						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
+							<div>
+								Secondary peristalsis response : <span v-text='SPR'/> %
+							</div>
+							<div>
+								Effective response : <span v-text='ER'/> %
+							</div>
+						</div>
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="ts_table_data" :t="'ab'" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+			<div id=ab_table_container>
+				<ab_add_table :patient_id="current_patient_id" :table_data="ab_table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ab", seted)' @set_max_break='seted=>set_max_break("ab", seted)' @set_SPR='set_SPR' @set_ER='set_ER'/>
 			</div>
-
+			<div style="text-align:left; color : white; font-size: 20px;">
+				<div>
+					mean break : <span v-text='ab_mean_break'/>
+				</div>
+				<div>
+					large break : <span v-text='ab_max_break'/>
+				</div>
+			</div>
 			<div style="text-align:right; ">
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -201,11 +223,12 @@
 </template>
 <script>
 import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ts_table_data_format } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
+import ab_add_table from "@/components/ab_add_table.vue"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -216,6 +239,7 @@ export default {
 	components: {
 		add_table,
 		draw,
+		ab_add_table
 	},
 	data() {
 		return {
@@ -247,8 +271,11 @@ export default {
 			table_data:[],
 			ws_10_table_data: '',
 
-			ts_table_data: [],
+			ab_table_data: [],
 
+			// break 相關變數
+			ws_10_mean_break: '-',
+			ws_10_max_break: '-',
 
 			// basic test selector result 的 options，於created中獲取資料
 			ws_10_options:0,
@@ -339,31 +366,31 @@ export default {
 
 			MRS_draw_data: [
 			{
-				flag: 'MRS during DCI',
+				flag: 'DCI(during MRS)',
 				value: 0
 			}, 
 			{
-				flag: 'MRS post DCI',
+				flag: 'DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS during IRP',
+				flag: 'IRP(during MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS post IRP',
+				flag: 'IRP(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Max MRS post DCI',
+				flag: 'Max DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Mean MRS post DCI\n*需全部subtest標記完成的值才較可信',
+				flag: 'Mean DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'DCI ratio',
+				flag: '<b>DCI ratio<b>',
 				value: 0
 			},
 			{
@@ -401,6 +428,12 @@ export default {
 				background: 'rgba(0, 0, 0, 0.7)'
 			},
 			loading_instance: {},
+
+			// 二度收縮的參數
+			ab_mean_break: '-',
+			ab_max_break: '-',
+			SPR: '-',
+			ER: '-',
 		}
 	},
 	created(){
@@ -412,7 +445,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
-		this.ts_table_data = ts_table_data_format
+		this.ab_table_data = ab_table_data_format
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
@@ -629,7 +662,7 @@ export default {
 		// 處理table的資料
 		preprocess_ws_10_table_data: function(table_data) {
 			// 這個只是要對add_table裡數據的順序而已
-			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			var dic = {}
 			
 			for (var i = 0; i < table_data.length; i++) {
@@ -888,6 +921,7 @@ export default {
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
 				this.update_hh_send_btn()
+				this.set_rip_result(poly_lst)
 			}
 		},
 
@@ -1190,10 +1224,10 @@ export default {
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[7]['value'] = 'incomplete'
+				this.MRS_draw_data[7]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[7]['value'] = 'complete'
+				this.MRS_draw_data[7]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
@@ -1208,13 +1242,64 @@ export default {
 				this.MRS_draw_data[6]['value'] = 'undefine'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = ws_10_DCI / MRS_DCI
+				this.MRS_draw_data[6]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
 
 		// show_loading() {
 		// 	let loadingInstance = this.$loading(this.loading_options)
 		// }
+		set_rip_result(poly_lst) {
+			var upper = -1
+			var lower = -1
+			var rip = -1
+
+			for(var i=0; i<poly_lst.length;i++) {
+				switch (poly_lst[i].flag) {
+					case 'HH_LES_upper':
+						upper = poly_lst[i].y0
+						break
+					case 'HH_LES_lower':
+						lower = poly_lst[i].y0
+						break
+					case 'HH_RIP':
+						rip = poly_lst[i].y0
+						break
+				}
+			}
+
+			if(upper >= 0 && rip >= 0 && rip < upper) {
+				this.rip_result = 'proximal'
+			}
+			else if(lower >= 0 && rip >= 0 && rip > lower) {
+				this.rip_result = 'distal'
+			}
+			else {
+				this.rip_result = 'no_result'
+			}
+		},
+		set_mean_break(test, val) {
+			if(test == 'ws_10') {
+				this.ws_10_mean_break = val
+			}
+			else if (test == 'ab') {
+				this.ab_mean_break = val
+			}
+		},
+		set_max_break(test, val) {
+			if(test == 'ws_10') {
+				this.ws_10_max_break = val
+			}
+			else if(test == 'ab') {
+				this.ab_max_break = val
+			}
+		},
+		set_SPR(val) {
+			this.SPR = val
+		},
+		set_ER(val) {
+			this.ER = val
+		}
 	}
 }
 </script>

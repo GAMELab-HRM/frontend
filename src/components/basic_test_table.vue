@@ -6,7 +6,7 @@
             <!-- @sort-change='sort_date' :default-sort="default_sort_param" -->
             <el-table-column type="index" :index="indexMethod">
             </el-table-column>
-            <el-table-column prop="patient_id" label="ID" width="110">
+            <el-table-column prop="patient_id" label="ID" width="80">
             </el-table-column>
             <el-table-column prop="filename" label="Filename">
             </el-table-column>
@@ -14,11 +14,11 @@
             </el-table-column>
             <el-table-column prop="ws_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
             </el-table-column>
-            <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method">
+            <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method" width="150">
             </el-table-column>
             <el-table-column prop="hiatal_hernia_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
             </el-table-column>
-            <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method">
+            <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method" width="150">
             </el-table-column>
             <el-table-column prop="last_update" label="Last update">
                 <!-- 暫時刪除sort的功能 -->
