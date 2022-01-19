@@ -197,19 +197,6 @@ export let mrs_subtest_options = [
 
 export let ab_table_data_format = [
     {
-        metrics: 'Contraction Vigor',
-        ab1: '',
-        ab2: '',
-        ab3: '',
-        ab4: '',
-        ab5: '',
-        ab6: '',
-        ab7: '',
-        ab8: '',
-        ab9: '',
-        ab10: '',
-    },
-    {
         metrics: 'IRP 4s',
         ab1: '',
         ab2: '',

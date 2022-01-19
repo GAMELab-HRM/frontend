@@ -127,6 +127,7 @@ export default {
                 row['metrics'] = 'Break'
             } else if(row['metrics'] == 'DCI') {
                 this.set_vigor(scope)
+                this.$emit('set_ws_10_DCI_in_MRS', '')
             }
             this.check_table()
         },

@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' />
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -222,7 +222,7 @@
 	
 </template>
 <script>
-import add_table from "../components/basic_test_add_table.vue"
+import ws_10_add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
@@ -237,7 +237,7 @@ import ab_add_table from "@/components/ab_add_table.vue"
 export default {
 	name: 'basic_test_add',
 	components: {
-		add_table,
+		ws_10_add_table,
 		draw,
 		ab_add_table
 	},
@@ -374,14 +374,6 @@ export default {
 				value: 0
 			},
 			{
-				flag: 'IRP(during MRS)',
-				value: 0
-			},
-			{
-				flag: 'IRP(post MRS)',
-				value: 0
-			},
-			{
 				flag: 'Max DCI(post MRS)',
 				value: 0
 			},
@@ -390,16 +382,24 @@ export default {
 				value: 0
 			},
 			{
+				flag: 'wet swallow mean DCI<br>(exclusive Faild)',
+				value: 0
+			},
+			{
 				flag: '<b>DCI ratio<b>',
+				value: 0
+			},
+			{
+				flag: 'IRP(during MRS)',
+				value: 0
+			},
+			{
+				flag: 'IRP(post MRS)',
 				value: 0
 			},
 			{
 				flag: 'Deglutitive inhibition',
 				value: 'incomplete'
-			},
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			HH_draw_data:[
@@ -410,10 +410,6 @@ export default {
 			{
 				flag: 'seperate',
 				value: false.toString()
-			}, 
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			draw_btn_rerender: 0,
@@ -465,7 +461,9 @@ export default {
 			// [TODO]
 			var lst = Object.values(this.table_data[4])
 			if(lst.length==10) {
+
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 			}
 			
 		}).catch((err)=>{
@@ -876,12 +874,13 @@ export default {
 				// rerender draw table data 
 				this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 				this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+				this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+				this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 
 			}
 			else if(test=='HH') {
@@ -932,8 +931,8 @@ export default {
 			// rerender draw table data 
 			this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 			this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-			this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+			this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+			this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 			this.set_DI()
 			this.set_DCI_ratio()
@@ -1098,12 +1097,12 @@ export default {
 			if(obj['seq']==1) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[2]['value'] = obj['IRP']
+				this.MRS_draw_data[6]['value'] = obj['IRP']
 			}
 			if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[3]['value'] = obj['IRP']
+				this.MRS_draw_data[7]['value'] = obj['IRP']
 			}
 
 		},
@@ -1133,12 +1132,12 @@ export default {
 				// MRS IRP1
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = 0
 				// force table data change
-				this.MRS_draw_data[2]['value'] = 0
+				this.MRS_draw_data[6]['value'] = 0
 
 				// MRS IRP2
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
 				// force table data change
-				this.MRS_draw_data[3]['value'] = 0
+				this.MRS_draw_data[7]['value'] = 0
 
 				this.set_DI()
 				this.set_Max_DCI()
@@ -1153,11 +1152,9 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[8]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
-				this.HH_draw_data[2]['value'] = val
 				this.$refs.HH_draw.contour_size_change(val)
 			}
 		},
@@ -1200,10 +1197,10 @@ export default {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+				this.MRS_draw_data[2]['value'] = Math.max(...DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[4]['value'] = 0
+				this.MRS_draw_data[2]['value'] = 0
 			}
 		},
 		set_Mean_DCI() {
@@ -1214,20 +1211,20 @@ export default {
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[5]['value'] = average(DCI_lst)
+				this.MRS_draw_data[3]['value'] = average(DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[5]['value'] = 0
+				this.MRS_draw_data[3]['value'] = 0
 			}
 			
 		},
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[7]['value'] = 'complete'
+				this.MRS_draw_data[8]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[7]['value'] = 'incomplete'
+				this.MRS_draw_data[8]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
@@ -1239,10 +1236,10 @@ export default {
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[6]['value'] = 'undefine'
+				this.MRS_draw_data[5]['value'] = 'undefine'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = MRS_DCI / ws_10_DCI
+				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
 
@@ -1299,7 +1296,22 @@ export default {
 		},
 		set_ER(val) {
 			this.ER = val
-		}
+		},
+		set_ws_10_DCI_in_MRS() {
+			var lst = Object.values(this.table_data[4])
+			var ws_10_DCI = 0
+			var ct=0;
+			for(var i=1; i<lst.length; i++) {
+				var dci = parseFloat(lst[i])
+				if(dci > 100) {
+					ws_10_DCI+=dci
+					ct+=1
+				}
+				
+			}
+			this.MRS_draw_data[4]['value'] = ws_10_DCI/ct
+
+		},
 	}
 }
 </script>
