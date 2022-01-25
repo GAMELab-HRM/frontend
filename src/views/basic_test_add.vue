@@ -74,7 +74,7 @@
 						</el-col>
 					</el-row>
 				</el-col>
-				<el-col offset="1" :span="7" >
+				<el-col :offset="1" :span="7" >
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
@@ -459,19 +459,20 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-
+			this.ws_10_result = retv["ws_result"]
+			this.update_ws_10_send_btn()
+		}).then(()=>{
 			var break_lst = [];
-			break_lst = Object.values(retv["breaks"])
-
+			// for break
+			break_lst = Object.values(this.table_data[this.table_data.length - 1])
 			if(break_lst.length > 0) {
+				break_lst.shift();
 				break_lst = break_lst.map(function(val) {
 					return parseFloat(val)
 				})
 				this.$refs.ws_10_table.set_mean_break(break_lst);
 				this.$refs.ws_10_table.set_max_break(break_lst);
 			}
-			this.ws_10_result = retv["ws_result"]
-			this.update_ws_10_send_btn()
 
 			// [TODO]
 			var lst = Object.values(this.table_data[4])
@@ -480,11 +481,13 @@ export default {
 				this.set_DCI_ratio()
 				this.set_ws_10_DCI_in_MRS()
 			}
-			
 		}).catch((err)=>{
             console.log("Call get swallow API Failed!")
 			console.log(err)
 		})
+			
+			
+		
 
 		/*
 			[MRS] Raw Data 
@@ -698,15 +701,42 @@ export default {
 			return dic
 		},
 		
+		
+
 		send_backend: function(test_type) {
 			// call api here
 			// ws_10_object is ready send to backend
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
-				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
+
+				if(this.send_doctor_num==1) {
+					this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
+					UpdateWetSwallow(this.ws_10_object).then((res)=>{
+						console.log("Call update WS API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update WS API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+				} else {
+					for(var i=0; i<2;i++) {
+						this.ws_10_object['doctor_id'] = i
+						UpdateWetSwallow(this.ws_10_object).then((res)=>{
+							console.log("Call update WS API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update WS API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
+				}
 
 				UpdateWetSwallow(this.ws_10_object).then((res)=>{
 					console.log("Call update WS API successed!")
@@ -719,110 +749,161 @@ export default {
 				})
 			}
 			else if(test_type == 'MRS') {
-				// [for 品峰] call UpdateMRSDrawInfo(in apis/mrs.js)
+				if(this.send_doctor_num==1) {
+					// 把MRS圖的資料傳到後端
+					UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRSDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRSDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
+					// 把MRS的數值傳到後端
+					UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRSMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRSMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 把MRS圖的資料傳到後端
-				UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRSDrawInfo API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRSDrawInfo API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+					// 把MRS的結果傳到後端
+					var mrs_result_obj = {
+						'mrs_result': this.mrs_result
+					}
+					UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRS Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRS Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// [for 品峰] call UpdateMRSMetrics(in apis/mrs.js)
+				} else {
+					for(i=0; i<2;i++) {
+						// 把MRS圖的資料傳到後端
+						UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update MRSDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRSDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.MRS_draw_param['metrics'], null, 4))
+						// 把MRS的數值傳到後端
+						UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update MRSMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRSMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 把MRS的數值傳到後端
-				UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRSMetrics API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRSMetrics API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+						// 把MRS的結果傳到後端
+						mrs_result_obj = {
+							'mrs_result': this.mrs_result
+						}
+						UpdateMRSResult(mrs_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update MRS Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRS Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
 
-				// [for 品峰]
-				// 把MRS的結果傳到後端
-				var mrs_result_obj = {
-					'mrs_result': this.mrs_result
 				}
-				UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRS Result API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRS Result API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
-
-
-
 			}
 			else if(test_type == 'HH') {
-				// [for 品峰] call UpdateHHDrawInfo(in apis/hh.js)
+				if(this.send_doctor_num==1) {
+					// 把HH圖的資料傳到後端
+					UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HHDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HHDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+					// 把HH的數值傳到後端
+					UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HHMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HHMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 把HH圖的資料傳到後端
-				UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HHDrawInfo API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HHDrawInfo API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+					var hh_result_obj = {
+						'hh_result': this.hh_result,
+						'rip_result': this.rip_result
+					}
+					UpdateHHResult(hh_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HH Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HH Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+				} else {
+					for(i=0; i<2;i++) {
+						// 把HH圖的資料傳到後端
+						UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update HHDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HHDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// [for 品峰] call UpdateHHMertics(in apis/hh.js)
+						// 把HH的數值傳到後端
+						UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update HHMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HHMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.HH_draw_param['metrics'], null, 4))
-
-				// 把HH的數值傳到後端
-				UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HHMetrics API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HHMetrics API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
-
-				var hh_result_obj = {
-					'hh_result': this.hh_result,
-					'rip_result': this.rip_result
+						hh_result_obj = {
+							'hh_result': this.hh_result,
+							'rip_result': this.rip_result
+						}
+						UpdateHHResult(hh_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update HH Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HH Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
 				}
-				UpdateHHResult(hh_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HH Result API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HH Result API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
 			}
-
-			// if(this.send_doctor_num==1) {
-			// 	console.log("send 1 doctor's data")
-			// }
-			// else {
-			// 	console.log("send 2 doctor's data")
-			// }
 		},
 
 		// 二次確認彈框關閉時的call back
