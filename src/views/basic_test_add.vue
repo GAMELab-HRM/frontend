@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -1333,14 +1333,17 @@ export default {
 			var lst = Object.values(this.table_data[4])
 			var ws_10_DCI = 0
 			for(var i=1; i<lst.length; i++) {
-				ws_10_DCI+=parseFloat(lst[i])
+				if(lst[i]!='') {
+					ws_10_DCI+=parseFloat(lst[i])
+				}
 			}
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[5]['value'] = 'undefine'
-			}
-			else {
+				this.MRS_draw_data[5]['value'] = 'MRS DCI is 0'
+			} else if(ws_10_DCI==0) {
+				this.MRS_draw_data[5]['value'] = 'ws_10 DCI is 0'
+			} else {
 				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
