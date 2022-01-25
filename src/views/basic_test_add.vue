@@ -44,59 +44,63 @@
 			<!-- section2 start -->
 			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-							<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
-								<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
-							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
-								<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-					<el-col :span="2">
-						<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-					</el-col>
-				</el-row>
-				<el-row type="flex" class="row-bg" justify="space-between">
-					<el-col :span="14">
-						<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
-					</el-col>
-					<el-col :span="7" >
-						<div style="margin-top: 50px">
-							<h2 style="padding-right: 100px">繪圖工具</h2>
-							<br>
-							<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
-							<br>
-							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
-								<el-table-column prop="metrics" label='Metrics'/>
-								<el-table-column label='Operation'>
-									<template slot-scope="scope">
-										<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-										<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
-									</template>
-								</el-table-column>
-							</el-table>
-						</div>
-						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-							<el-table-column prop="flag" label="參數">
+					<el-col el-col :span="16">
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+								<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
+									<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+					</el-row>
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
+								<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
+									<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<el-col :offset="2" :span="2">
+							<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+						</el-col>
+					</el-row>
+					<el-row type="flex" class="row-bg" justify="space-between">
+						<el-col :span="14">
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+						</el-col>
+					</el-row>
+				</el-col>
+				<el-col offset="1" :span="7" >
+					<div style="margin-top: 50px">
+						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
+						<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+						<br>
+						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<div v-html="scope.row.flag"></div>
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
 								</template>
 							</el-table-column>
-							<el-table-column prop="value"  label="值"/>
 						</el-table>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
-					</el-col>
+					</div>
+					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+						<el-table-column prop="flag" label="參數">
+							<template slot-scope="scope">
+								<div v-html="scope.row.flag"></div>
+							</template>
+						</el-table-column>
+						<el-table-column prop="value"  label="值"/>
+					</el-table>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+				</el-col>
 				</el-row>
 
 				<!-- section2 dialog start -->
@@ -634,12 +638,13 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			// for(var i=0; i<this.mrs_subtest_options.length; i++) {
-			// 	if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
-			// 		this.mrs_send_disable = true
-			// 		return
-			// 	}
-			// }
+			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+					this.mrs_send_disable = true
+					return
+				}
+			}
 			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
