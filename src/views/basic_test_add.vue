@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' />
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -29,7 +29,7 @@
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
-			
+
 			<!-- section1 dialog start -->
 			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
@@ -44,59 +44,63 @@
 			<!-- section2 start -->
 			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-							<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
-								<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
-							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
-								<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-					<el-col :span="2">
-						<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-					</el-col>
-				</el-row>
-				<el-row type="flex" class="row-bg" justify="space-between">
-					<el-col :span="14">
-						<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
-					</el-col>
-					<el-col :span="7" >
-						<div style="margin-top: 50px">
-							<h2 style="padding-right: 100px">繪圖工具</h2>
-							<br>
-							<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
-							<br>
-							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
-								<el-table-column prop="metrics" label='Metrics'/>
-								<el-table-column label='Operation'>
-									<template slot-scope="scope">
-										<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-										<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
-									</template>
-								</el-table-column>
-							</el-table>
-						</div>
-						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-							<el-table-column prop="flag" label="參數">
+					<el-col el-col :span="16">
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+								<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
+									<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+					</el-row>
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
+								<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
+									<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<el-col :offset="2" :span="2">
+							<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+						</el-col>
+					</el-row>
+					<el-row type="flex" class="row-bg" justify="space-between">
+						<el-col :span="14">
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+						</el-col>
+					</el-row>
+				</el-col>
+				<el-col offset="1" :span="7" >
+					<div style="margin-top: 50px">
+						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
+						<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+						<br>
+						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<div v-html="scope.row.flag"></div>
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
 								</template>
 							</el-table-column>
-							<el-table-column prop="value"  label="值"/>
 						</el-table>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
-					</el-col>
+					</div>
+					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+						<el-table-column prop="flag" label="參數">
+							<template slot-scope="scope">
+								<div v-html="scope.row.flag"></div>
+							</template>
+						</el-table-column>
+						<el-table-column prop="value"  label="值"/>
+					</el-table>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+				</el-col>
 				</el-row>
 
 				<!-- section2 dialog start -->
@@ -222,7 +226,7 @@
 	
 </template>
 <script>
-import add_table from "../components/basic_test_add_table.vue"
+import ws_10_add_table from "../components/basic_test_add_table.vue"
 import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
@@ -237,7 +241,7 @@ import ab_add_table from "@/components/ab_add_table.vue"
 export default {
 	name: 'basic_test_add',
 	components: {
-		add_table,
+		ws_10_add_table,
 		draw,
 		ab_add_table
 	},
@@ -374,14 +378,6 @@ export default {
 				value: 0
 			},
 			{
-				flag: 'IRP(during MRS)',
-				value: 0
-			},
-			{
-				flag: 'IRP(post MRS)',
-				value: 0
-			},
-			{
 				flag: 'Max DCI(post MRS)',
 				value: 0
 			},
@@ -390,16 +386,24 @@ export default {
 				value: 0
 			},
 			{
+				flag: 'wet swallow mean DCI<br>(exclusive Faild)',
+				value: 0
+			},
+			{
 				flag: '<b>DCI ratio<b>',
+				value: 0
+			},
+			{
+				flag: 'IRP(during MRS)',
+				value: 0
+			},
+			{
+				flag: 'IRP(post MRS)',
 				value: 0
 			},
 			{
 				flag: 'Deglutitive inhibition',
 				value: 'incomplete'
-			},
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			HH_draw_data:[
@@ -410,10 +414,6 @@ export default {
 			{
 				flag: 'seperate',
 				value: false.toString()
-			}, 
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			draw_btn_rerender: 0,
@@ -446,11 +446,12 @@ export default {
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
 		this.ab_table_data = ab_table_data_format
+		console.log(this.current_record_id)
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
 			let retv = res.data
-			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			
 			for(let i=0; i<eptmetric_order.length; i++){
 				//console.log(res.data[eptmetric_order[i]])
@@ -458,14 +459,26 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-			
+
+			var break_lst = [];
+			break_lst = Object.values(retv["breaks"])
+
+			if(break_lst.length > 0) {
+				break_lst = break_lst.map(function(val) {
+					return parseFloat(val)
+				})
+				this.$refs.ws_10_table.set_mean_break(break_lst);
+				this.$refs.ws_10_table.set_max_break(break_lst);
+			}
 			this.ws_10_result = retv["ws_result"]
 			this.update_ws_10_send_btn()
 
 			// [TODO]
 			var lst = Object.values(this.table_data[4])
 			if(lst.length==10) {
+
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 			}
 			
 		}).catch((err)=>{
@@ -625,12 +638,13 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			// for(var i=0; i<this.mrs_subtest_options.length; i++) {
-			// 	if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
-			// 		this.mrs_send_disable = true
-			// 		return
-			// 	}
-			// }
+			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
+			for(var i=0; i<this.mrs_subtest_options.length; i++) {
+				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+					this.mrs_send_disable = true
+					return
+				}
+			}
 			if(this.mrs_result=='') {
 				this.mrs_send_disable = true
 				return
@@ -668,9 +682,14 @@ export default {
 			for (var i = 0; i < table_data.length; i++) {
 				var temp = Object.values(table_data[i])
 				// 去除metrics
-				temp.shift()
+				if(i==table_data.length-1) {
+					temp.pop()
+				} else {
+					temp.shift()
+				}
 				dic[ws_10_object_col[i]] = temp
 			}
+			console.log(dic)
 
 			// ???這是啥???
 			dic['pressure_max'] = 0
@@ -876,12 +895,13 @@ export default {
 				// rerender draw table data 
 				this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 				this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+				this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+				this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 
 			}
 			else if(test=='HH') {
@@ -932,8 +952,8 @@ export default {
 			// rerender draw table data 
 			this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 			this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-			this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+			this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+			this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 			this.set_DI()
 			this.set_DCI_ratio()
@@ -1098,12 +1118,12 @@ export default {
 			if(obj['seq']==1) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[2]['value'] = obj['IRP']
+				this.MRS_draw_data[6]['value'] = obj['IRP']
 			}
 			if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[3]['value'] = obj['IRP']
+				this.MRS_draw_data[7]['value'] = obj['IRP']
 			}
 
 		},
@@ -1133,12 +1153,12 @@ export default {
 				// MRS IRP1
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = 0
 				// force table data change
-				this.MRS_draw_data[2]['value'] = 0
+				this.MRS_draw_data[6]['value'] = 0
 
 				// MRS IRP2
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
 				// force table data change
-				this.MRS_draw_data[3]['value'] = 0
+				this.MRS_draw_data[7]['value'] = 0
 
 				this.set_DI()
 				this.set_Max_DCI()
@@ -1153,11 +1173,9 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[8]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
-				this.HH_draw_data[2]['value'] = val
 				this.$refs.HH_draw.contour_size_change(val)
 			}
 		},
@@ -1200,10 +1218,10 @@ export default {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+				this.MRS_draw_data[2]['value'] = Math.max(...DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[4]['value'] = 0
+				this.MRS_draw_data[2]['value'] = 0
 			}
 		},
 		set_Mean_DCI() {
@@ -1214,20 +1232,20 @@ export default {
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[5]['value'] = average(DCI_lst)
+				this.MRS_draw_data[3]['value'] = average(DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[5]['value'] = 0
+				this.MRS_draw_data[3]['value'] = 0
 			}
 			
 		},
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[7]['value'] = 'complete'
+				this.MRS_draw_data[8]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[7]['value'] = 'incomplete'
+				this.MRS_draw_data[8]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
@@ -1239,10 +1257,10 @@ export default {
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[6]['value'] = 'undefine'
+				this.MRS_draw_data[5]['value'] = 'undefine'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = MRS_DCI / ws_10_DCI
+				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
 
@@ -1299,7 +1317,22 @@ export default {
 		},
 		set_ER(val) {
 			this.ER = val
-		}
+		},
+		set_ws_10_DCI_in_MRS() {
+			var lst = Object.values(this.table_data[4])
+			var ws_10_DCI = 0
+			var ct=0;
+			for(var i=1; i<lst.length; i++) {
+				var dci = parseFloat(lst[i])
+				if(dci > 100) {
+					ws_10_DCI+=dci
+					ct+=1
+				}
+				
+			}
+			this.MRS_draw_data[4]['value'] = ws_10_DCI/ct
+
+		},
 	}
 }
 </script>

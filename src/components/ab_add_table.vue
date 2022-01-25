@@ -1,19 +1,19 @@
 <template>
     <div>
-        <el-table :data="table_data" height=400 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
+        <el-table :data="table_data" height=330 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"ab "+index' :prop='"ab"+index' :key="index">
                 <template slot-scope="scope">
-                    <div v-if="scope.$index < 1">
+                    <!-- <div v-if="scope.$index < 1">
                         <el-select v-model="table_data[scope.$index]['ab'+index]" placeholder="請選擇" @change="check_table">
                             <el-option v-for="item in get_options(scope.$index)" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
-                    </div>
-                    <div v-else>
+                    </div> -->
+                    <!-- <div v-else> -->
                         <el-input v-model="table_data[scope.$index]['ab'+index]" @change="table_text_change(scope)"></el-input>
-                    </div>
+                    <!-- </div> -->
                 </template>
             </el-table-column> 
         </el-table>
@@ -28,16 +28,16 @@ export default {
         return {
             text:'',
             send_disable: true,
-            vigor_options: [{
-                value: 'Failed',
-                label: 'Failed'
-            }, {
-                value: 'Weak',
-                label: 'Weak'
-            }, {
-                value: 'Normal',
-                label: 'Normal'
-            }],
+            // vigor_options: [{
+            //     value: 'Failed',
+            //     label: 'Failed'
+            // }, {
+            //     value: 'Weak',
+            //     label: 'Weak'
+            // }, {
+            //     value: 'Normal',
+            //     label: 'Normal'
+            // }],
         }
     },
     props: {
@@ -65,10 +65,10 @@ export default {
             this.$emit('update_send', this.send_disable)
             this.$emit('send_object', this.table_data)
         },
-        get_options: function(idx) {
-            var options_lst = [this.vigor_options]
-            return options_lst[idx]
-        },
+        // get_options: function(idx) {
+        //     var options_lst = [this.vigor_options]
+        //     return options_lst[idx]
+        // },
         table_text_change(scope) {
             var row = scope.row
             if(row['metrics'] == 'Break') {
@@ -92,7 +92,7 @@ export default {
                 row['metrics'] = 'Break'
 
             } else if(row['metrics'] == 'DCI') {
-                this.set_vigor(scope)
+                // this.set_vigor(scope)
                 delete row['metrics']
                 var dci_lst = Object.values(row)
                 
@@ -139,19 +139,19 @@ export default {
             }
             this.$emit('set_ER', ct)
         },
-        set_vigor(scope) {
-            var dci = this.table_data[scope.$index][scope.column.property]
-            var vigor=''
-            dci = parseFloat(dci)
-            if(dci<100) {
-                vigor='Failed'
-            } else if(dci>=100 && dci<450) {
-                vigor='Weak'
-            } else {
-                vigor='Normal'
-            }
-            this.table_data[0][scope.column.property] = vigor
-        }
+        // set_vigor(scope) {
+        //     var dci = this.table_data[scope.$index][scope.column.property]
+        //     var vigor=''
+        //     dci = parseFloat(dci)
+        //     if(dci<100) {
+        //         vigor='Failed'
+        //     } else if(dci>=100 && dci<450) {
+        //         vigor='Weak'
+        //     } else {
+        //         vigor='Normal'
+        //     }
+        //     this.table_data[0][scope.column.property] = vigor
+        // }
     }
 }
 </script>
