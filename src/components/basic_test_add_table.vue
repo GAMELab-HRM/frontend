@@ -78,7 +78,6 @@ export default {
     props: {
         patient_id: [String],
         table_data:[],
-        t: [String]
     },
 
     mounted() {
@@ -89,7 +88,13 @@ export default {
         check_table() {
             for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
-                val_lst.shift()
+                if(i==this.table_data.length-1) {
+                    val_lst.pop()
+
+                } else {
+                    val_lst.shift()
+                }
+                
                 if(val_lst.length != 10) {
                     this.send_disable = true
                     this.$emit('update_send', this.send_disable)
@@ -123,8 +128,7 @@ export default {
                     this.$emit('set_mean_break', '-')
                     this.$emit('set_max_break', '-')
                 }
-
-                row['metrics'] = 'Break'
+                row["metrics"] = "Break"
             } else if(row['metrics'] == 'DCI') {
                 this.set_vigor(scope)
                 this.$emit('set_ws_10_DCI_in_MRS', '')

@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -29,7 +29,7 @@
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
-			
+
 			<!-- section1 dialog start -->
 			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
@@ -442,11 +442,12 @@ export default {
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
 		this.ab_table_data = ab_table_data_format
+		console.log(this.current_record_id)
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
 			let retv = res.data
-			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			
 			for(let i=0; i<eptmetric_order.length; i++){
 				//console.log(res.data[eptmetric_order[i]])
@@ -454,7 +455,17 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-			
+
+			var break_lst = [];
+			break_lst = Object.values(retv["breaks"])
+
+			if(break_lst.length > 0) {
+				break_lst = break_lst.map(function(val) {
+					return parseFloat(val)
+				})
+				this.$refs.ws_10_table.set_mean_break(break_lst);
+				this.$refs.ws_10_table.set_max_break(break_lst);
+			}
 			this.ws_10_result = retv["ws_result"]
 			this.update_ws_10_send_btn()
 
@@ -666,9 +677,14 @@ export default {
 			for (var i = 0; i < table_data.length; i++) {
 				var temp = Object.values(table_data[i])
 				// 去除metrics
-				temp.shift()
+				if(i==table_data.length-1) {
+					temp.pop()
+				} else {
+					temp.shift()
+				}
 				dic[ws_10_object_col[i]] = temp
 			}
+			console.log(dic)
 
 			// ???這是啥???
 			dic['pressure_max'] = 0
