@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="getted=>update_send('ws_10', getted)" @send_object="getted=>get_table_data('ws_10', getted)" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -223,7 +223,7 @@
 				</el-col>
 			</el-row>
 			<div id=ab_table_container>
-				<ab_add_table :patient_id="current_patient_id" :table_data="ab_table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ab", seted)' @set_max_break='seted=>set_max_break("ab", seted)' @set_SPR='set_SPR' @set_ER='set_ER'/>
+				<ab_add_table :patient_id="current_patient_id" :table_data="ab_table" @update_send="getted=>update_send('ab', getted)" @send_object="getted=>get_table_data('ab', getted)" @set_mean_break='seted=>set_mean_break("ab", seted)' @set_max_break='seted=>set_max_break("ab", seted)' @set_SPR='set_SPR' @set_ER='set_ER' ref="ab_table"/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -233,9 +233,9 @@
 					large break : <span v-text='ab_max_break'/>
 				</div>
 			</div>
-			<div style="text-align:right; ">
-				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
-				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
+			<div style="text-align:right;">
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ab', 1)" :disabled="ab_send_disable"> 送出 </el-button>
+				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ab', 2)" :disabled="ab_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
 			
 			<!-- section4 dialog start -->
@@ -294,15 +294,17 @@ export default {
 			ws_10_send_disable: true,
 			mrs_send_disable: true,
 			hh_send_disable: true,
+			ab_send_disable: true,
 
 			// ws_10 table data是否可傳送(是否全部填完)
 			ws_10_table_send_disable: true,
+			ab_table_send_disable:true,
 
 			// basic test table data
 			table_data:[],
 			ws_10_table_data: '',
-
-			ab_table_data: [],
+			ab_table:[],
+			ab_table_data: '',
 
 			// break 相關變數
 			ws_10_mean_break: '-',
@@ -476,7 +478,7 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
-		this.ab_table_data = ab_table_data_format
+		this.ab_table = ab_table_data_format
 		console.log(this.current_record_id)
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
@@ -641,11 +643,17 @@ export default {
 		},
 
 		// trigger when table data input
-		ws_10_update_send: function(val) {
-			console.log(val)
-			this.ws_10_table_send_disable = val
-			this.update_ws_10_send_btn()
+		update_send: function(test, val) {
+			if(test=='ws_10') {
+				this.ws_10_table_send_disable = val
+				this.update_ws_10_send_btn()
+			} else if(test=='ab') {
+				this.ab_table_send_disable = val
+				this.update_ab_send_btn()
+			}
+
 		},
+
 
 		// trigger when any result selector selected 
 		basic_test_selected_update: function(test_type) {
@@ -706,15 +714,28 @@ export default {
 			this.hh_send_disable = false
 		},
 		
-		// get ws_10 table data
-		get_ws_10_table_data: function(table) {
-			this.ws_10_table_data = table
+		// update ab send btn status
+		update_ab_send_btn: function() {
+			if(!this.ab_table_send_disable) {
+				this.ab_send_disable = false
+			}
+			else {
+				this.ab_send_disable = true
+			}
+		},
+
+		// get table data from ws_10 table or ab table
+		get_table_data: function(test, table) {
+			if(test=='ws_10') {
+				this.ws_10_table_data = table
+			} else if(test=='ab') {
+				this.ab_table_data = table
+			}
 		},
 
 		// 處理table的資料
 		preprocess_ws_10_table_data: function(table_data) {
 			// 這個只是要對add_table裡數據的順序而已
-			console.log(1111, table_data)
 			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			var dic = {}
 			
@@ -722,10 +743,18 @@ export default {
 				var temp = table_data[i]
 				dic[ws_10_object_col[i]] = temp
 			}
+			return dic
+		},
 
-			// ???這是啥???
-			dic['pressure_max'] = 0
-			dic['pressure_min'] = 0
+		preprocess_ab_table_data: function(table_data) {
+			// 這個只是要對add_table裡數據的順序而已
+			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
+			var dic = {}
+			
+			for (var i = 0; i < table_data.length; i++) {
+				var temp = table_data[i]
+				dic[ws_10_object_col[i]] = temp
+			}
 
 			return dic
 		},

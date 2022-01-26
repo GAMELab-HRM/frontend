@@ -43,27 +43,39 @@ export default {
     props: {
         patient_id: [String],
         table_data:[],
-        t: [String]
     },
 
     mounted() {
-        this.check_table()
+
     },
     
     methods: {
         check_table() {
             for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
-                val_lst.shift()
-                if(val_lst.length != 10) {
+                console.log('val', val_lst)
+                if(val_lst.length != 11) {
                     this.send_disable = true
                     this.$emit('update_send', this.send_disable)
                     return 0
                 }
             }
+
+            var return_lst = []
+
+            for(i = 0; i < this.table_data.length; i++) {
+                var idxOfmetrics = Object.keys(this.table_data[i]).indexOf('metrics')
+                val_lst = Object.values(this.table_data[i])
+                val_lst.splice(idxOfmetrics, 1)
+                return_lst.push(val_lst)
+            }
+
+            console.log("return lst", return_lst)
+
             this.send_disable = false
             this.$emit('update_send', this.send_disable)
-            this.$emit('send_object', this.table_data)
+            this.$emit('send_object', return_lst)
+
         },
         // get_options: function(idx) {
         //     var options_lst = [this.vigor_options]
@@ -72,6 +84,7 @@ export default {
         table_text_change(scope) {
             var row = scope.row
             if(row['metrics'] == 'Break') {
+                console.log("row", row)
                 delete row['metrics']
                 var break_lst = Object.values(row)
                 break_lst = break_lst.filter(function(val) {
@@ -88,9 +101,7 @@ export default {
                     this.$emit('set_mean_break', '-')
                     this.$emit('set_max_break', '-')
                 }
-
-                row['metrics'] = 'Break'
-
+                row["metrics"] = "Break"
             } else if(row['metrics'] == 'DCI') {
                 // this.set_vigor(scope)
                 delete row['metrics']
