@@ -210,7 +210,7 @@
 			<!-- section4 start -->
 			<el-row :gutter="1">
 				<el-col :span="10">
-					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
+					<h1 style="text-align:left; color: white; padding-top: 20px;font-size:35px" >二度收縮
 						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
 							<div>
 								Secondary peristalsis response : <span v-text='SPR'/> %
@@ -328,6 +328,10 @@ export default {
 
 			//basic test final data to send backend
 			ws_10_object:0,
+			catheter_lst: [
+				[40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				[],
+			],
 
 			// 繪圖的變數
 			MRS_draw_param: {
@@ -486,14 +490,16 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
+			this.$refs.ws_10_table.check_table()
 			this.ws_10_result = retv["ws_result"]
 			this.update_ws_10_send_btn()
 		}).then(()=>{
 			var break_lst = [];
 			// for break
 			break_lst = Object.values(this.table_data[this.table_data.length - 1])
+			console.log("break", break_lst)
 			if(break_lst.length > 0) {
-				break_lst.shift();
+				break_lst.shift()
 				break_lst = break_lst.map(function(val) {
 					return parseFloat(val)
 				})
@@ -514,7 +520,9 @@ export default {
 		})
 			
 			
-		
+		/*
+			Call API get catheter
+		*/
 
 		/*
 			[MRS] Raw Data 
@@ -706,20 +714,14 @@ export default {
 		// 處理table的資料
 		preprocess_ws_10_table_data: function(table_data) {
 			// 這個只是要對add_table裡數據的順序而已
+			console.log(1111, table_data)
 			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			var dic = {}
 			
 			for (var i = 0; i < table_data.length; i++) {
-				var temp = Object.values(table_data[i])
-				// 去除metrics
-				if(i==table_data.length-1) {
-					temp.pop()
-				} else {
-					temp.shift()
-				}
+				var temp = table_data[i]
 				dic[ws_10_object_col[i]] = temp
 			}
-			console.log(dic)
 
 			// ???這是啥???
 			dic['pressure_max'] = 0

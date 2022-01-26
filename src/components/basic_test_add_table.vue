@@ -81,29 +81,35 @@ export default {
     },
 
     mounted() {
-        this.check_table()
+
     },
 
     methods: {
         check_table() {
             for (var i = 0; i < this.table_data.length; i++) {
                 var val_lst = Object.values(this.table_data[i])
-                if(i==this.table_data.length-1) {
-                    val_lst.pop()
-
-                } else {
-                    val_lst.shift()
-                }
-                
-                if(val_lst.length != 10) {
+                if(val_lst.length != 11) {
                     this.send_disable = true
                     this.$emit('update_send', this.send_disable)
                     return 0
                 }
             }
+
+            var return_lst = []
+
+            for(i = 0; i < this.table_data.length; i++) {
+                var idxOfmetrics = Object.keys(this.table_data[i]).indexOf('metrics')
+                val_lst = Object.values(this.table_data[i])
+                val_lst.splice(idxOfmetrics, 1)
+                return_lst.push(val_lst)
+            }
+
+            console.log("return lst", return_lst)
+
             this.send_disable = false
             this.$emit('update_send', this.send_disable)
-            this.$emit('send_object', this.table_data)
+            this.$emit('send_object', return_lst)
+
         },
         get_options: function(idx) {
             var options_lst = [this.vigor_options, this.pattern_options, this.type_options]
