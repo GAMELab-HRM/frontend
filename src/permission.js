@@ -2,6 +2,7 @@ import router from './router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from './store'
+import {GetLoginStatus} from "@/utils/auth"
 NProgress.configure({showSpinner:false})
 
 
@@ -15,14 +16,25 @@ router.beforeEach(async(to,from,next)=>{
     NProgress.start()
     console.log('to: '+to.path)
     console.log('from: '+from.path)
-    if(store.state.auth_app.login_status){
-        next()
+    if(GetLoginStatus()){
+        if(store.state.auth_app.login_status){
+            next()
+        }
+        else{
+            console.log("請先選取身份")
+     
+            if(to.path!=='/'){
+                next('/')
+            }
+            else{
+                next()
+            }
+        }
     }
     else{
-        console.log("請先選取身份")
- 
-        if(to.path!=='/'){
-            next('/')
+        console.log("please login first")
+        if(to.path!=="/login"){
+            next("/login")
         }
         else{
             next()

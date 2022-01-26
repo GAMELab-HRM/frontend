@@ -42,6 +42,11 @@
                         </el-dialog>
                     </div>
                 </el-menu-item>
+                <el-menu-item style="float:right">
+                    <div>
+                        <el-button @click="logout">登出</el-button>
+                    </div>
+                </el-menu-item>
             </el-menu>
         </div>
     </div>
@@ -49,7 +54,7 @@
 
 <script>
 import Logo from "@/components/Logo"
-
+import {RemoveLoginItem} from "@/utils/auth"
 export default{
     components:{
         Logo,
@@ -60,7 +65,7 @@ export default{
                 "Dr. Lei":"0",
                 "Dr. Liang":"1"
             },
-            login_status: "登入",
+            login_status: "選擇醫師",
             login_btn: {
                 borderColor: 'red',
                 fontSize: '20px',
@@ -98,7 +103,13 @@ export default{
             this.login_btn.borderColor = 'lightgreen'
             console.log(name)
         },
-
+        // this logout is for account in this system
+        logout: function(){
+            RemoveLoginItem("login-status")
+            RemoveLoginItem("access_token")
+            RemoveLoginItem("refresh_token")
+            this.$router.push('/login')
+        },
         nav_bar_active(idx, event) {
             console.log(idx)
             console.log(event)
