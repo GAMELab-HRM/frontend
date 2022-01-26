@@ -210,7 +210,7 @@
 			<!-- section4 start -->
 			<el-row :gutter="1">
 				<el-col :span="10">
-					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
+					<h1 style="text-align:left; color: white; padding-top: 20px;font-size:35px" >二度收縮
 						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
 							<div>
 								Secondary peristalsis response : <span v-text='SPR'/> %
@@ -328,6 +328,10 @@ export default {
 
 			//basic test final data to send backend
 			ws_10_object:0,
+			catheter_lst: [
+				[40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				[],
+			],
 
 			// 繪圖的變數
 			MRS_draw_param: {
@@ -486,6 +490,7 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
+			this.ws_10_table_data = this.table_data
 			this.ws_10_result = retv["ws_result"]
 			this.update_ws_10_send_btn()
 		}).then(()=>{
@@ -514,7 +519,9 @@ export default {
 		})
 			
 			
-		
+		/*
+			Call API get catheter
+		*/
 
 		/*
 			[MRS] Raw Data 
