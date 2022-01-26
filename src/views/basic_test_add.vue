@@ -131,28 +131,27 @@
 
 			<div v-if="hh_drawinfo_show & hh_result_show & rip_result_show & hh_metric_show & hh_rawdata_show">
 				<!-- section3 start -->
-				<el-row :gutter="1">
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result
+				<el-row :gutter="3">
+					<el-col :md="{span: 7}" :xl="{span:5}">
+						<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result<br>
 							<el-select v-model="hh_result" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('hh')">
 								<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
 								</el-option>
 							</el-select>
 						</h1>
 					</el-col>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result
+					<el-col :md="{span: 7}" :xl="{span:5}">
+						<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result<br>
 							<el-select v-model="rip_result" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('rip')">
 								<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
 								</el-option>
 							</el-select>
 						</h1>
 					</el-col>
-					<el-col :span="2">
+					<el-col :md="{span: 3}" :xl="{span:3}">
 						<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 					</el-col>
 				</el-row>
-
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
 						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
@@ -167,8 +166,15 @@
 								<el-table-column prop="metrics" label='Metrics'/>
 								<el-table-column label='Operation'>
 									<template slot-scope="scope">
-										<el-button type="primary" @click="draw_handler('HH', scope.$index)" :disabled="draw_disable('HH', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-										<el-button type="danger" @click="delete_handler('HH', scope.$index)" :disabled="delete_disable('HH', scope.$index)">刪除</el-button>
+										<el-row>
+											<el-col :md="{span: 3}" :xl="{span: 8}">
+												<el-button type="primary" @click="draw_handler('HH', scope.$index)" :disabled="draw_disable('HH', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+											</el-col>
+											<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+											<el-col :md="{span: 1}" :xl="{span: 8}">
+												<el-button type="danger" @click="delete_handler('HH', scope.$index)" :disabled="delete_disable('HH', scope.$index)">刪除</el-button>
+											</el-col>
+										</el-row>
 									</template>
 								</el-table-column>
 							</el-table>
@@ -177,8 +183,15 @@
 							<el-table-column prop="flag" label="參數"/>
 							<el-table-column prop="value"  label="值"/>
 						</el-table>
-						<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
-						<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+						<el-row>
+							<el-col :md="{span: 3}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+							</el-col>
+							<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
+							<el-col :md="{span: 1}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+							</el-col>
+						</el-row>
 					</el-col>
 				</el-row>
 
