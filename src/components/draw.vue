@@ -275,6 +275,7 @@ var vue_instance = {
 				}
 			}
 		}
+		console.log(update_layout)
 		for(var i=0; i<this.polys.length; i++) {
 			this.$emit('update_draw_btn_status', {'flag': this.polys[i]['flag'], 'status': true})
 		}
@@ -295,11 +296,12 @@ var vue_instance = {
 		// reset flag
 		this.flag = ''
 		console.log('created')
-
+		
 		this.$refs.plotly.relayout(update_layout)
 	},
 	methods: {
 		mousemove_handler(evt){
+			
 			let bb = evt.target.getBoundingClientRect()
 			this.mouse_x = this.$refs.plotly.$refs.container._fullLayout.xaxis.p2d(evt.clientX - bb.left)
 			this.mouse_y = this.$refs.plotly.$refs.container._fullLayout.yaxis.p2d(evt.clientY - bb.top)
