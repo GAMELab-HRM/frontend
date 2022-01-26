@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
 			</div>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
@@ -84,8 +84,15 @@
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+									<el-row>
+										<el-col :md="{span: 3}" :xl="{span: 8}">
+											<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+										</el-col>
+										<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+										<el-col :md="{span: 1}" :xl="{span: 8}">
+											<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+										</el-col>
+									</el-row>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -98,8 +105,15 @@
 						</el-table-column>
 						<el-table-column prop="value"  label="值"/>
 					</el-table>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+					<el-row>
+						<el-col :md="{span: 3}" :xl="{span: 8}">
+							<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+						</el-col>
+						<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
+						<el-col :md="{span: 1}" :xl="{span: 8}">
+							<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+						</el-col>
+					</el-row>
 				</el-col>
 				</el-row>
 
@@ -1333,14 +1347,17 @@ export default {
 			var lst = Object.values(this.table_data[4])
 			var ws_10_DCI = 0
 			for(var i=1; i<lst.length; i++) {
-				ws_10_DCI+=parseFloat(lst[i])
+				if(lst[i]!='') {
+					ws_10_DCI+=parseFloat(lst[i])
+				}
 			}
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[5]['value'] = 'undefine'
-			}
-			else {
+				this.MRS_draw_data[5]['value'] = 'MRS DCI is undefine'
+			} else if(ws_10_DCI==0) {
+				this.MRS_draw_data[5]['value'] = 'ws_10 DCI is undefine'
+			} else {
 				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},

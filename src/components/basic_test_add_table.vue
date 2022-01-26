@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table id=add_teble :data="table_data" height=520 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
+        <el-table id=add_teble :data="table_data" height=530 border style="width: 100%; text-align: center" :header-cell-style="{ background: '#4C8ED2', color: 'white', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" highlight-current-row>
             <el-table-column :label="patient_id" prop="metrics">
             </el-table-column>
             <el-table-column v-for="(index) in 10" :label='"swallow "+index' :prop='"sw"+index' :key="index">
@@ -132,6 +132,7 @@ export default {
             } else if(row['metrics'] == 'DCI') {
                 this.set_vigor(scope)
                 this.$emit('set_ws_10_DCI_in_MRS', '')
+                this.$emit('set_MRS_DCI_ratio', '')
             }
             this.check_table()
         },

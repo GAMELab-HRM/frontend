@@ -25,10 +25,17 @@
                 <!-- sortable -->
             </el-table-column>
             <el-table-column prop="action" label="操作">
-                <template slot-scope="scope" style="display: flex-box">
-                    <el-button size="mini" type='primary' :disabled="check_login" @click="handleEdit(scope.$index, scope.row)">輸 入</el-button>
+                <template slot-scope="scope">
+                    <el-row>
+                    <el-col :md="{span: 3}" :xl="{span: 8}">
+                        <el-button size="mini" type='primary' :disabled="check_login" @click="handleEdit(scope.$index, scope.row)">輸 入</el-button>
+                    </el-col>
+                        <el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+                    <el-col :md="{span: 1}" :xl="{span: 8}">
                     <!-- :disabled="check_login" -->
-                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled='true' >刪 除</el-button>
+                        <el-button class="delete_btn" size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled='true' >刪 除</el-button>
+                    </el-col>
+                    </el-row>
                 </template>
             </el-table-column>
         </el-table>
@@ -264,17 +271,21 @@ export default {
 
 .el-table td,
 .el-table th.is-leaf {
-        border-bottom: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 .el-table--border th,
 .el-table--border th.gutter:last-of-type {
-        border-bottom: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 .el-table--border td,
 .el-table--border th {
-        border-right: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.delete_btn {
+    margin: 0px;
 }
 
 </style>
