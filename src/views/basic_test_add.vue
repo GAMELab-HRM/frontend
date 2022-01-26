@@ -1340,9 +1340,9 @@ export default {
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[5]['value'] = 'MRS DCI is 0'
+				this.MRS_draw_data[5]['value'] = 'MRS DCI is undefine'
 			} else if(ws_10_DCI==0) {
-				this.MRS_draw_data[5]['value'] = 'ws_10 DCI is 0'
+				this.MRS_draw_data[5]['value'] = 'ws_10 DCI is undefine'
 			} else {
 				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
