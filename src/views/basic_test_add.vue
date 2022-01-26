@@ -84,8 +84,15 @@
 							<el-table-column prop="metrics" label='Metrics'/>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
-									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+									<el-row>
+										<el-col :md="{span: 3}" :xl="{span: 8}">
+											<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+										</el-col>
+										<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+										<el-col :md="{span: 1}" :xl="{span: 8}">
+											<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+										</el-col>
+									</el-row>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -98,8 +105,15 @@
 						</el-table-column>
 						<el-table-column prop="value"  label="值"/>
 					</el-table>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+					<el-row>
+						<el-col :md="{span: 3}" :xl="{span: 8}">
+							<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+						</el-col>
+						<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
+						<el-col :md="{span: 1}" :xl="{span: 8}">
+							<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+						</el-col>
+					</el-row>
 				</el-col>
 				</el-row>
 
