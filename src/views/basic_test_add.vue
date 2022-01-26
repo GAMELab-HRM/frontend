@@ -15,14 +15,21 @@
 				</el-col>
 			</el-row>
 			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" :t="'swallow'" />
+				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS'/>
 			</div>
-
+			<div style="text-align:left; color : white; font-size: 20px;">
+				<div>
+					mean break : <span v-text='ws_10_mean_break'/>
+				</div>
+				<div>
+					large break : <span v-text='ws_10_max_break'/>
+				</div>
+			</div>
 			<div style="text-align:right; ">
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
-			
+
 			<!-- section1 dialog start -->
 			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
@@ -37,55 +44,63 @@
 			<!-- section2 start -->
 			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
-							<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
-								<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-				</el-row>
-				<el-row>
-					<el-col :span="4">
-						<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
-							<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
-								<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</h1>
-					</el-col>
-					<el-col :span="2">
-						<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-					</el-col>
-				</el-row>
-				<el-row type="flex" class="row-bg" justify="space-between">
-					<el-col :span="14">
-						<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
-					</el-col>
-					<el-col :span="7" >
-						<div style="margin-top: 50px">
-							<h2 style="padding-right: 100px">繪圖工具</h2>
-							<br>
-							<el-slider v-model="MRS_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
-							<br>
-							<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
-								<el-table-column prop="metrics" label='Metrics'/>
-								<el-table-column label='Operation'>
-									<template slot-scope="scope">
-										<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-										<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
-									</template>
-								</el-table-column>
-							</el-table>
-						</div>
-						<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
-							<el-table-column prop="flag" label="參數"/>
-							<el-table-column prop="value"  label="值"/>
+					<el-col el-col :span="16">
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
+								<el-select v-model="mrs_result" placeholder="MRS Result" style="margin-top: 15px" @change="basic_test_selected_update('mrs')">
+									<el-option v-for="item in mrs_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+					</el-row>
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Test<br>
+								<el-select v-model="mrs_subtest" placeholder="MRS Test" style="margin-top: 15px" @change="mrs_subtest_selected_update">
+									<el-option v-for="item in mrs_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<el-col :offset="2" :span="2">
+							<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+						</el-col>
+					</el-row>
+					<el-row type="flex" class="row-bg" justify="space-between">
+						<el-col :span="14">
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+						</el-col>
+					</el-row>
+				</el-col>
+				<el-col :offset="1" :span="7" >
+					<div style="margin-top: 50px">
+						<h2 style="padding-right: 100px">繪圖工具</h2>
+						<br>
+						<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
+						<br>
+						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
+							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column label='Operation'>
+								<template slot-scope="scope">
+									<el-button type="primary" @click="draw_handler('MRS', scope.$index)" :disabled="draw_disable('MRS', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+									<el-button type="danger" @click="delete_handler('MRS', scope.$index)" :disabled="delete_disable('MRS', scope.$index)">刪除</el-button>
+								</template>
+							</el-table-column>
 						</el-table>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
-						<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
-					</el-col>
+					</div>
+					<el-table :data='MRS_draw_data' style="width: 80%; margin-top:30px">
+						<el-table-column prop="flag" label="參數">
+							<template slot-scope="scope">
+								<div v-html="scope.row.flag"></div>
+							</template>
+						</el-table-column>
+						<el-table-column prop="value"  label="值"/>
+					</el-table>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 1)" :disabled="mrs_send_disable"> 送出 </el-button>
+					<el-button class="send_btn" type="primary" icon="el-icon-check" @click="basic_test_send('mrs', 2)" :disabled="mrs_send_disable"> 送出兩位醫師的診斷 </el-button>
+				</el-col>
 				</el-row>
 
 				<!-- section2 dialog start -->
@@ -132,7 +147,7 @@
 						<div style="margin-top: 50px">
 							<h2 style="padding-right: 100px">繪圖工具</h2>
 							<br>
-							<el-slider v-model="HH_draw_param['contour_size']" :step="5" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
+							<el-slider v-model="HH_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('HH', changed)" style="padding-right: 100px"/>
 							<br>
 							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
 								<el-table-column prop="metrics" label='Metrics'/>
@@ -167,19 +182,30 @@
 
 			<!-- section4 start -->
 			<el-row :gutter="1">
-				<el-col :span="4">
+				<el-col :span="10">
 					<h1 style="text-align:left; color: white; padding-top: 20px">二度收縮
-						<el-select v-model="ws_10_result" placeholder="二度收縮 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
-							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
+						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
+							<div>
+								Secondary peristalsis response : <span v-text='SPR'/> %
+							</div>
+							<div>
+								Effective response : <span v-text='ER'/> %
+							</div>
+						</div>
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=ws_10_table_container>
-				<add_table :patient_id="current_patient_id" :table_data="ts_table_data" :t="'ab'" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data"/>
+			<div id=ab_table_container>
+				<ab_add_table :patient_id="current_patient_id" :table_data="ab_table_data" @update_send="ws_10_update_send" @send_object="get_ws_10_table_data" @set_mean_break='seted=>set_mean_break("ab", seted)' @set_max_break='seted=>set_max_break("ab", seted)' @set_SPR='set_SPR' @set_ER='set_ER'/>
 			</div>
-
+			<div style="text-align:left; color : white; font-size: 20px;">
+				<div>
+					mean break : <span v-text='ab_mean_break'/>
+				</div>
+				<div>
+					large break : <span v-text='ab_max_break'/>
+				</div>
+			</div>
 			<div style="text-align:right; ">
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 1)" :disabled="ws_10_send_disable"> 送出 </el-button>
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ws_10', 2)" :disabled="ws_10_send_disable"> 送出兩位醫師的診斷 </el-button>
@@ -200,12 +226,13 @@
 	
 </template>
 <script>
-import add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ts_table_data_format } from "@/utils/optiondata.js"
+import ws_10_add_table from "../components/basic_test_add_table.vue"
+import { ws_10_options, mrs_options, hh_options, rip_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
+import ab_add_table from "@/components/ab_add_table.vue"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -214,8 +241,9 @@ import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHM
 export default {
 	name: 'basic_test_add',
 	components: {
-		add_table,
+		ws_10_add_table,
 		draw,
+		ab_add_table
 	},
 	data() {
 		return {
@@ -247,8 +275,11 @@ export default {
 			table_data:[],
 			ws_10_table_data: '',
 
-			ts_table_data: [],
+			ab_table_data: [],
 
+			// break 相關變數
+			ws_10_mean_break: '-',
+			ws_10_max_break: '-',
 
 			// basic test selector result 的 options，於created中獲取資料
 			ws_10_options:0,
@@ -339,40 +370,40 @@ export default {
 
 			MRS_draw_data: [
 			{
-				flag: 'MRS during DCI',
+				flag: 'DCI(during MRS)',
 				value: 0
 			}, 
 			{
-				flag: 'MRS post DCI',
+				flag: 'DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS during IRP',
+				flag: 'Max DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'MRS post IRP',
+				flag: 'Mean DCI(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Max MRS post DCI',
+				flag: 'wet swallow mean DCI<br>(exclusive Faild)',
 				value: 0
 			},
 			{
-				flag: 'Mean MRS post DCI\n*需全部subtest標記完成的值才較可信',
+				flag: '<b>DCI ratio<b>',
 				value: 0
 			},
 			{
-				flag: 'DCI ratio',
+				flag: 'IRP(during MRS)',
+				value: 0
+			},
+			{
+				flag: 'IRP(post MRS)',
 				value: 0
 			},
 			{
 				flag: 'Deglutitive inhibition',
 				value: 'incomplete'
-			},
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			HH_draw_data:[
@@ -383,10 +414,6 @@ export default {
 			{
 				flag: 'seperate',
 				value: false.toString()
-			}, 
-			{
-				flag: 'contour threshold',
-				value: 30
 			}],
 
 			draw_btn_rerender: 0,
@@ -401,6 +428,12 @@ export default {
 				background: 'rgba(0, 0, 0, 0.7)'
 			},
 			loading_instance: {},
+
+			// 二度收縮的參數
+			ab_mean_break: '-',
+			ab_max_break: '-',
+			SPR: '-',
+			ER: '-',
 		}
 	},
 	created(){
@@ -412,12 +445,13 @@ export default {
 		this.hh_options = hh_options
 		this.rip_options = rip_options 
 		this.table_data = table_data_format
-		this.ts_table_data = ts_table_data_format
+		this.ab_table_data = ab_table_data_format
+		console.log(this.current_record_id)
 		
 		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
 			let retv = res.data
-			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			
 			for(let i=0; i<eptmetric_order.length; i++){
 				//console.log(res.data[eptmetric_order[i]])
@@ -425,20 +459,35 @@ export default {
 					this.table_data[i]["sw"+(j+1).toString()] = retv[eptmetric_order[i]][j]
 				}
 			}
-			
 			this.ws_10_result = retv["ws_result"]
 			this.update_ws_10_send_btn()
+		}).then(()=>{
+			var break_lst = [];
+			// for break
+			break_lst = Object.values(this.table_data[this.table_data.length - 1])
+			if(break_lst.length > 0) {
+				break_lst.shift();
+				break_lst = break_lst.map(function(val) {
+					return parseFloat(val)
+				})
+				this.$refs.ws_10_table.set_mean_break(break_lst);
+				this.$refs.ws_10_table.set_max_break(break_lst);
+			}
 
 			// [TODO]
 			var lst = Object.values(this.table_data[4])
 			if(lst.length==10) {
+
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 			}
-			
 		}).catch((err)=>{
             console.log("Call get swallow API Failed!")
 			console.log(err)
 		})
+			
+			
+		
 
 		/*
 			[MRS] Raw Data 
@@ -516,7 +565,6 @@ export default {
 			this.rip_result = retv['rip_result']
 			this.hh_result_show = true 
 			this.rip_result_show = true
-			this.update_hh_send_btn()
 		}).catch((err)=>{
 			console.log("Call get HH Result API Failed!")
 			console.log(err)
@@ -528,7 +576,6 @@ export default {
 			let retv = res.data
 			this.set_backend_draw_param('HH', retv)
 			this.hh_drawinfo_show = true
-			this.update_hh_send_btn()
 		}).catch((err)=>{
             console.log("Call get HH DrawInfo API Failed!")
 			console.log(err)
@@ -594,6 +641,7 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
+			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
 				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
 					this.mrs_send_disable = true
@@ -631,15 +679,20 @@ export default {
 		// 處理table的資料
 		preprocess_ws_10_table_data: function(table_data) {
 			// 這個只是要對add_table裡數據的順序而已
-			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls']
+			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
 			var dic = {}
 			
 			for (var i = 0; i < table_data.length; i++) {
 				var temp = Object.values(table_data[i])
 				// 去除metrics
-				temp.shift()
+				if(i==table_data.length-1) {
+					temp.pop()
+				} else {
+					temp.shift()
+				}
 				dic[ws_10_object_col[i]] = temp
 			}
+			console.log(dic)
 
 			// ???這是啥???
 			dic['pressure_max'] = 0
@@ -648,15 +701,42 @@ export default {
 			return dic
 		},
 		
+		
+
 		send_backend: function(test_type) {
 			// call api here
 			// ws_10_object is ready send to backend
 			console.log(this.ws_10_table_data)
 			if(test_type == 'ws_10') {
 				this.ws_10_object = this.preprocess_ws_10_table_data(this.ws_10_table_data)
-				this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
 				this.ws_10_object['ws_result'] = this.ws_10_result
 				this.ws_10_object['record_id'] = this.current_record_id
+
+				if(this.send_doctor_num==1) {
+					this.ws_10_object['doctor_id'] = parseInt(this.$store.state.auth_app.login_name)
+					UpdateWetSwallow(this.ws_10_object).then((res)=>{
+						console.log("Call update WS API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update WS API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+				} else {
+					for(var i=0; i<2;i++) {
+						this.ws_10_object['doctor_id'] = i
+						UpdateWetSwallow(this.ws_10_object).then((res)=>{
+							console.log("Call update WS API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update WS API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
+				}
 
 				UpdateWetSwallow(this.ws_10_object).then((res)=>{
 					console.log("Call update WS API successed!")
@@ -669,110 +749,161 @@ export default {
 				})
 			}
 			else if(test_type == 'MRS') {
-				// [for 品峰] call UpdateMRSDrawInfo(in apis/mrs.js)
+				if(this.send_doctor_num==1) {
+					// 把MRS圖的資料傳到後端
+					UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRSDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRSDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.MRS_draw_param['polys'], null, 4))
+					// 把MRS的數值傳到後端
+					UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRSMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRSMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 把MRS圖的資料傳到後端
-				UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRSDrawInfo API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRSDrawInfo API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+					// 把MRS的結果傳到後端
+					var mrs_result_obj = {
+						'mrs_result': this.mrs_result
+					}
+					UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update MRS Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update MRS Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// [for 品峰] call UpdateMRSMetrics(in apis/mrs.js)
+				} else {
+					for(i=0; i<2;i++) {
+						// 把MRS圖的資料傳到後端
+						UpdateMRSDrawInfo(this.MRS_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update MRSDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRSDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.MRS_draw_param['metrics'], null, 4))
+						// 把MRS的數值傳到後端
+						UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update MRSMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRSMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 把MRS的數值傳到後端
-				UpdateMRSMetrics(this.MRS_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRSMetrics API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRSMetrics API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+						// 把MRS的結果傳到後端
+						mrs_result_obj = {
+							'mrs_result': this.mrs_result
+						}
+						UpdateMRSResult(mrs_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update MRS Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update MRS Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
 
-				// [for 品峰]
-				// 把MRS的結果傳到後端
-				var mrs_result_obj = {
-					'mrs_result': this.mrs_result
 				}
-				UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update MRS Result API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update MRS Result API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
-
-
-
 			}
 			else if(test_type == 'HH') {
-				// [for 品峰] call UpdateHHDrawInfo(in apis/hh.js)
+				if(this.send_doctor_num==1) {
+					// 把HH圖的資料傳到後端
+					UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HHDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HHDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.HH_draw_param['polys'], null, 4))
+					// 把HH的數值傳到後端
+					UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HHMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HHMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
 
-				// 把HH圖的資料傳到後端
-				UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HHDrawInfo API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HHDrawInfo API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
+					var hh_result_obj = {
+						'hh_result': this.hh_result,
+						'rip_result': this.rip_result
+					}
+					UpdateHHResult(hh_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update HH Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update HH Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+				} else {
+					for(i=0; i<2;i++) {
+						// 把HH圖的資料傳到後端
+						UpdateHHDrawInfo(this.HH_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update HHDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HHDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// [for 品峰] call UpdateHHMertics(in apis/hh.js)
+						// 把HH的數值傳到後端
+						UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update HHMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HHMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
 
-				// 測試，用不到的話可刪
-				// console.log(JSON.stringify(this.HH_draw_param['metrics'], null, 4))
-
-				// 把HH的數值傳到後端
-				UpdateHHMetrics(this.HH_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HHMetrics API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HHMetrics API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
-
-				var hh_result_obj = {
-					'hh_result': this.hh_result,
-					'rip_result': this.rip_result
+						hh_result_obj = {
+							'hh_result': this.hh_result,
+							'rip_result': this.rip_result
+						}
+						UpdateHHResult(hh_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update HH Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update HH Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
 				}
-				UpdateHHResult(hh_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-					console.log("Call update HH Result API successed!")
-					console.log(res)
-					this.$message({message: '更新成功!',type: 'success'});
-				}).catch((err)=>{
-					console.log("Call update HH Result API successed!")
-					console.log(err)
-					this.$message.error('更新失敗!');
-				})
 			}
-
-			// if(this.send_doctor_num==1) {
-			// 	console.log("send 1 doctor's data")
-			// }
-			// else {
-			// 	console.log("send 2 doctor's data")
-			// }
 		},
 
 		// 二次確認彈框關閉時的call back
@@ -845,12 +976,13 @@ export default {
 				// rerender draw table data 
 				this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 				this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-				this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-				this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+				this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+				this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 				this.set_Max_DCI()
 				this.set_Mean_DCI()
 				this.set_DCI_ratio()
+				this.set_ws_10_DCI_in_MRS()
 
 			}
 			else if(test=='HH') {
@@ -890,6 +1022,7 @@ export default {
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
 				this.update_hh_send_btn()
+				this.set_rip_result(poly_lst)
 			}
 		},
 
@@ -900,8 +1033,8 @@ export default {
 			// rerender draw table data 
 			this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 			this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
-			this.MRS_draw_data[2]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
-			this.MRS_draw_data[3]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
+			this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
+			this.MRS_draw_data[7]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2']
 
 			this.set_DI()
 			this.set_DCI_ratio()
@@ -1066,12 +1199,12 @@ export default {
 			if(obj['seq']==1) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[2]['value'] = obj['IRP']
+				this.MRS_draw_data[6]['value'] = obj['IRP']
 			}
 			if(obj['seq']==2) {
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = obj['IRP']
 				// force table data change
-				this.MRS_draw_data[3]['value'] = obj['IRP']
+				this.MRS_draw_data[7]['value'] = obj['IRP']
 			}
 
 		},
@@ -1101,12 +1234,12 @@ export default {
 				// MRS IRP1
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1'] = 0
 				// force table data change
-				this.MRS_draw_data[2]['value'] = 0
+				this.MRS_draw_data[6]['value'] = 0
 
 				// MRS IRP2
 				this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP2'] = 0
 				// force table data change
-				this.MRS_draw_data[3]['value'] = 0
+				this.MRS_draw_data[7]['value'] = 0
 
 				this.set_DI()
 				this.set_Max_DCI()
@@ -1121,11 +1254,9 @@ export default {
 		},
 		contour_size_change(test, val) {
 			if(test=='MRS') {
-				this.MRS_draw_data[8]['value'] = val
 				this.$refs.MRS_draw.contour_size_change(val)
 			}
 			else if(test=='HH') {
-				this.HH_draw_data[2]['value'] = val
 				this.$refs.HH_draw.contour_size_change(val)
 			}
 		},
@@ -1168,10 +1299,10 @@ export default {
 				DCI_lst.push(this.MRS_draw_param['metrics']['MRS'+(i+1).toString()]['MRS_DCI2'])
 			}
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[4]['value'] = Math.max(...DCI_lst)
+				this.MRS_draw_data[2]['value'] = Math.max(...DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[4]['value'] = 0
+				this.MRS_draw_data[2]['value'] = 0
 			}
 		},
 		set_Mean_DCI() {
@@ -1182,20 +1313,20 @@ export default {
 			}
 			const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
 			if(DCI_lst.length>0) {
-				this.MRS_draw_data[5]['value'] = average(DCI_lst)
+				this.MRS_draw_data[3]['value'] = average(DCI_lst)
 			}
 			else {
-				this.MRS_draw_data[5]['value'] = 0
+				this.MRS_draw_data[3]['value'] = 0
 			}
 			
 		},
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[7]['value'] = 'incomplete'
+				this.MRS_draw_data[8]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[7]['value'] = 'complete'
+				this.MRS_draw_data[8]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
@@ -1207,16 +1338,82 @@ export default {
 			
 			var MRS_DCI = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			if(MRS_DCI == 0) {
-				this.MRS_draw_data[6]['value'] = 'undefine'
+				this.MRS_draw_data[5]['value'] = 'undefine'
 			}
 			else {
-				this.MRS_draw_data[6]['value'] = ws_10_DCI / MRS_DCI
+				this.MRS_draw_data[5]['value'] = MRS_DCI / ws_10_DCI
 			}
 		},
 
 		// show_loading() {
 		// 	let loadingInstance = this.$loading(this.loading_options)
 		// }
+		set_rip_result(poly_lst) {
+			var upper = -1
+			var lower = -1
+			var rip = -1
+
+			for(var i=0; i<poly_lst.length;i++) {
+				switch (poly_lst[i].flag) {
+					case 'HH_LES_upper':
+						upper = poly_lst[i].y0
+						break
+					case 'HH_LES_lower':
+						lower = poly_lst[i].y0
+						break
+					case 'HH_RIP':
+						rip = poly_lst[i].y0
+						break
+				}
+			}
+
+			if(upper >= 0 && rip >= 0 && rip < upper) {
+				this.rip_result = 'proximal'
+			}
+			else if(lower >= 0 && rip >= 0 && rip > lower) {
+				this.rip_result = 'distal'
+			}
+			else {
+				this.rip_result = 'no_result'
+			}
+		},
+		set_mean_break(test, val) {
+			if(test == 'ws_10') {
+				this.ws_10_mean_break = val
+			}
+			else if (test == 'ab') {
+				this.ab_mean_break = val
+			}
+		},
+		set_max_break(test, val) {
+			if(test == 'ws_10') {
+				this.ws_10_max_break = val
+			}
+			else if(test == 'ab') {
+				this.ab_max_break = val
+			}
+		},
+		set_SPR(val) {
+			this.SPR = val
+		},
+		set_ER(val) {
+			this.ER = val
+		},
+		set_ws_10_DCI_in_MRS() {
+			var lst = Object.values(this.table_data[4])
+			var ws_10_DCI = 0
+			var ct=0;
+			for(var i=1; i<lst.length; i++) {
+				var dci = parseFloat(lst[i])
+				if(dci > 100) {
+					ws_10_DCI+=dci
+					ct+=1
+				}
+				
+			}
+			this.MRS_draw_data[4]['value'] = ws_10_DCI/ct
+
+		},
 	}
 }
 </script>

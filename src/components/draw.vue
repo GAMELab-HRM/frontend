@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<el-row>
-			<el-col :span="15" :offset="5">
+			<el-col :span="15" :offset="11">
 				<h1 style="font-size: 30px">x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h1>
 			</el-col>
 		</el-row>

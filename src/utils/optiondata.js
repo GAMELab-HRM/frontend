@@ -136,6 +136,19 @@ export let table_data_format = [
         sw8: '',
         sw9: '',
         sw10: '',
+    },
+    {
+        metrics: 'Break',
+        sw1: '',
+        sw2: '',
+        sw3: '',
+        sw4: '',
+        sw5: '',
+        sw6: '',
+        sw7: '',
+        sw8: '',
+        sw9: '',
+        sw10: '',
     }
 ]
 export let mrs_subtest_options = [
@@ -158,50 +171,31 @@ export let mrs_subtest_options = [
     {
         value: 5,
         label: 'MRS5'
+    },
+    {
+        value: 6,
+        label: 'MRS6'
+    },
+    {
+        value: 7,
+        label: 'MRS7'
+    },
+    {
+        value: 8,
+        label: 'MRS8'
+    },
+    {
+        value: 9,
+        label: 'MRS9'
+    },
+    {
+        value: 10,
+        label: 'MRS10'
     }
 ]
 
 
-export let ts_table_data_format = [
-    {
-        metrics: 'Contraction Vigor',
-        ab1: '',
-        ab2: '',
-        ab3: '',
-        ab4: '',
-        ab5: '',
-        ab6: '',
-        ab7: '',
-        ab8: '',
-        ab9: '',
-        ab10: '',
-    },
-    {
-        metrics: 'Contraction Pattern',
-        ab1: '',
-        ab2: '',
-        ab3: '',
-        ab4: '',
-        ab5: '',
-        ab6: '',
-        ab7: '',
-        ab8: '',
-        ab9: '',
-        ab10: '',
-    },
-    {
-        metrics: 'Swallow Type',
-        ab1: '',
-        ab2: '',
-        ab3: '',
-        ab4: '',
-        ab5: '',
-        ab6: '',
-        ab7: '',
-        ab8: '',
-        ab9: '',
-        ab10: '',
-    },
+export let ab_table_data_format = [
     {
         metrics: 'IRP 4s',
         ab1: '',
@@ -230,6 +224,19 @@ export let ts_table_data_format = [
     },
     {
         metrics: 'Distal Latency',
+        ab1: '',
+        ab2: '',
+        ab3: '',
+        ab4: '',
+        ab5: '',
+        ab6: '',
+        ab7: '',
+        ab8: '',
+        ab9: '',
+        ab10: '',
+    },
+    {
+        metrics: 'Break',
         ab1: '',
         ab2: '',
         ab3: '',
