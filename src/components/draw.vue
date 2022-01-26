@@ -1,8 +1,11 @@
 <template>
 	<div>
 		<el-row>
-			<el-col :span="15" :offset="11">
-				<h1 style="font-size: 30px">x = {{mouse_x}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = {{mouse_y}}</h1>
+			<el-col :md="{span: 10, offset:2}" :xl="{span: 5, offset: 12}">
+				<h1 style="font-size: 30px">x = {{mouse_x}}</h1>
+			</el-col>
+			<el-col :md="{span: 10, offset: 2}" :xl="{span: 5, offset:2}">
+				<h1 style="font-size: 30px">y = {{mouse_y}}</h1>
 			</el-col>
 		</el-row>
 		<div id='plt' @mouseleave="leave_handler" @mousemove="mousemove_handler">
