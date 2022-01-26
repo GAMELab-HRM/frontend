@@ -10,6 +10,11 @@ const routes = [
     component: AppLayout
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import("@/views/login/index.vue")
+  },
+  {
     path: '/hello',
     component: AppLayout,
     name: 'Hello',

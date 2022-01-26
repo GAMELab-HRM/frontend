@@ -10,6 +10,7 @@
   "dependencies": {
     "@statnett/vue-plotly": "^0.3.2",
     "axios": "^0.21.4",
+    "axios-auth-refresh": "^3.2.1",
     "core-js": "^3.19.1",
     "element-ui": "^2.15.6",
     "fs": "^0.0.1-security",
