@@ -5,7 +5,7 @@
 
 			<!-- section1 start -->
 			<el-row :gutter="1">
-				<el-col :span="4">
+				<el-col :span="6">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
 						<el-select v-model="ws_10_result" placeholder="WS10 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
 							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
@@ -14,9 +14,11 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="getted=>update_send('ws_10', getted)" @send_object="getted=>get_table_data('ws_10', getted)" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
-			</div>
+			<el-row>
+				<el-col  :md="{span: 24}" :xl="{span: 24}">
+					<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="getted=>update_send('ws_10', getted)" @send_object="getted=>get_table_data('ws_10', getted)" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
+				</el-col>
+			</el-row>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
 					mean break : <span v-text='ws_10_mean_break'/>
@@ -209,7 +211,7 @@
 
 			<!-- section4 start -->
 			<el-row :gutter="1">
-				<el-col :span="10">
+				<el-col :span="24">
 					<h1 style="text-align:left; color: white; padding-top: 20px;font-size:35px" >二度收縮
 						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
 							<div>

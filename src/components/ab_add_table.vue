@@ -59,7 +59,7 @@ export default {
                     this.$emit('update_send', this.send_disable)
                     return 0
                 }
-            }
+            } 
 
             var return_lst = []
 
