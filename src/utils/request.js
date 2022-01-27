@@ -20,37 +20,37 @@ axios_instance.interceptors.request.use((config)=>{
     console.log("ERRROR in request interceptors")
     return Promise.reject(error)
 })
-const refreshAuthLogic = function(){
-    let token = localStorage.getItem("refresh_token")
-    let config = {
-        headers: { Authorization: `Bearer ${token}` }
-    }
-    let data = {
+// const refreshAuthLogic = function(){
+//     let token = localStorage.getItem("refresh_token")
+//     let config = {
+//         headers: { Authorization: `Bearer ${token}` }
+//     }
+//     let data = {
 
-    }
-    axios.post(base_url + "/api/v1/auth/refresh", data, config).then((res)=>{
-        console.log("refresh logic")
-        console.log(res)
-        localStorage.setItem("access_token", res.data["access_token"])
-        return Promise.resolve()
-    }).catch((err)=>{
-        console.log("refresh error")
-        console.log(err)
-        router.push('/login')        
-    })
-}
-// const refreshAuthLogic = () => axios.post(base_url+"/api/v1/auth/refresh",).then((res)=>{
-//     console.log("refresh logic")
-//     console.log(res)
-//     localStorage.setItem("access_token", res.data["access_token"])
-//     // new token should be written in local storage 
-//     return Promise.resolve()
-// }).catch((err)=>{
-//     //代表refresh token 過期了
-//     console.log("refresh error")
-//     console.log(err)
-//     router.push('/login')
-// })
+//     }
+//     axios.post(base_url + "/api/v1/auth/refresh", data, config).then((res)=>{
+//         console.log("refresh logic")
+//         console.log(res)
+//         localStorage.setItem("access_token", res.data["access_token"])
+//         return Promise.resolve()
+//     }).catch((err)=>{
+//         console.log("refresh error")
+//         console.log(err)
+//         router.push('/login')        
+//     })
+// }
+const refreshAuthLogic = () => axios.post(base_url+"/api/v1/auth/refresh",{},{headers: { Authorization: `Bearer ${localStorage.getItem("refresh_token")}` }}).then((res)=>{
+    console.log("refresh logic")
+    console.log(res)
+    localStorage.setItem("access_token", res.data["access_token"])
+    // new token should be written in local storage 
+    return Promise.resolve()
+}).catch((err)=>{
+    //代表refresh token 過期了
+    console.log("refresh error")
+    console.log(err)
+    router.push('/login')
+})
 
 createAuthRefreshInterceptor(
     axios_instance,
