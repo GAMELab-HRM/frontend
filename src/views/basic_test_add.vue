@@ -262,6 +262,7 @@ import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
 import ab_add_table from "@/components/ab_add_table.vue"
+import { catheter_dict } from "@/utils/catheter.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -332,17 +333,13 @@ export default {
 
 			//basic test final data to send backend
 			ws_10_object:0,
-			catheter_lst: [
-				[40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
-				[],
-			],
 
 			// 繪圖的變數
 			MRS_draw_param: {
 				raw_data: [],
 				x_size: 0,
 				draw_obj_lst: [],
-				catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				catheter_scale: catheter_dict["3"],
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
@@ -355,7 +352,7 @@ export default {
 				raw_data: [],
 				x_size: 0,
 				draw_obj_lst: [],
-				catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				catheter_scale: catheter_dict["3"],
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
