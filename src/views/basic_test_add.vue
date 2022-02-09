@@ -5,7 +5,7 @@
 
 			<!-- section1 start -->
 			<el-row :gutter="1">
-				<el-col :span="4">
+				<el-col :span="6">
 					<h1 style="text-align:left; color: white; padding-top: 20px">Wet swallow 10
 						<el-select v-model="ws_10_result" placeholder="WS10 Result" style="margin-top: 15px" @change="basic_test_selected_update('ws_10')">
 							<el-option v-for="item in ws_10_options" :key="item.value" :label="item.label" :value="item.value">
@@ -14,9 +14,11 @@
 					</h1>
 				</el-col>
 			</el-row>
-			<div id=ws_10_table_container>
-				<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="getted=>update_send('ws_10', getted)" @send_object="getted=>get_table_data('ws_10', getted)" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
-			</div>
+			<el-row>
+				<el-col  :md="{span: 24}" :xl="{span: 24}">
+					<ws_10_add_table :patient_id="current_patient_id" :table_data="table_data" ref="ws_10_table" @update_send="getted=>update_send('ws_10', getted)" @send_object="getted=>get_table_data('ws_10', getted)" @set_mean_break='seted=>set_mean_break("ws_10", seted)' @set_max_break='seted=>set_max_break("ws_10", seted)' @set_ws_10_DCI_in_MRS='set_ws_10_DCI_in_MRS' @set_MRS_DCI_ratio='set_DCI_ratio'/>
+				</el-col>
+			</el-row>
 			<div style="text-align:left; color : white; font-size: 20px;">
 				<div>
 					mean break : <span v-text='ws_10_mean_break'/>
@@ -209,7 +211,7 @@
 
 			<!-- section4 start -->
 			<el-row :gutter="1">
-				<el-col :span="10">
+				<el-col :span="24">
 					<h1 style="text-align:left; color: white; padding-top: 20px;font-size:35px" >二度收縮
 						<div style="text-align:left; color : white; font-size: 35px; padding-top: 30px">
 							<div>
@@ -260,6 +262,7 @@ import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
 import ab_add_table from "@/components/ab_add_table.vue"
+import { catheter_dict } from "@/utils/catheter.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -330,17 +333,13 @@ export default {
 
 			//basic test final data to send backend
 			ws_10_object:0,
-			catheter_lst: [
-				[40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
-				[],
-			],
 
 			// 繪圖的變數
 			MRS_draw_param: {
 				raw_data: [],
 				x_size: 0,
 				draw_obj_lst: [],
-				catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				catheter_scale: catheter_dict["3"],
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
@@ -353,7 +352,7 @@ export default {
 				raw_data: [],
 				x_size: 0,
 				draw_obj_lst: [],
-				catheter_scale: [40, 35, 34, 33, 32, 31, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0],
+				catheter_scale: catheter_dict["3"],
 				time_scale: [],
 				disable_dict: {},
 				metrics: {},
