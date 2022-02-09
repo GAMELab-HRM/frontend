@@ -42,6 +42,10 @@ var vue_instance = {
 			DCI_computable: false,
 			IRP_computable: false,
 			LES_CD_computable: false,
+			abdominal_baseline_computable: false,
+			abdominal_SLR_computable: false,
+			esophageal_baseline_computable: false,
+			esophageal_SLR_computable: false,
 			plotly_style: '',
 			MRS_mapping_flag: {
 				'MRS_TZ': 3,
@@ -64,6 +68,14 @@ var vue_instance = {
 				'HH_LES_lower': 17,
 				'HH_RIP': 18,
 				'HH_CD': 19,
+			},
+
+			SLR_mapping_flag: {
+				'SLR_h_upper': 20,
+				'SLR_h_lower': 21,
+				'SLR_v_left': 22,
+				'SLR_v_middle': 23,
+				'SLR_v_right': 24,
 			},
 
 			// plotly data
@@ -225,6 +237,21 @@ var vue_instance = {
 
 					//for HH CD
 					initial_line,
+
+					// for SLR v upper
+					initial_line,
+
+					// for SLR v lower
+					initial_line,
+
+					// for SLR h left
+					initial_line,
+
+					// for SLR h middle
+					initial_line,
+
+					// for SLR h right
+					initial_line,
 				]
 			},
 			options: {
@@ -290,6 +317,9 @@ var vue_instance = {
 			else if(f.includes('HH')) {
 				this.layout.shapes[this.HH_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
 			}
+			else if(f.includes('SLR')) {
+				this.layout.shapes[this.SLR_mapping_flag[this.polys[i]['flag']]] = this.polys[i]
+			}
 			
 			if(this.polys[i]['draw_type'] == 'horizontal') {
 				this.flag = this.polys[i]['flag']
@@ -335,7 +365,7 @@ var vue_instance = {
 				}
 			}
 			var title_text=''
-			if(this.flag.includes('MRS')) {
+			if(this.flag.includes('MRS') || this.flag.includes('SLR')) {
 				title_text=flag.slice(4, flag.length)
 			}
 			else if(this.flag.includes('HH')) {
@@ -373,17 +403,18 @@ var vue_instance = {
 		},
 		click_handler() {
 			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
-			for(var i=13; i>5; i--) {
-				if(this.mouse_x >= this.layout.shapes[i].x0 - 0.5 && this.mouse_x <= this.layout.shapes[i].x1 + 0.5 && this.mouse_y >= this.layout.shapes[i].y0 - 0.1 && this.mouse_y <= this.layout.shapes[i].y1 + 0.1) {
-					this.flag = this.layout.shapes[i]['flag']
-					this.draw_type = this.layout.shapes[i]['draw_type']
-					this.clear_target([i])
+			var vertical_lst = [6, 7, 8, 9, 10, 11, 12, 13, 22, 23, 24]
+			for(var i=0; i<vertical_lst.length; i++) {
+				if(this.mouse_x >= this.layout.shapes[vertical_lst[i]].x0 - 0.5 && this.mouse_x <= this.layout.shapes[vertical_lst[i]].x1 + 0.5 && this.mouse_y >= this.layout.shapes[vertical_lst[i]].y0 - 0.1 && this.mouse_y <= this.layout.shapes[vertical_lst[i]].y1 + 0.1) {
+					this.flag = this.layout.shapes[vertical_lst[i]]['flag']
+					this.draw_type = this.layout.shapes[vertical_lst[i]]['draw_type']
+					this.clear_target([vertical_lst[i]])
 					return
 				}
 			}
 
 			// for horizontal line (TZ, LES upper、lower)
-			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19]
+			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19, 20, 21]
 			for(i=0; i<horizontal_lst.length; i++) {
 				if(this.mouse_x >= this.layout.shapes[horizontal_lst[i]].x0 && this.mouse_x <= this.layout.shapes[horizontal_lst[i]].x1 && this.mouse_y >= this.layout.shapes[horizontal_lst[i]].y0-0.2 && this.mouse_y <= this.layout.shapes[horizontal_lst[i]].y1+0.2) {
 					this.flag = this.layout.shapes[horizontal_lst[i]]['flag']
@@ -472,9 +503,19 @@ var vue_instance = {
 					new_line['line']['color'] = 'rgb(235, 82, 52)'
 				}
 				else if(this.flag.includes('RIP')) {
-										new_line['line']['color'] = 'rgb(52, 95, 235)'
+					new_line['line']['color'] = 'rgb(52, 95, 235)'
 				}
 				this.layout.shapes[this.HH_mapping_flag[this.flag]] = new_line
+			}
+
+			else if(this.flag.includes('SLR')) {
+				this.layout.shapes[this.SLR_mapping_flag[this.flag]] = new_line
+
+				if(this.rehorizontal && this.flag == 'SLR_h_upper') {
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_left']].y1 = this.mouse_y
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_middle']].y1 = this.mouse_y
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_right']].y1 = this.mouse_y
+				}
 			}
 
 			this.$refs.plotly.relayout(this.layout)
@@ -482,6 +523,7 @@ var vue_instance = {
 			console.log(this.flag)
 			this.add_line_title(this.flag, this.mouse_y)
 			this.get_current_polys()
+			var max_pressure = 0
 
 			if(this.flag.includes('MRS')) {
 				// line index [3, 4, 6, 7] for DCI1
@@ -513,6 +555,31 @@ var vue_instance = {
 				if(this.LES_CD_computable) {
 					var lst = this.compute_LES_CD([16, 17, 19])
 					this.$emit("get_LES_CD", {'LES_CD': lst[0], 'seperate': lst[1]})
+				}
+			}
+			else if(this.flag.includes("SLR")) {
+				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				if(this.abdominal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+				}
+
+				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				if(this.abdominal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+				}
+
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				if(this.esophageal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+				}
+
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				if(this.esophageal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
 				}
 			}
 
@@ -557,6 +624,12 @@ var vue_instance = {
 					color = 'rgb(245, 66, 239)'
 				}
 			}
+			else if(this.flag.includes('SLR')) {
+				// SLR_h_upper
+				new_y0 = this.layout.shapes[20].y0
+
+				new_y1 = Math.max(...this.catheter_scale)
+			}
 			
 			var new_line = {
 				type: 'line',
@@ -573,34 +646,67 @@ var vue_instance = {
 				flag: this.flag,
 				is_draw: true,
 			}
-
-			this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+			if(this.flag.includes('MRS')) {
+				this.layout.shapes[this.MRS_mapping_flag[this.flag]] = new_line
+			}
+			else if(this.flag.includes('SLR')) {
+				this.layout.shapes[this.SLR_mapping_flag[this.flag]] = new_line
+			}
+			
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.get_current_polys()
 
-			// line index [3, 4, 6, 7] for DCI1
-			this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
-			}
+			if(this.flag.includes('MRS')) {
+				// line index [3, 4, 6, 7] for DCI1
+				this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
+				}
 
-			// line index [3, 4, 8, 9] for DCI2
-			this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
-			}
+				// line index [3, 4, 8, 9] for DCI2
+				this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+				}
 
-			// line index [4, 5, 10, 11] for IRP1
-			this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
-			}
+				// line index [4, 5, 10, 11] for IRP1
+				this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
+				}
 
-			// line index [4, 5, 12, 13] for IRP2
-			this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				// line index [4, 5, 12, 13] for IRP2
+				this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				}
+			}
+			else if(this.flag.includes("SLR")) {
+				var max_pressure = 0
+				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				if(this.abdominal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+				}
+
+				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				if(this.abdominal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+				}
+
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				if(this.esophageal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+				}
+
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				if(this.esophageal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+				}
 			}
 
 			this.draw_type=''
@@ -711,7 +817,37 @@ var vue_instance = {
 					this.$emit("get_LES_CD", {'LES_CD': lst[0], 'seperate': lst[1]})
 				}
 			}
-			
+			else if(this.flag.includes("SLR")) {
+				if(this.rehorizontal && this.flag == 'SLR_h_upper') {
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_left']].y0 = this.mouse_y
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_middle']].y0 = this.mouse_y
+					this.layout.shapes[this.SLR_mapping_flag['SLR_v_right']].y0 = this.mouse_y
+				}
+				var max_pressure = 0
+				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				if(this.abdominal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+				}
+
+				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				if(this.abdominal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+				}
+
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				if(this.esophageal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+				}
+
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				if(this.esophageal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+				}
+			}
 
 			this.layout.shapes[0].y0 = this.mouse_y
 			this.layout.shapes[0].y1 = this.mouse_y
@@ -735,29 +871,63 @@ var vue_instance = {
 				// LES upper
 				new_y1 = this.layout.shapes[5].y0
 			}
+			else if(this.flag.includes('SLR')) {
+				// SLR_h_upper
+				new_y0 = this.layout.shapes[20].y0
+
+				new_y1 = Math.max(...this.catheter_scale)
+			}
 			
-			// line index [3, 4, 6, 7] for DCI1
-			this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
-			}
+			if(this.flag.includes('MRS')) {
+				// line index [3, 4, 6, 7] for DCI1
+				this.DCI_computable = this.check_metrics_computable([3, 4, 6, 7], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 1, 'DCI': this.compute_DCI([3, 4, 6, 7])})
+				}
 
-			// line index [3, 4, 8, 9] for DCI2
-			this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
-			if(this.DCI_computable) {
-				this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
-			}
+				// line index [3, 4, 8, 9] for DCI2
+				this.DCI_computable = this.check_metrics_computable([3, 4, 8, 9], this.flag)
+				if(this.DCI_computable) {
+					this.$emit("get_DCI", {'seq': 2, 'DCI': this.compute_DCI([3, 4, 8, 9])})
+				}
 
-			// line index [4, 5, 10, 11] for IRP1
-			this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
-			}
+				// line index [4, 5, 10, 11] for IRP1
+				this.IRP_computable = this.check_metrics_computable([4, 5, 10, 11], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 1, 'IRP': this.compute_IRP([4, 5, 10, 11])})
+				}
 
-			// line index [4, 5, 12, 13] for IRP2
-			this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
-			if(this.IRP_computable) {
-				this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				// line index [4, 5, 12, 13] for IRP2
+				this.IRP_computable = this.check_metrics_computable([4, 5, 12, 13], this.flag)
+				if(this.IRP_computable) {
+					this.$emit("get_IRP", {'seq': 2, 'IRP': this.compute_IRP([4, 5, 12, 13])})
+				}
+			}
+			else if(this.flag.includes("SLR")) {
+				var max_pressure = 0
+				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				if(this.abdominal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+				}
+
+				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				if(this.abdominal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+				}
+
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				if(this.esophageal_baseline_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+				}
+
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				if(this.esophageal_SLR_computable) {
+					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+				}
 			}
 			
 			this.layout.shapes[1].y0 = new_y0
@@ -842,6 +1012,24 @@ var vue_instance = {
 					this.layout.shapes[i+14] = initial_line
 				}
 			}
+			else if(test=='SLR') {
+				flags = Object.keys(this.SLR_mapping_flag)
+
+				for(i=0; i<flags.length; i++) {
+					// set horizontal line can draw but vertical line cant
+					if(i<2) {
+						this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': false})
+					}
+					else {
+						this.$emit('update_draw_btn_status', {'flag': flags[i], 'status': true})
+					}
+					
+					// 0 1 2 for hover line
+					this.layout.shapes[i+3] = initial_line
+				}
+				// this.$refs.plotly.relayout(this.layout)
+				this.get_current_polys()
+			}
 		},
 		get_current_polys() {
 			var polys = this.layout.shapes.slice(3, this.layout.shapes.length)
@@ -860,7 +1048,9 @@ var vue_instance = {
 			else if(current_flag.includes('HH')) {
 				current_line_idx = this.HH_mapping_flag[current_flag]
 			}
-			
+			else if(current_flag.includes('SLR')) {
+				current_line_idx = this.SLR_mapping_flag[current_flag]
+			}
 
 			if(metric_line_idx.includes(current_line_idx)) {
 				var temp = []
@@ -918,9 +1108,9 @@ var vue_instance = {
 			var x_line_lst = [flags[line_idx[2]-3], flags[line_idx[3]-3]]
 			var y_line_lst = [flags[line_idx[0]-3], flags[line_idx[1]-3]]
 
-			var IRP_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
+			var IRP_raw_data = this.get_raw_data("IRP", x_line_lst, y_line_lst)
 			
-			var x_lst = this.get_xy_lst(x_line_lst, y_line_lst)[0]
+			var x_lst = this.get_xy_lst("MRS", x_line_lst, y_line_lst)[0]
 			
 			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
@@ -968,7 +1158,7 @@ var vue_instance = {
 			var y_line_lst = [flags[line_idx[0]-3], flags[line_idx[1]-3]]
 
 
-			var DCI_raw_data = this.get_raw_data(x_line_lst, y_line_lst)
+			var DCI_raw_data = this.get_raw_data("DCI", x_line_lst, y_line_lst)
 			console.log(DCI_raw_data)
 			var over20 = 0
 			var ct = 0
@@ -997,7 +1187,7 @@ var vue_instance = {
 			// new DCI
 			duration = 0.05
 			var length_lst = []
-			var y_lst = this.get_xy_lst(x_line_lst, y_line_lst)[1]
+			var y_lst = this.get_xy_lst("MRS", x_line_lst, y_line_lst)[1]
 			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
 			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
 
@@ -1051,23 +1241,35 @@ var vue_instance = {
 			return DCI
 		},
 
-		get_raw_data(x_line_lst, y_line_lst) {
+		get_raw_data(test, x_line_lst, y_line_lst) {
 			// raw_data[0] 是從壓力圖下面開始， raw_data[length] 是 0 公分位置處
-
-			var temp = this.get_xy_lst(x_line_lst, y_line_lst)
+			var temp = []
+			if(test == "abdominal" || test=="esophageal") {
+				temp = this.get_xy_lst("SLR", x_line_lst, y_line_lst)
+			} else {
+				temp = this.get_xy_lst("MRS", x_line_lst, y_line_lst)
+			}
+			
 			var x_lst = temp[0]
 			var y_lst = temp[1]
 
 			// max_x、min_x、max_y、min_y 皆為catheter scale 的 index
 			var max_x = this.get_x_index(Math.max(...x_lst), 'max')
 			var min_x = this.get_x_index(Math.min(...x_lst), 'min')
-			var max_y = this.get_y_index(Math.max(...y_lst), 'max')
-			var min_y = this.get_y_index(Math.min(...y_lst), 'min')
+			var min_y = 0
+			var max_y = 0
 
+			if(test == "abdominal") {
+				min_y = this.get_y_index(y_lst[0], 'min')
+				max_y = 0 // abodminal的下界是壓力圖的最下面
 
+			} else {
+				min_y = this.get_y_index(Math.min(...y_lst), 'min') // 最上面，index較大
+				max_y = this.get_y_index(Math.max(...y_lst), 'max') // 最下面，index較小
+			}
 
 			var return_raw_data = []
-			
+				
 			// 從max開始，因為坐標軸有reversed過
 			for(var i=max_y; i<=min_y; i++) {
 				return_raw_data.push(this.raw_data[i].slice(min_x, max_x+1))
@@ -1075,6 +1277,7 @@ var vue_instance = {
 
 			// console.log('DCI', DCI_data)
 			return return_raw_data
+			
 		},
 
 		// 將mouse位置映射到資料點的index
@@ -1106,7 +1309,7 @@ var vue_instance = {
 		},
 
 		// 取得4個邊界確切的位置
-		get_xy_lst(x_line_lst, y_line_lst) {
+		get_xy_lst(test, x_line_lst, y_line_lst) {
 			var x_lst = []
 			var y_lst = []
 
@@ -1115,19 +1318,55 @@ var vue_instance = {
 					x_lst.push(this.mouse_x)
 				}
 				else {
-					x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
+					if(test == "MRS") {
+						x_lst.push(this.layout.shapes[this.MRS_mapping_flag[x_line_lst[i]]].x0)
+					} else if(test == "SLR") {
+						x_lst.push(this.layout.shapes[this.SLR_mapping_flag[x_line_lst[i]]].x0)
+					}
+					
 				}
-
+			}
+			for(i=0; i<y_line_lst.length; i++) {
 				if(this.flag == y_line_lst[i]) {
 					y_lst.push(this.mouse_y)
 				}
 				else {
-					y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
+					if(test=="MRS") {
+						y_lst.push(this.layout.shapes[this.MRS_mapping_flag[y_line_lst[i]]].y0)
+					} else if(test == "SLR") {
+						y_lst.push(this.layout.shapes[this.SLR_mapping_flag[y_line_lst[i]]].y0)
+					}
 				}
 			}
 
+			console.log(x_lst)
+			console.log(y_lst)
+
 			return [x_lst, y_lst]
 		},
+
+		// get 2d array max
+		getMax(a){
+			return Math.max(...a.map(e => Array.isArray(e) ? this.getMax(e) : e));
+		},
+
+		compute_SLR_metrics(type, line_idx) {
+			var flags = Object.keys(this.SLR_mapping_flag)
+			var x_line_lst = []
+			var y_line_lst = []
+			if(type == "abdominal") {
+				// -20 : keys的index從0開始，但傳進來的line_idx的前20個是用來hover的線以及其他test的線，所以要-20
+				x_line_lst = [flags[line_idx[1]-20], flags[line_idx[2]-20]]
+				y_line_lst = [flags[line_idx[0]-20]]
+			} else {
+				x_line_lst = [flags[line_idx[2]-20], flags[line_idx[3]-20]]
+				y_line_lst = [flags[line_idx[0]-20], flags[line_idx[1]-20]]
+			}
+			var SLR_raw_data = this.get_raw_data(type, x_line_lst, y_line_lst)
+			var max_pressure = this.getMax(SLR_raw_data)
+			
+			return max_pressure
+		}
 	}
 }
 

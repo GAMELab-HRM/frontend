@@ -249,3 +249,18 @@ export let ab_table_data_format = [
         ab10: '',
     }
 ]
+
+export let slr_options = [
+    {
+        value: 'adequate',
+        label: 'Adequate'
+    }, 
+    {
+        value: 'inadequate',
+        label: 'Inadequate'
+    },
+    {
+        value: 'no_result',
+        label: '無'
+    }
+]
