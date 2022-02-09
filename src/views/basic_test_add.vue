@@ -339,6 +339,7 @@ import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, Ge
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
+import { GetCatheterType } from "@/apis/catheter.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -648,9 +649,25 @@ export default {
 		})
 			
 			
-		/*
-			Call API get catheter
-		*/
+		GetCatheterType(this.current_record_id).then((res)=>{
+			console.log("Call get Catheter Type API successed!")
+			let retv = res.data
+			var catheter_type = retv['catheter_type'].toString()
+			if(catheter_type == "-1") {
+				catheter_type = "3"
+				console.log("this catheter type in not in DB")
+			}
+			
+			console.log(catheter_type)
+
+			this.MRS_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+			this.HH_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+			this.SLR_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+
+		}).catch((err)=>{
+			console.log("Call get Catheter Type API failed")
+			console.log(err)
+		})
 
 		/*
 			[MRS] Raw Data 
@@ -674,7 +691,7 @@ export default {
 			[Hiatal Hernia] Raw Data 
 		*/
 		GetHHRawData(this.current_record_id).then((res)=>{
-			console.log("Call get MRS RawData API successed!")
+			console.log("Call get HH RawData API successed!")
 			let retv = res.data 
 			this.HH_draw_param['draw_obj_lst'] = retv['rawdata']
 			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
@@ -1207,6 +1224,7 @@ export default {
 			else if(test=='HH') {
 				// 先預設拿0來繪製(因為HH只有一張圖)
 				this.HH_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
+				console.log(this.HH_draw_param['raw_data'].length)
 				this.HH_draw_param['x_size'] = this.HH_draw_param['raw_data'][0].length
 				this.HH_draw_param['time_scale'] = [...Array(this.HH_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
