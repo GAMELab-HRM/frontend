@@ -499,7 +499,9 @@ export default {
 
 			SLR_metrics_table_data:[{
 				'metrics': 'h upper'
-			},{
+			}, {
+				'metrics': 'h middle'
+			}, {
 				'metrics': 'h lower'
 			}, {
 				'metrics': 'v left'
@@ -559,19 +561,35 @@ export default {
 
 			SLR_draw_data:[
 			{
-				flag: 'Peak intra-abdominal<br>pressure(baseline)',
+				flag: 'Peak intra-abdominal<br>pressure(baseline, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-abdominal<br>pressure(straight leg raise)',
+				flag: 'Peak intra-abdominal<br>pressure(baseline, Mean)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(baseline)',
+				flag: 'Peak intra-abdominal<br>pressure(straight leg raise, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(straight leg raise)',
+				flag: 'Peak intra-abdominal<br>pressure(straight leg raise, Mean)',
+				value: 0
+			},
+			{
+				flag: 'Peak intra-esophageal<br>pressure(baseline, Max)',
+				value: 0
+			},
+			{
+				flag: 'Peak intra-esophageal<br>pressure(baseline, Mean)',
+				value: 0
+			},
+			{
+				flag: 'Peak intra-esophageal<br>pressure(straight leg raise, Max)',
+				value: 0
+			},
+			{
+				flag: 'Peak intra-esophageal<br>pressure(straight leg raise, Mean)',
 				value: 0
 			}],
 
@@ -1224,7 +1242,7 @@ export default {
 			else if(test=='HH') {
 				// 先預設拿0來繪製(因為HH只有一張圖)
 				this.HH_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
-				console.log(this.HH_draw_param['raw_data'].length)
+				console.log(this.HH_draw_param['raw_data'])
 				this.HH_draw_param['x_size'] = this.HH_draw_param['raw_data'][0].length
 				this.HH_draw_param['time_scale'] = [...Array(this.HH_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
@@ -1331,8 +1349,8 @@ export default {
 			}
 			else if(test=='SLR') {
 				this.SLR_draw_param['ini'] = false
-				horizontal_lst = [0, 1]
-				vertical_lst = [2, 3, 4]
+				horizontal_lst = [0, 1, 2]
+				vertical_lst = [3, 4, 5]
 
 				if(horizontal_lst.includes(idx)) {
 					draw_type = 'horizontal'
@@ -1405,7 +1423,7 @@ export default {
 					this.SLR_draw_param['disable_dict']['SLR_v_middle'] = true
 					this.SLR_draw_param['disable_dict']['SLR_v_right'] = true
 
-					idx_lst.push(2, 3, 4)
+					idx_lst.push(3, 4, 5)
 				}
 
 				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines // 14 ~ 19 for HH lines
@@ -1600,13 +1618,19 @@ export default {
 
 		init_slr(){
 			this.SLR_draw_param['metrics']['landmark'] = {
-				'abdominal_basline': 0,
-				'abdominal_SLR': 0,
-				'esophageal_baseline': 0,
-				'esophageal_SLR':0,
+				'abdominal_basline_max': 0,
+				'abdominal_basline_mean': 0,
+				'abdominal_SLR_max': 0,
+				'abdominal_SLR_mean': 0,
+				'esophageal_baseline_max': 0,
+				'esophageal_baseline_mean': 0,
+				'esophageal_SLR_max':0,
+				'esophageal_SLR_mean':0,
+				'esophageal_pressure_ratio': 0,
 			}
 			this.SLR_draw_param['disable_dict'] = {
 				'SLR_h_upper': false,
+				'SLR_h_middle': false,
 				'SLR_h_lower': false,
 				'SLR_v_left': true,
 				'SLR_v_middle': true,
@@ -1737,24 +1761,29 @@ export default {
 					ws_10_DCI+=dci
 					ct+=1
 				}
-				
 			}
 			this.MRS_draw_data[4]['value'] = ws_10_DCI/ct
 		},
 		get_SLR_metrics(obj) {
 			if(obj["type"] == "abdominal_baseline") {
-				this.SLR_draw_data[0]['value'] = obj["value"]
+				this.SLR_draw_data[0]['value'] = obj["value"][0]
+				this.SLR_draw_data[1]['value'] = obj["value"][1]
 			} else if(obj["type"] == "abdominal_SLR") {
-				this.SLR_draw_data[1]['value'] = obj["value"]
+				this.SLR_draw_data[2]['value'] = obj["value"][0]
+				this.SLR_draw_data[3]['value'] = obj["value"][1]
 			} else if(obj["type"] == "esophageal_baseline") {
-				this.SLR_draw_data[2]['value'] = obj["value"]
+				this.SLR_draw_data[4]['value'] = obj["value"][0]
+				this.SLR_draw_data[5]['value'] = obj["value"][1]
 			} else if(obj["type"] == "esophageal_SLR") {
-				this.SLR_draw_data[3]['value'] = obj["value"]
+				this.SLR_draw_data[6]['value'] = obj["value"][0]
+				this.SLR_draw_data[7]['value'] = obj["value"][1]
 			}
-			this.SLR_draw_param["metrics"]["landmark"][obj["type"]] = obj["value"]
-			var base_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_baseline"]
-			var SLR_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_SLR"]
+			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_max'] = obj["value"][0]
+			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_mean'] = obj["value"][1]
+			var base_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_baseline_max"]
+			var SLR_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_SLR_max"]
 			
+			// set SLR result
 			if(base_pressure>0 && SLR_pressure>0) {
 				if(base_pressure * 1.5 > SLR_pressure) {
 					this.slr_result = "inadequate"
