@@ -72,10 +72,11 @@ var vue_instance = {
 
 			SLR_mapping_flag: {
 				'SLR_h_upper': 20,
-				'SLR_h_lower': 21,
-				'SLR_v_left': 22,
-				'SLR_v_middle': 23,
-				'SLR_v_right': 24,
+				'SLR_h_middle': 21,
+				'SLR_h_lower': 22,
+				'SLR_v_left': 23,
+				'SLR_v_middle': 24,
+				'SLR_v_right': 25,
 			},
 
 			// plotly data
@@ -241,6 +242,9 @@ var vue_instance = {
 					// for SLR v upper
 					initial_line,
 
+					// for SLR v middle
+					initial_line,
+
 					// for SLR v lower
 					initial_line,
 
@@ -403,7 +407,7 @@ var vue_instance = {
 		},
 		click_handler() {
 			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
-			var vertical_lst = [6, 7, 8, 9, 10, 11, 12, 13, 22, 23, 24]
+			var vertical_lst = [6, 7, 8, 9, 10, 11, 12, 13, 23, 24, 25]
 			for(var i=0; i<vertical_lst.length; i++) {
 				if(this.mouse_x >= this.layout.shapes[vertical_lst[i]].x0 - 0.5 && this.mouse_x <= this.layout.shapes[vertical_lst[i]].x1 + 0.5 && this.mouse_y >= this.layout.shapes[vertical_lst[i]].y0 - 0.1 && this.mouse_y <= this.layout.shapes[vertical_lst[i]].y1 + 0.1) {
 					this.flag = this.layout.shapes[vertical_lst[i]]['flag']
@@ -414,7 +418,7 @@ var vue_instance = {
 			}
 
 			// for horizontal line (TZ, LES upper、lower)
-			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19, 20, 21]
+			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 			for(i=0; i<horizontal_lst.length; i++) {
 				if(this.mouse_x >= this.layout.shapes[horizontal_lst[i]].x0 && this.mouse_x <= this.layout.shapes[horizontal_lst[i]].x1 && this.mouse_y >= this.layout.shapes[horizontal_lst[i]].y0-0.2 && this.mouse_y <= this.layout.shapes[horizontal_lst[i]].y1+0.2) {
 					this.flag = this.layout.shapes[horizontal_lst[i]]['flag']
@@ -523,7 +527,7 @@ var vue_instance = {
 			console.log(this.flag)
 			this.add_line_title(this.flag, this.mouse_y)
 			this.get_current_polys()
-			var max_pressure = 0
+			var pressure_lst = []
 
 			if(this.flag.includes('MRS')) {
 				// line index [3, 4, 6, 7] for DCI1
@@ -558,28 +562,28 @@ var vue_instance = {
 				}
 			}
 			else if(this.flag.includes("SLR")) {
-				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				this.abdominal_baseline_computable = this.check_metrics_computable([22, 23, 24], this.flag)
 				if(this.abdominal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": pressure_lst})
 				}
 
-				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				this.abdominal_SLR_computable = this.check_metrics_computable([22, 24, 25], this.flag)
 				if(this.abdominal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": pressure_lst})
 				}
 
-				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
 				if(this.esophageal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": pressure_lst})
 				}
 
-				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 24, 25], this.flag)
 				if(this.esophageal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": pressure_lst})
 				}
 			}
 
@@ -683,29 +687,29 @@ var vue_instance = {
 				}
 			}
 			else if(this.flag.includes("SLR")) {
-				var max_pressure = 0
-				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				var pressure_lst=[]
+				this.abdominal_baseline_computable = this.check_metrics_computable([22, 23, 24], this.flag)
 				if(this.abdominal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": pressure_lst})
 				}
 
-				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				this.abdominal_SLR_computable = this.check_metrics_computable([22, 24, 25], this.flag)
 				if(this.abdominal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": pressure_lst})
 				}
 
-				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
 				if(this.esophageal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": pressure_lst})
 				}
 
-				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 24, 25], this.flag)
 				if(this.esophageal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": pressure_lst})
 				}
 			}
 
@@ -818,34 +822,29 @@ var vue_instance = {
 				}
 			}
 			else if(this.flag.includes("SLR")) {
-				if(this.rehorizontal && this.flag == 'SLR_h_upper') {
-					this.layout.shapes[this.SLR_mapping_flag['SLR_v_left']].y0 = this.mouse_y
-					this.layout.shapes[this.SLR_mapping_flag['SLR_v_middle']].y0 = this.mouse_y
-					this.layout.shapes[this.SLR_mapping_flag['SLR_v_right']].y0 = this.mouse_y
-				}
-				var max_pressure = 0
-				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				var pressure_lst = []
+				this.abdominal_baseline_computable = this.check_metrics_computable([22, 23, 24], this.flag)
 				if(this.abdominal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": pressure_lst})
 				}
 
-				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				this.abdominal_SLR_computable = this.check_metrics_computable([22, 24, 25], this.flag)
 				if(this.abdominal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": pressure_lst})
 				}
 
-				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
 				if(this.esophageal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": pressure_lst})
 				}
 
-				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 24, 25], this.flag)
 				if(this.esophageal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": pressure_lst})
 				}
 			}
 
@@ -904,29 +903,29 @@ var vue_instance = {
 				}
 			}
 			else if(this.flag.includes("SLR")) {
-				var max_pressure = 0
-				this.abdominal_baseline_computable = this.check_metrics_computable([21, 22, 23], this.flag)
+				var pressure_lst = []
+				this.abdominal_baseline_computable = this.check_metrics_computable([22, 23, 24], this.flag)
 				if(this.abdominal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_baseline", "value": pressure_lst})
 				}
 
-				this.abdominal_SLR_computable = this.check_metrics_computable([21, 23, 24], this.flag)
+				this.abdominal_SLR_computable = this.check_metrics_computable([22, 24, 25], this.flag)
 				if(this.abdominal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("abdominal", [21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("abdominal", [22, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "abdominal_SLR", "value": pressure_lst})
 				}
 
-				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 22, 23], this.flag)
+				this.esophageal_baseline_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
 				if(this.esophageal_baseline_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 22, 23])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_baseline", "value": pressure_lst})
 				}
 
-				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 23, 24], this.flag)
+				this.esophageal_SLR_computable = this.check_metrics_computable([20, 21, 24, 25], this.flag)
 				if(this.esophageal_SLR_computable) {
-					max_pressure = this.compute_SLR_metrics("esophageal", [20, 21, 23, 24])
-					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": max_pressure})
+					pressure_lst = this.compute_SLR_metrics("esophageal", [20, 21, 24, 25])
+					this.$emit("get_SLR_metrics", {"type": "esophageal_SLR", "value": pressure_lst})
 				}
 			}
 			
@@ -1350,6 +1349,18 @@ var vue_instance = {
 			return Math.max(...a.map(e => Array.isArray(e) ? this.getMax(e) : e));
 		},
 
+		// get 2d array mean
+		getMean(a) {
+			var s = 0;
+			for(var i=0; i<a.length; i++) {
+				for(var j=0;j<a[i].length; j++) {
+					s+=a[i][j]
+				}
+			}
+
+			return s/(a.length * a[0].length)
+		},
+
 		compute_SLR_metrics(type, line_idx) {
 			var flags = Object.keys(this.SLR_mapping_flag)
 			var x_line_lst = []
@@ -1364,8 +1375,9 @@ var vue_instance = {
 			}
 			var SLR_raw_data = this.get_raw_data(type, x_line_lst, y_line_lst)
 			var max_pressure = this.getMax(SLR_raw_data)
-			
-			return max_pressure
+			var mean_pressure = this.getMean(SLR_raw_data).toFixed(2)
+
+			return [max_pressure, mean_pressure]
 		}
 	}
 }
