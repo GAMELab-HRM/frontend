@@ -30,6 +30,7 @@ var vue_instance = {
 	props:['raw_data', 'time_scale', 'catheter_scale', 'polys'],
 	data() {
 		return {
+			drawing: false,
 			mouse_x: 0,
 			mouse_y: 0,
 			// box_first_point: false,
@@ -348,6 +349,7 @@ var vue_instance = {
 		set_draw_data(draw_type, flag) {
 			this.draw_type = draw_type
 			this.flag = flag
+			this.drawing = true
 		},
 		add_line_title(flag, line_y) {
 			var offset = 0
@@ -409,7 +411,7 @@ var vue_instance = {
 			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
 			var vertical_lst = [6, 7, 8, 9, 10, 11, 12, 13, 23, 24, 25]
 			for(var i=0; i<vertical_lst.length; i++) {
-				if(this.mouse_x >= this.layout.shapes[vertical_lst[i]].x0 - 0.5 && this.mouse_x <= this.layout.shapes[vertical_lst[i]].x1 + 0.5 && this.mouse_y >= this.layout.shapes[vertical_lst[i]].y0 - 0.1 && this.mouse_y <= this.layout.shapes[vertical_lst[i]].y1 + 0.1) {
+				if(this.mouse_x >= this.layout.shapes[vertical_lst[i]].x0 - 0.5 && this.mouse_x <= this.layout.shapes[vertical_lst[i]].x1 + 0.5 && this.mouse_y >= this.layout.shapes[vertical_lst[i]].y0 - 0.1 && this.mouse_y <= this.layout.shapes[vertical_lst[i]].y1 + 0.1 && !this.drawing) {
 					this.flag = this.layout.shapes[vertical_lst[i]]['flag']
 					this.draw_type = this.layout.shapes[vertical_lst[i]]['draw_type']
 					this.clear_target([vertical_lst[i]])
@@ -420,7 +422,7 @@ var vue_instance = {
 			// for horizontal line (TZ, LES upper、lower)
 			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 			for(i=0; i<horizontal_lst.length; i++) {
-				if(this.mouse_x >= this.layout.shapes[horizontal_lst[i]].x0 && this.mouse_x <= this.layout.shapes[horizontal_lst[i]].x1 && this.mouse_y >= this.layout.shapes[horizontal_lst[i]].y0-0.2 && this.mouse_y <= this.layout.shapes[horizontal_lst[i]].y1+0.2) {
+				if(this.mouse_x >= this.layout.shapes[horizontal_lst[i]].x0 && this.mouse_x <= this.layout.shapes[horizontal_lst[i]].x1 && this.mouse_y >= this.layout.shapes[horizontal_lst[i]].y0-0.2 && this.mouse_y <= this.layout.shapes[horizontal_lst[i]].y1+0.2 && !this.drawing) {
 					this.flag = this.layout.shapes[horizontal_lst[i]]['flag']
 					this.draw_type = this.layout.shapes[horizontal_lst[i]]['draw_type']
 					this.delete_line_title(this.flag)
@@ -526,6 +528,7 @@ var vue_instance = {
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true, 'rehorizontal': this.rehorizontal})
 			console.log(this.flag)
 			this.add_line_title(this.flag, this.mouse_y)
+			this.drawing=false
 			this.get_current_polys()
 			var pressure_lst = []
 
@@ -660,6 +663,7 @@ var vue_instance = {
 			this.$refs.plotly.relayout(this.layout)
 			this.$emit('update_draw_btn_status', {'flag': this.flag, 'status': true})
 			this.get_current_polys()
+			this.drawing=false
 
 			if(this.flag.includes('MRS')) {
 				// line index [3, 4, 6, 7] for DCI1
