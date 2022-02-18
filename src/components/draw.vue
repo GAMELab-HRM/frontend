@@ -418,7 +418,7 @@ var vue_instance = {
 					return
 				}
 			}
-
+			
 			// for horizontal line (TZ, LES upper、lower)
 			var horizontal_lst = [3, 4, 5, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 			for(i=0; i<horizontal_lst.length; i++) {
