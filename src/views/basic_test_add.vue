@@ -597,7 +597,7 @@ export default {
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
-			mrs_subtest_options: 0,
+			mrs_subtest_options: 3,
 
 			loading_options: {
 				lock: true,
@@ -700,9 +700,17 @@ export default {
 			this.mrs_subtest_options = mrs_subtest_options
 			this.init_mrs(mrs_subtest_num)
 			this.mrs_rawdata_show = true
-		}).catch((err)=>{
-			console.log("Call get MRS RawData API failed")
-			console.log(err)
+		}).then(()=> {
+			GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+				console.log("Call get MRS DrawInfo API successed!")
+				let retv = res2.data
+				this.set_backend_draw_param('MRS', retv)
+				this.mrs_drawinfo_show = true
+				this.update_mrs_send_btn()
+			}).catch((err)=>{
+				console.log("Call get MRS DrawInfo API Failed!")
+				console.log(err)
+			})
 		})
 
 		/*
@@ -740,16 +748,16 @@ export default {
 			console.log(err)
 		})
 
-		GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-			console.log("Call get MRS DrawInfo API successed!")
-			let retv = res.data
-			this.set_backend_draw_param('MRS', retv)
-			this.mrs_drawinfo_show = true
-			this.update_mrs_send_btn()
-		}).catch((err)=>{
-			console.log("Call get MRS DrawInfo API Failed!")
-			console.log(err)
-		})
+		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		// 	console.log("Call get MRS DrawInfo API successed!")
+		// 	let retv = res.data
+		// 	this.set_backend_draw_param('MRS', retv)
+		// 	this.mrs_drawinfo_show = true
+		// 	this.update_mrs_send_btn()
+		// }).catch((err)=>{
+		// 	console.log("Call get MRS DrawInfo API Failed!")
+		// 	console.log(err)
+		// })
 		
 		GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS Metrics API successed!")
@@ -852,17 +860,24 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
+			console.log("start", this.mrs_subtest_options)
+			// var f = false
 			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
 				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < this.MRS_metrics_table_data.length) {
 					this.mrs_send_disable = true
-					return
+					console.log(1122333)
+					return 0
 				}
+				console.log(444444)
 			}
 			// if(this.mrs_result=='') {
 			// 	this.mrs_send_disable = true
 			// 	return
-			// }
+			// // }
+			// console.log(112233, this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length)
+			// console.log(112233, this.MRS_metrics_table_data.length)
+			// console.log(this.mrs_send_disable)
 
 			this.mrs_send_disable = false
 		},
