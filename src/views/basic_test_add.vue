@@ -854,7 +854,7 @@ export default {
 		update_mrs_send_btn: function() {
 			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
-				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < Object.keys(this.MRS_draw_param['disable_dict']['MRS1']).length) {
+				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < this.MRS_metrics_table_data.length) {
 					this.mrs_send_disable = true
 					return
 				}
