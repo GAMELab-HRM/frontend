@@ -859,10 +859,10 @@ export default {
 					return
 				}
 			}
-			if(this.mrs_result=='') {
-				this.mrs_send_disable = true
-				return
-			}
+			// if(this.mrs_result=='') {
+			// 	this.mrs_send_disable = true
+			// 	return
+			// }
 
 			this.mrs_send_disable = false
 		},
