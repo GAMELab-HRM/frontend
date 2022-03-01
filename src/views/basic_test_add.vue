@@ -83,7 +83,12 @@
 						<el-slider v-model="MRS_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('MRS', changed)"   style="padding-right: 100px"/>
 						<br>
 						<el-table :data='MRS_metrics_table_data' style="width: 80%" height="400">
-							<el-table-column prop="metrics" label='Metrics'/>
+							<el-table-column prop="metrics" label="Lines">
+								<template slot-scope="scope">
+									<div v-html="scope.row.metrics"></div>
+									<!-- 888 -->
+								</template>
+							</el-table-column>
 							<el-table-column label='Operation'>
 								<template slot-scope="scope">
 									<el-row>
@@ -460,28 +465,30 @@ export default {
 			SLR_draw_rerender:0,
 
 			MRS_metrics_table_data:[{
-				'metrics': 'Time Zone'
+				'metrics': 'Transaction Zone'
 			},{
 				'metrics': 'LES upper'
 			}, {
 				'metrics': 'LES lower'
 			}, {
-				'metrics': 'during MRS DCI left'
+				'metrics': 'during MRS<br>DCI left'
 			}, {
-				'metrics': 'during MRS DCI right'
+				'metrics': 'during MRS<br>DCI right'
 			},  {
-				'metrics': 'post MRS DCI left'
+				'metrics': 'post MRS<br>DCI left'
 			},  {
-				'metrics': 'post MRS DCI right'
+				'metrics': 'post MRS<br>DCI right'
 			}, {
-				'metrics': 'during MRS IRP left'
+				'metrics': 'MRS IRP<br>left'
 			}, {
-				'metrics': 'during MRS IRP right'
-			}, {
-				'metrics': 'post MRS IRP left'
-			}, {
-				'metrics': 'post MRS IRP right'
-			}],
+				'metrics': 'MRS IRP<br>right'
+			}, 
+			// {
+			// 	'metrics': 'post MRS<br>IRP left'
+			// }, {
+			// 	'metrics': 'post MRS<br>IRP right'
+			// }
+			],
 
 			HH_metrics_table_data:[{
 				'metrics': 'UES upper'
@@ -513,23 +520,23 @@ export default {
 
 			MRS_draw_data: [
 			{
-				flag: 'DCI(during MRS)',
+				flag: 'DCI<br>(during MRS)',
 				value: 0
 			}, 
 			{
-				flag: 'DCI(post MRS)',
+				flag: 'DCI<br>(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Max DCI(post MRS)',
+				flag: 'Max DCI<br>(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'Mean DCI(post MRS)',
+				flag: 'Mean DCI<br>(post MRS)',
 				value: 0
 			},
 			{
-				flag: 'wet swallow mean DCI<br>(exclusive Faild)',
+				flag: 'wet swallow<br>mean DCI<br>(exclusive Faild)',
 				value: 0
 			},
 			{
@@ -537,15 +544,15 @@ export default {
 				value: 0
 			},
 			{
-				flag: 'IRP(during MRS)',
+				flag: 'MRS IRP',
 				value: 0
 			},
+			// {
+			// 	flag: 'IRP<br>(post MRS)',
+			// 	value: 0
+			// },
 			{
-				flag: 'IRP(post MRS)',
-				value: 0
-			},
-			{
-				flag: 'Deglutitive inhibition',
+				flag: 'Deglutitive<br>inhibition',
 				value: 'incomplete'
 			}],
 
