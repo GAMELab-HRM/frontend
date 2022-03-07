@@ -274,6 +274,7 @@
 				<el-col :md="{span: 9}" :xl="{span:7}">
 					<h1 style="text-align:left; color: white; padding-top: 20px">SLR Test<br>
 						<el-select v-model="slr_subtest" placeholder="SLR subtest" style="margin-top: 15px" @change="slr_subtest_selected_update">
+							<!-- 123 -->
 							<el-option v-for="item in slr_subtest_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
@@ -347,7 +348,7 @@
 </template>
 <script>
 import ws_10_add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, slr_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
@@ -355,6 +356,7 @@ import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHM
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
+import {GetSLRRawData} from "@/apis/slr.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -369,7 +371,6 @@ export default {
 	},
 	data() {
 		return {
-			mrs_show:false,
 			mrs_result_show: false,
 			mrs_drawinfo_show: false,
 			mrs_metric_show: false,
@@ -631,6 +632,11 @@ export default {
 			ab_max_break: '-',
 			SPR: '-',
 			ER: '-',
+
+			// SLR的參數
+			slr_subtest: 1,
+			slr_subtest_options: 0
+
 		}
 	},
 	created(){
@@ -749,7 +755,6 @@ export default {
 			this.set_backend_draw_param("SLR", {
 				"landmark": []
 			})
-			this.slr_rawdata_show = true
 
 			this.init_hh()
 			this.hh_rawdata_show = true
@@ -821,6 +826,37 @@ export default {
             console.log("Call get HH Metrics API Failed!")
 			console.log(err)
 		})
+
+		/*
+			[SLR] Raw Data 
+		*/
+		GetSLRRawData(this.current_record_id).then((res)=>{	
+			let retv = res.data
+			console.log("retv", retv)
+			this.SLR_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
+			let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
+			slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
+			this.slr_subtest_options = slr_subtest_options
+			this.init_slr(slr_subtest_num)
+			this.slr_rawdata_show = true
+			console.log("Call get SLR RawData API successed!")
+		}).then(()=> {
+
+			// [TODO]
+			// GET SLR drawInfo
+
+			// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+			// 	console.log("Call get MRS DrawInfo API successed!")
+			// 	let retv = res2.data
+			// 	this.set_backend_draw_param('MRS', retv)
+			// 	this.mrs_drawinfo_show = true
+			// 	this.update_mrs_send_btn()
+			// }).catch((err)=>{
+			// 	console.log("Call get MRS DrawInfo API Failed!")
+			// 	console.log(err)
+			// })
+		})
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -885,7 +921,6 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			console.log("start", this.mrs_subtest_options)
 			// var f = false
 			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
@@ -1300,6 +1335,14 @@ export default {
 				this.HH_draw_data[0]['value'] = this.HH_draw_param['metrics']['landmark']['LES-CD']
 				this.HH_draw_data[1]['value'] = this.HH_draw_param['metrics']['landmark']['seperate'].toString()
 			}
+			else if(test=='SLR') {
+				this.SLR_draw_param['metrics'] = metrics
+
+				// rerender draw table data 
+				for(var i=0; i<Object.keys(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()]).length; i++) {
+					this.SLR_draw_data[i]['value'] = Object.values(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()])[i]
+				}
+			}
 		},
 		
 		set_contour_data(test, obj_lst, idx) {
@@ -1320,9 +1363,8 @@ export default {
 				})
 			}
 			else if(test=="SLR") {
-				// 先預設拿0來繪製(因為SLR只有一張圖)
-				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
-				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][0].length
+				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
+				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][idx].length
 				this.SLR_draw_param['time_scale'] = [...Array(this.SLR_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
 				})
@@ -1686,25 +1728,27 @@ export default {
 			}
 		},
 
-		init_slr(){
-			this.SLR_draw_param['metrics']['landmark'] = {
-				'abdominal_basline_max': 0,
-				'abdominal_basline_mean': 0,
-				'abdominal_SLR_max': 0,
-				'abdominal_SLR_mean': 0,
-				'esophageal_baseline_max': 0,
-				'esophageal_baseline_mean': 0,
-				'esophageal_SLR_max':0,
-				'esophageal_SLR_mean':0,
-				'esophageal_pressure_ratio': 0,
-			}
-			this.SLR_draw_param['disable_dict'] = {
-				'SLR_h_upper': false,
-				'SLR_h_middle': false,
-				'SLR_h_lower': false,
-				'SLR_v_left': true,
-				'SLR_v_middle': true,
-				'SLR_v_right': true,
+		init_slr(slr_subtest_num){
+			for(var i=0; i<slr_subtest_num; i++) {
+				this.SLR_draw_param['metrics']['SLR'+(i+1).toString()] = {
+					'abdominal_basline_max': 0,
+					'abdominal_basline_mean': 0,
+					'abdominal_SLR_max': 0,
+					'abdominal_SLR_mean': 0,
+					'esophageal_baseline_max': 0,
+					'esophageal_baseline_mean': 0,
+					'esophageal_SLR_max':0,
+					'esophageal_SLR_mean':0,
+					'esophageal_pressure_ratio': 0,
+				}
+				this.SLR_draw_param['disable_dict']['SLR'+(i+1).toString()] = {
+					'SLR_h_upper': false,
+					'SLR_h_middle': false,
+					'SLR_h_lower': false,
+					'SLR_v_left': true,
+					'SLR_v_middle': true,
+					'SLR_v_right': true,
+				}
 			}
 		},
 		set_Max_DCI() {

@@ -194,6 +194,49 @@ export let mrs_subtest_options = [
     }
 ]
 
+export let slr_subtest_options = [
+    {
+        value: 1,
+        label: 'Leg1'
+    },
+    {
+        value: 2,
+        label: 'Leg2'
+    },
+    {
+        value: 3,
+        label: 'Leg3'
+    },
+    {
+        value: 4,
+        label: 'Leg4'
+    },
+    {
+        value: 5,
+        label: 'Leg5'
+    },
+    {
+        value: 6,
+        label: 'Leg6'
+    },
+    {
+        value: 7,
+        label: 'Leg7'
+    },
+    {
+        value: 8,
+        label: 'Leg8'
+    },
+    {
+        value: 9,
+        label: 'Leg9'
+    },
+    {
+        value: 10,
+        label: 'Leg10'
+    }
+]
+
 
 export let ab_table_data_format = [
     {
