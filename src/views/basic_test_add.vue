@@ -246,11 +246,11 @@
 			</div>
 			
 			<!-- section4 dialog start -->
-			<el-dialog title="提示" :visible.sync="ws_10_confirm" width="30%" center>
+			<el-dialog title="提示" :visible.sync="ab_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
 				<span slot="footer" class="dialog-footer">
-					<el-button type="primary" @click="confirm_send({status: true, test_type: 'ws_10'})"> 確認 </el-button>
-					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ws_10'})"> 返回 </el-button>
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'ab'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ab'})"> 返回 </el-button>
 				</span>
 			</el-dialog>
 			<!-- section4 dialog end -->
@@ -265,6 +265,17 @@
 					<h1 style="text-align:left; color: white; padding-top: 20px">Straight leg raise<br>
 						<el-select v-model="slr_result" placeholder="SLR Result" style="margin-top: 15px" @change="basic_test_selected_update('slr')">
 							<el-option v-for="item in slr_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
+			</el-row>
+			<el-row :gutter="3">
+				<el-col :md="{span: 9}" :xl="{span:7}">
+					<h1 style="text-align:left; color: white; padding-top: 20px">SLR Test<br>
+						<el-select v-model="slr_subtest" placeholder="SLR subtest" style="margin-top: 15px" @change="slr_subtest_selected_update">
+							<!-- 123 -->
+							<el-option v-for="item in slr_subtest_options" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</h1>
@@ -310,22 +321,22 @@
 					</el-table>
 					<el-row>
 						<el-col :md="{span: 3}" :xl="{span: 8}">
-							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 1)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('slr', 1)" :disabled="slr_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
 						</el-col>
 						<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
 						<el-col :md="{span: 1}" :xl="{span: 8}">
-							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('hh', 2)" :disabled="hh_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('slr', 2)" :disabled="slr_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
 						</el-col>
 					</el-row>
 				</el-col>
 			</el-row>
 
 			<!-- section5 dialog start -->
-			<el-dialog title="提示" :visible.sync="hh_confirm" width="30%" center>
+			<el-dialog title="提示" :visible.sync="slr_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
 				<span slot="footer" class="dialog-footer">
-					<el-button type="primary" @click="confirm_send({status: true, test_type: 'hh'})"> 確認 </el-button>
-					<el-button type="danger" @click="confirm_send({status: false, test_type: 'hh'})"> 返回 </el-button>
+					<el-button type="primary" @click="confirm_send({status: true, test_type: 'slr'})"> 確認 </el-button>
+					<el-button type="danger" @click="confirm_send({status: false, test_type: 'slr'})"> 返回 </el-button>
 				</span>
 			</el-dialog>
 			<!-- section5 dialog end -->
@@ -337,7 +348,7 @@
 </template>
 <script>
 import ws_10_add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, slr_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
@@ -345,6 +356,7 @@ import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHM
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
+import {GetSLRRawData} from "@/apis/slr.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -359,7 +371,6 @@ export default {
 	},
 	data() {
 		return {
-			mrs_show:false,
 			mrs_result_show: false,
 			mrs_drawinfo_show: false,
 			mrs_metric_show: false,
@@ -384,6 +395,7 @@ export default {
 			mrs_send_disable: true,
 			hh_send_disable: true,
 			ab_send_disable: true,
+			slr_send_disable: true,
 
 			// ws_10 table data是否可傳送(是否全部填完)
 			ws_10_table_send_disable: true,
@@ -417,6 +429,8 @@ export default {
 			ws_10_confirm: false,
 			mrs_confirm: false,
 			hh_confirm: false,
+			ab_confirm: false,
+			slr_confirm: false,
 
 			//basic test final data to send backend
 			ws_10_object:0,
@@ -618,6 +632,11 @@ export default {
 			ab_max_break: '-',
 			SPR: '-',
 			ER: '-',
+
+			// SLR的參數
+			slr_subtest: 1,
+			slr_subtest_options: 0
+
 		}
 	},
 	created(){
@@ -736,7 +755,6 @@ export default {
 			this.set_backend_draw_param("SLR", {
 				"landmark": []
 			})
-			this.slr_rawdata_show = true
 
 			this.init_hh()
 			this.hh_rawdata_show = true
@@ -808,6 +826,37 @@ export default {
             console.log("Call get HH Metrics API Failed!")
 			console.log(err)
 		})
+
+		/*
+			[SLR] Raw Data 
+		*/
+		GetSLRRawData(this.current_record_id).then((res)=>{	
+			let retv = res.data
+			console.log("retv", retv)
+			this.SLR_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
+			let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
+			slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
+			this.slr_subtest_options = slr_subtest_options
+			this.init_slr(slr_subtest_num)
+			this.slr_rawdata_show = true
+			console.log("Call get SLR RawData API successed!")
+		}).then(()=> {
+
+			// [TODO]
+			// GET SLR drawInfo
+
+			// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+			// 	console.log("Call get MRS DrawInfo API successed!")
+			// 	let retv = res2.data
+			// 	this.set_backend_draw_param('MRS', retv)
+			// 	this.mrs_drawinfo_show = true
+			// 	this.update_mrs_send_btn()
+			// }).catch((err)=>{
+			// 	console.log("Call get MRS DrawInfo API Failed!")
+			// 	console.log(err)
+			// })
+		})
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
@@ -821,6 +870,12 @@ export default {
 			}
 			else if(test_type == 'hh') {
 				this.hh_confirm = true
+			} 
+			else if(test_type=='ab') {
+				this.ab_confirm = true
+			} 
+			else if(test_type == 'slr') {
+				this.slr_confirm = true
 			}
 		},
 
@@ -833,7 +888,6 @@ export default {
 				this.ab_table_send_disable = val
 				this.update_ab_send_btn()
 			}
-
 		},
 
 
@@ -867,24 +921,18 @@ export default {
 
 		// update mrs send btn status
 		update_mrs_send_btn: function() {
-			console.log("start", this.mrs_subtest_options)
 			// var f = false
 			// set 所有 MRS subtest的所有線都要畫出來，才可以上傳
 			for(var i=0; i<this.mrs_subtest_options.length; i++) {
 				if(this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length < this.MRS_metrics_table_data.length) {
 					this.mrs_send_disable = true
-					console.log(1122333)
 					return 0
 				}
-				console.log(444444)
 			}
 			// if(this.mrs_result=='') {
 			// 	this.mrs_send_disable = true
 			// 	return
 			// // }
-			// console.log(112233, this.MRS_draw_param['polys']['MRS'+(i+1).toString()].length)
-			// console.log(112233, this.MRS_metrics_table_data.length)
-			// console.log(this.mrs_send_disable)
 
 			this.mrs_send_disable = false
 		},
@@ -897,7 +945,7 @@ export default {
 			}
 
 			if(this.hh_result=='' && this.rip_result=='') {
-				this.hh_send_disable = false
+				this.hh_send_disable = true
 				return
 			}
 
@@ -912,6 +960,22 @@ export default {
 			else {
 				this.ab_send_disable = true
 			}
+		},
+
+		// update hh send btn status
+		update_SLR_send_btn: function() {
+			if(this.SLR_draw_param['polys']['landmark'].length < Object.keys(this.SLR_draw_param['disable_dict']).length) {
+				console.log('polys', this.SLR_draw_param['polys'])
+				this.slr_send_disable = true
+				return
+			}
+
+			if(this.slr_result=='') {
+				this.slr_send_disable = true
+				return
+			}
+
+			this.slr_send_disable = false
 		},
 
 		// get table data from ws_10 table or ab table
@@ -938,7 +1002,7 @@ export default {
 
 		preprocess_ab_table_data: function(table_data) {
 			// 這個只是要對add_table裡數據的順序而已
-			var ws_10_object_col = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
+			var ws_10_object_col = ['irp4s', 'dcis', 'dls', 'breaks']
 			var dic = {}
 			
 			for (var i = 0; i < table_data.length; i++) {
@@ -1151,6 +1215,14 @@ export default {
 						})
 					}
 				}
+			} else if(test_type=='ab') {
+				var ab_dic = this.preprocess_ab_table_data(this.ab_table_data)
+				ab_dic['SPR'] = this.SPR
+				ab_dic['ER'] = this.ER
+				console.log(ab_dic)
+			} else if(test_type=='slr') {
+				console.log("here is slr", this.SLR_draw_param['polys'])
+				console.log("here is slr", this.SLR_draw_param['metrics'])
 			}
 		},
 
@@ -1175,6 +1247,18 @@ export default {
 				this.hh_confirm = false
 				if(confirm_result) {
 					this.send_backend('HH')
+				}
+			}
+			if(type=='ab') {
+				this.ab_confirm = false
+				if(confirm_result) {
+					this.send_backend('ab')
+				}
+			}
+			if(type=='slr') {
+				this.slr_confirm = false
+				if(confirm_result) {
+					this.send_backend('slr')
 				}
 			}
 		},
@@ -1251,6 +1335,14 @@ export default {
 				this.HH_draw_data[0]['value'] = this.HH_draw_param['metrics']['landmark']['LES-CD']
 				this.HH_draw_data[1]['value'] = this.HH_draw_param['metrics']['landmark']['seperate'].toString()
 			}
+			else if(test=='SLR') {
+				this.SLR_draw_param['metrics'] = metrics
+
+				// rerender draw table data 
+				for(var i=0; i<Object.keys(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()]).length; i++) {
+					this.SLR_draw_data[i]['value'] = Object.values(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()])[i]
+				}
+			}
 		},
 		
 		set_contour_data(test, obj_lst, idx) {
@@ -1271,9 +1363,8 @@ export default {
 				})
 			}
 			else if(test=="SLR") {
-				// 先預設拿0來繪製(因為SLR只有一張圖)
-				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
-				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][0].length
+				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
+				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][idx].length
 				this.SLR_draw_param['time_scale'] = [...Array(this.SLR_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
 				})
@@ -1294,8 +1385,7 @@ export default {
 			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['polys']['landmark'] = poly_lst
-				// [TODO]
-				// this.update_slr_send_btn()
+				this.update_SLR_send_btn()
 				this.set_slr_result(poly_lst)
 			}
 		},
@@ -1638,25 +1728,27 @@ export default {
 			}
 		},
 
-		init_slr(){
-			this.SLR_draw_param['metrics']['landmark'] = {
-				'abdominal_basline_max': 0,
-				'abdominal_basline_mean': 0,
-				'abdominal_SLR_max': 0,
-				'abdominal_SLR_mean': 0,
-				'esophageal_baseline_max': 0,
-				'esophageal_baseline_mean': 0,
-				'esophageal_SLR_max':0,
-				'esophageal_SLR_mean':0,
-				'esophageal_pressure_ratio': 0,
-			}
-			this.SLR_draw_param['disable_dict'] = {
-				'SLR_h_upper': false,
-				'SLR_h_middle': false,
-				'SLR_h_lower': false,
-				'SLR_v_left': true,
-				'SLR_v_middle': true,
-				'SLR_v_right': true,
+		init_slr(slr_subtest_num){
+			for(var i=0; i<slr_subtest_num; i++) {
+				this.SLR_draw_param['metrics']['SLR'+(i+1).toString()] = {
+					'abdominal_basline_max': 0,
+					'abdominal_basline_mean': 0,
+					'abdominal_SLR_max': 0,
+					'abdominal_SLR_mean': 0,
+					'esophageal_baseline_max': 0,
+					'esophageal_baseline_mean': 0,
+					'esophageal_SLR_max':0,
+					'esophageal_SLR_mean':0,
+					'esophageal_pressure_ratio': 0,
+				}
+				this.SLR_draw_param['disable_dict']['SLR'+(i+1).toString()] = {
+					'SLR_h_upper': false,
+					'SLR_h_middle': false,
+					'SLR_h_lower': false,
+					'SLR_v_left': true,
+					'SLR_v_middle': true,
+					'SLR_v_right': true,
+				}
 			}
 		},
 		set_Max_DCI() {
@@ -1747,9 +1839,19 @@ export default {
 				this.rip_result = 'no_result'
 			}
 		},
-		//123
-		set_slr_result(poly_lst) {
-			console.log(poly_lst)
+		set_slr_result() {
+			var base_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_baseline_max"]
+			var SLR_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_SLR_max"]
+			
+			// set SLR result
+			if(base_pressure>0 && SLR_pressure>0) {
+				if(base_pressure * 1.5 > SLR_pressure) {
+					this.slr_result = "inadequate"
+				} else {
+					this.slr_result = "adequate"
+				}
+				
+			}
 		},
 		set_mean_break(test, val) {
 			if(test == 'ws_10') {
@@ -1802,18 +1904,7 @@ export default {
 			}
 			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_max'] = obj["value"][0]
 			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_mean'] = obj["value"][1]
-			var base_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_baseline_max"]
-			var SLR_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_SLR_max"]
-			
-			// set SLR result
-			if(base_pressure>0 && SLR_pressure>0) {
-				if(base_pressure * 1.5 > SLR_pressure) {
-					this.slr_result = "inadequate"
-				} else {
-					this.slr_result = "adequate"
-				}
-				
-			}
+			this.set_slr_result()
 		}
 	}
 }
