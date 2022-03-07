@@ -2,7 +2,9 @@
 	<div class="home">
 		<el-container style="margin:0%" >
 			<el-main style="text-align: center;">
-				<basic_table :key="rerender" :main_table_data="main_table_data"/>	
+				<div v-if="main_table_data_isready">
+					<basic_table :key="rerender" :main_table_data="main_table_data"/>	
+				</div>
 			</el-main>
 		</el-container>	
 	</div>
@@ -20,6 +22,7 @@ export default {
 	},
 	data() {
 		return {
+			main_table_data_isready: false,
 			rerender:0,
 			main_table_data:[] //不要初始化成0
 		}
@@ -54,6 +57,7 @@ export default {
 			console.log(retv)
 			retv = this.doctor_map(retv)
 			this.main_table_data = retv
+			this.main_table_data_isready = true
 		}).catch((err)=>{
 			console.log("call api [所有資料的table] failed!")
 			console.log(err)

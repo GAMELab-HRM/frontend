@@ -269,6 +269,16 @@
 						</el-select>
 					</h1>
 				</el-col>
+			</el-row>
+			<el-row :gutter="3">
+				<el-col :md="{span: 9}" :xl="{span:7}">
+					<h1 style="text-align:left; color: white; padding-top: 20px">SLR Test<br>
+						<el-select v-model="slr_subtest" placeholder="SLR subtest" style="margin-top: 15px" @change="slr_subtest_selected_update">
+							<el-option v-for="item in slr_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
+					</h1>
+				</el-col>
 				<el-col :md="{span: 5, offset:2}" :xl="{span:3}">
 					<el-button type="primary" @click="SLR_draw_rerender+=1,clear_all('SLR'),SLR_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
 				</el-col>

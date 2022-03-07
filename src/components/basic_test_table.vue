@@ -1,7 +1,7 @@
 <template>
     <div id=main_table_container>
         <!-- main table start -->
-        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" :span-method="main_table_span">
+        <el-table :data="main_table_data" height="720" border style="width: 100%"  :header-cell-style="{background: '#D9C2A6', color: 'black', fontSize: '15px', borderColor: 'black'}" :cell-style="{borderColor: 'black'}" :span-method="main_table_span" :key="rerender">
             <!-- 暫時刪除sort的功能 -->
             <!-- @sort-change='sort_date' :default-sort="default_sort_param" -->
             <el-table-column type="index" :index="indexMethod">
@@ -12,25 +12,55 @@
             </el-table-column>
             <el-table-column prop="doctor_id" label="Doctor" width="110">
             </el-table-column>
-            <el-table-column prop="ws_result" label="Wet Swallow 10 result" :filters="ws_10_filter" :filter-method="ws_10_filter_method">
+            <!-- prop="ws_result" -->
+            <el-table-column :filters="ws_10_filter" :filter-method="ws_10_filter_method">
+                <template slot="header">
+                    <span>Wet Swallow 10</span>
+                    <!-- <div>Wet Swallow 10</div> -->
+                    <!-- <span>result</span> -->
+                </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.ws_result }}</span>
+                </template>
             </el-table-column>
-            <el-table-column prop="mrs_result" label="MRS result"  :filters="mrs_filter" :filter-method="mrs_filter_method" width="150">
+            <!-- prop="mrs_result" -->
+            <el-table-column :filters="mrs_filter" :filter-method="mrs_filter_method" width="150">
+                <template slot="header">
+                    <span>MRS</span>
+                </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.mrs_result }}</span>
+                </template>
             </el-table-column>
-            <el-table-column prop="hiatal_hernia_result" label="Hiatal hernia result" :filters="hh_filter" :filter-method="hh_filter_method">
+            <el-table-column :filters="hh_filter" :filter-method="hh_filter_method">
+                <template slot="header">
+                    <span>Hiatal hernia</span>
+                </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.hiatal_hernia_result }}</span>
+                </template>
             </el-table-column>
             <el-table-column prop="rip_result" label="RIP result" :filters="rip_filter" :filter-method="rip_filter_method" width="150">
+                <template slot="header">
+                    <span>RIP</span>
+                </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.rip_result }}</span>
+                </template>
             </el-table-column>
             <el-table-column prop="last_update" label="Last update">
                 <!-- 暫時刪除sort的功能 -->
                 <!-- sortable -->
             </el-table-column>
-            <el-table-column prop="action" label="操作">
+            <el-table-column prop="action" label="操作" width="90">
                 <template slot-scope="scope">
                     <el-row>
                     <el-col :md="{span: 3}" :xl="{span: 8}">
                         <el-button size="mini" type='primary' :disabled="check_login" @click="handleEdit(scope.$index, scope.row)">輸 入</el-button>
                     </el-col>
-                        <el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+                    </el-row>
+                    <div :md="{span: 24}" :xl="{span: 3}">&nbsp;</div>
+                    <el-row>
                     <el-col :md="{span: 1}" :xl="{span: 8}">
                     <!-- :disabled="check_login" -->
                         <el-button class="delete_btn" size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" :disabled='true' >刪 除</el-button>
@@ -62,6 +92,31 @@ export default {
 
 	},
     props: ["main_table_data"],
+    created() {
+        for(var i=0; i<this.main_table_data.length; i++) {
+            if(this.main_table_data[i]['mrs_result'].length == 0) {
+                if(this.main_table_data[i]['mrs_draw']) {
+                    this.main_table_data[i]['mrs_result'] = "線已標記完成"
+                }
+            }
+
+            if(this.main_table_data[i]['hiatal_hernia_result'].length == 0) {
+                if(this.main_table_data[i]['hh_draw']) {
+                    this.main_table_data[i]['hiatal_hernia_result'] = "線已標記完成"
+                }
+            }
+
+            if(this.main_table_data[i]['mrs_result'].length == 0) {
+                if(this.main_table_data[i]['mrs_draw']) {
+                    this.main_table_data[i]['mrs_result'] = "線已標記完成"
+                }
+            }
+        }
+        
+        console.log(this.main_table_data)
+        this.rerender+=1
+
+    },
     computed:{
         check_login:function(){
             return !(this.$store.state.auth_app.login_status)
@@ -69,11 +124,12 @@ export default {
     },
     data() {
         return {
+            rerender: 0,
             ws_10_filter: [
                 {text: 'normal', value: 'normal'},
                 {text: 'IEM', value: 'IEM'},
                 {text: 'Absent', value: 'Absent'},
-                {text: 'Fragmented', value: 'Fragmented'}
+                {text: 'Fragmented', value: 'Fragmented'},
             ],
             mrs_filter: [
                 {text: 'Contractile Reserve', value: 'CR'},
@@ -110,7 +166,7 @@ export default {
             for(var i=0 ; i<this.mrs_filter.length ; i++) {
                 var t = this.mrs_filter[i]['text']
                 var v = this.mrs_filter[i]['value']
-
+                
                 if(t == row.mrs_result && v == value) {
                     return true
                 }
@@ -286,6 +342,10 @@ export default {
 
 .delete_btn {
     margin: 0px;
+}
+
+.el-table th.el-table__cell > .cell {
+  white-space: pre;
 }
 
 </style>
