@@ -980,6 +980,19 @@ var vue_instance = {
 				if([16, 17, 19].includes(idx_lst[i])) {
 					this.$emit('get_LES_CD', {'LES_CD': 0, 'seperate': false})
 				}
+				//123
+				if([22, 23, 24].includes(idx_lst[i])) {
+					this.$emit('get_SLR_metrics', {'type': 'abdominal_baseline', 'value': [0, 0]})
+				}
+				if([22, 24, 25].includes(idx_lst[i])) {
+					this.$emit('get_SLR_metrics', {'type': 'abdominal_SLR', 'value': [0, 0]})
+				}
+				if([20, 21, 23, 24].includes(idx_lst[i])) {
+					this.$emit('get_SLR_metrics', {'type': 'esophageal_baseline', 'value': [0, 0]})
+				}
+				if([20, 21, 24, 25].includes(idx_lst[i])) {
+					this.$emit('get_SLR_metrics', {'type': 'esophageal_SLR', 'value': [0, 0]})
+				}
 			}
 			
 			this.$refs.plotly.relayout(this.layout)
