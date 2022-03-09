@@ -113,7 +113,6 @@ export default {
             }
         }
         
-        console.log(this.main_table_data)
         this.rerender+=1
 
     },
@@ -199,7 +198,6 @@ export default {
 
         // 輸入btn click event
         handleEdit: function(index) {
-            console.log(this.main_table_data)
             this.$router.push({
                 name: 'basic_test_add', 
                 params: {
