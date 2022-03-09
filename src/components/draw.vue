@@ -1392,7 +1392,7 @@ var vue_instance = {
 			}
 			var SLR_raw_data = this.get_raw_data(type, x_line_lst, y_line_lst)
 			var max_pressure = this.getMax(SLR_raw_data)
-			var mean_pressure = this.getMean(SLR_raw_data).toFixed(2)
+			var mean_pressure = parseFloat(this.getMean(SLR_raw_data).toFixed(2))
 
 			return [max_pressure, mean_pressure]
 		}

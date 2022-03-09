@@ -1,7 +1,7 @@
 import request from '../utils/request'
-export function GetMRSDrawInfo(record_id, d_id) {
+export function GetSLRDrawInfo(record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/drawinfo',
+        url: '/api/v1/leg/drawinfo',
         method: 'GET',
         params: {
             record_id: record_id,
@@ -12,9 +12,9 @@ export function GetMRSDrawInfo(record_id, d_id) {
     return request(config)
 }
 
-export function UpdateMRSDrawInfo(obj, record_id, d_id) {
+export function UpdateSLRDrawInfo(obj, record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/drawinfo',
+        url: '/api/v1/leg/drawinfo',
         method: 'PUT',
         params: {
             record_id: record_id,
@@ -36,9 +36,9 @@ export function GetSLRRawData(record_id) {
     return request(config)
 }
 
-export function GetMRSMetrics(record_id, d_id) {
+export function GetSLRMetrics(record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/metrics',
+        url: '/api/v1/leg/metrics',
         method: 'GET',
         params: {
             record_id: record_id,
@@ -49,9 +49,9 @@ export function GetMRSMetrics(record_id, d_id) {
     return request(config)
 }
 
-export function UpdateMRSMetrics(obj, record_id, d_id) {
+export function UpdateSLRMetrics(obj, record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/metrics',
+        url: '/api/v1/leg/metrics',
         method: 'PUT',
         params: {
             record_id: record_id,
@@ -63,9 +63,9 @@ export function UpdateMRSMetrics(obj, record_id, d_id) {
 }
 
 
-export function UpdateMRSResult(obj, record_id, d_id) {
+export function UpdateSLRResult(obj, record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/result',
+        url: '/api/v1/leg/result',
         method: 'PUT',
         params: {
             record_id: record_id,
@@ -77,9 +77,9 @@ export function UpdateMRSResult(obj, record_id, d_id) {
 }
 
 
-export function GetMRSResult(record_id, d_id) {
+export function GetSLRResult(record_id, d_id) {
     let config = {
-        url: '/api/v1/mrs/result',
+        url: '/api/v1/leg/result',
         method: 'GET',
         params: {
             record_id: record_id,
