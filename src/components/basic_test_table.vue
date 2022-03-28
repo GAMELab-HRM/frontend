@@ -48,6 +48,14 @@
                     <span>{{ scope.row.rip_result }}</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="leg_result" label="Leg result" :filters="leg_filter" :filter-method="leg_filter_method" width="150">
+                <template slot="header">
+                    <span>Leg</span>
+                </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.leg_result }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="last_update" label="Last update">
                 <!-- 暫時刪除sort的功能 -->
                 <!-- sortable -->
@@ -111,9 +119,20 @@ export default {
                     this.main_table_data[i]['mrs_result'] = "線已標記完成"
                 }
             }
+
+            if(!(this.main_table_data[i]['leg_exist'])) {
+                this.main_table_data[i]['leg_result'] = "無測試資料"
+            } else {
+                if(this.main_table_data[i]['leg_result'].length == 0) {
+                    if(this.main_table_data[i]['leg_draw']) {
+                        this.main_table_data[i]['leg_result'] = "線已標記完成"
+                    }
+                }
+            }
+
+
         }
         
-        console.log(this.main_table_data)
         this.rerender+=1
 
     },
@@ -144,6 +163,11 @@ export default {
                 {text: 'Proximal RIP', value: 'proximal'},
                 {text: 'Distal RIP', value: 'distal'},
             ],
+            leg_filter: [
+                {text: 'Adequate', value: 'adequate'},
+                {text: 'Inadequate', value: 'inadequate'},
+                {text: '無測試資料', value: '無測試資料'}
+            ],
             // basic test 篩選對應表 end
             
             current_patient_id: '',
@@ -155,6 +179,7 @@ export default {
             //     prop: Object.keys(this.main_table_data[0]).slice(-2)[this.$store.state.auth_app.login_name]
             //     , order: 'ascending'
             // },
+            hasLag: false,
         }
     },
     methods: {
@@ -195,11 +220,21 @@ export default {
             }
             return false
         },
+        leg_filter_method: function(value, row) {
+            for(var i=0 ; i<this.leg_filter.length ; i++) {
+                var t = this.leg_filter[i]['text']
+                var v = this.leg_filter[i]['value']
+
+                if(t == row.leg_result && v == value) {
+                    return true
+                }
+            }
+            return false
+        },
         // basic test filter method end
 
         // 輸入btn click event
         handleEdit: function(index) {
-            console.log(this.main_table_data)
             this.$router.push({
                 name: 'basic_test_add', 
                 params: {

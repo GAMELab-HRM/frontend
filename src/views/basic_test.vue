@@ -58,6 +58,10 @@ export default {
 			retv = this.doctor_map(retv)
 			this.main_table_data = retv
 			this.main_table_data_isready = true
+			var patientid = this.main_table_data.map((elem)=>{
+				return elem['patient_id']
+			})
+			console.log(patientid)
 		}).catch((err)=>{
 			console.log("call api [所有資料的table] failed!")
 			console.log(err)

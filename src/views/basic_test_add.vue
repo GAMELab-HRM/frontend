@@ -46,7 +46,7 @@
 			<!-- section2 start -->
 			<div v-if="mrs_result_show & mrs_drawinfo_show  & mrs_metric_show & mrs_rawdata_show">
 				<el-row>
-					<el-col el-col :span="16">
+					<el-col :span="16">
 					<el-row>
 						<el-col :span="6">
 							<h1 style="text-align:left; color: white; padding-top: 20px">MRS Result
@@ -66,9 +66,9 @@
 								</el-select>
 							</h1>
 						</el-col>
-						<el-col :offset="2" :span="2">
+						<!-- <el-col :offset="2" :span="2">
 							<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-						</el-col>
+						</el-col> -->
 					</el-row>
 					<el-row type="flex" class="row-bg" justify="space-between">
 						<el-col :span="14">
@@ -155,9 +155,9 @@
 							</el-select>
 						</h1>
 					</el-col>
-					<el-col :md="{span: 3}" :xl="{span:3}">
+					<!-- <el-col :md="{span: 3}" :xl="{span:3}">
 						<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-					</el-col>
+					</el-col> -->
 				</el-row>
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
@@ -259,36 +259,41 @@
 
 			
 			<!-- section5 start -->
-			<div v-if="slr_rawdata_show">
-			<el-row :gutter="3">
-				<el-col :md="{span: 9}" :xl="{span:7}">
-					<h1 style="text-align:left; color: white; padding-top: 20px">Straight leg raise<br>
-						<el-select v-model="slr_result" placeholder="SLR Result" style="margin-top: 15px" @change="basic_test_selected_update('slr')">
-							<el-option v-for="item in slr_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
+			<div v-if="slr_rawdata_show & slr_drawinfo_show">
+			<el-row>
+				<el-col :span="16">
+					<el-row :gutter="3">
+					<el-col :md="{span: 9}" :xl="{span:7}">
+						<h1 style="text-align:left; color: white; padding-top: 20px">Straight leg raise<br>
+							<el-select v-model="slr_result" placeholder="SLR Result" style="margin-top: 15px" @change="basic_test_selected_update('slr')">
+								<el-option v-for="item in slr_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					</el-row>
+					<el-row :gutter="3">
+					<el-col :md="{span: 9}" :xl="{span:7}">
+						<h1 style="text-align:left; color: white; padding-top: 20px">SLR Test<br>
+							<el-select v-model="slr_subtest" placeholder="SLR subtest" style="margin-top: 15px" @change="slr_subtest_selected_update">
+								<!-- 123 -->
+								<el-option v-for="item in slr_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</h1>
+					</el-col>
+					<!-- <el-col :md="{span: 5, offset:2}" :xl="{span:3}">
+						<el-button type="primary" @click="SLR_draw_rerender+=1,clear_all('SLR'),SLR_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+					</el-col> -->
+					</el-row>
+
+					<el-row>
+					<el-col :span="14">
+						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
+					</el-col>
+					</el-row>
 				</el-col>
-			</el-row>
-			<el-row :gutter="3">
-				<el-col :md="{span: 9}" :xl="{span:7}">
-					<h1 style="text-align:left; color: white; padding-top: 20px">SLR Test<br>
-						<el-select v-model="slr_subtest" placeholder="SLR subtest" style="margin-top: 15px" @change="slr_subtest_selected_update">
-							<!-- 123 -->
-							<el-option v-for="item in slr_subtest_options" :key="item.value" :label="item.label" :value="item.value">
-							</el-option>
-						</el-select>
-					</h1>
-				</el-col>
-				<el-col :md="{span: 5, offset:2}" :xl="{span:3}">
-					<el-button type="primary" @click="SLR_draw_rerender+=1,clear_all('SLR'),SLR_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
-				</el-col>
-			</el-row>
-			<el-row type="flex" class="row-bg" justify="space-between">
-				<el-col :span="14">
-					<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["landmark"]' :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
-				</el-col>
-				<el-col :span="7" >
+				<el-col :offset="1" :span="7" >
 					<div style="margin-top: 50px">
 						<h2 style="padding-right: 100px">繪圖工具</h2>
 						<br>
@@ -311,13 +316,13 @@
 							</el-table-column>
 						</el-table>
 					</div>
-					<el-table :data='SLR_draw_data' style="width: 80%; margin-top:30px">
+					<el-table :data='SLR_draw_data' style="width: 80%; margin-top:30px" height="500">
 						<el-table-column prop="flag" label="參數">
 							<template slot-scope="scope">
 								<div v-html="scope.row.flag"></div>
 							</template>
 						</el-table-column>
-						<el-table-column prop="value"  label="值"/>
+						<el-table-column prop="value"  label="值" width="100"/>
 					</el-table>
 					<el-row>
 						<el-col :md="{span: 3}" :xl="{span: 8}">
@@ -356,7 +361,7 @@ import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHM
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
-import {GetSLRRawData} from "@/apis/slr.js"
+import {GetSLRDrawInfo, UpdateSLRDrawInfo, UpdateSLRMetrics, UpdateSLRResult, GetSLRRawData, GetSLRMetrics,  GetSLRResult} from "@/apis/slr.js"
 
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
@@ -381,6 +386,7 @@ export default {
 			hh_metric_show: false,
 			hh_rawdata_show: false,
 			slr_rawdata_show:false,
+			slr_drawinfo_show: false,
 
 
 			// basic test selector result
@@ -471,7 +477,7 @@ export default {
 				metrics: {},
 				polys: {},
 				contour_size: 30,
-				ini: true,
+				ini: {},
 			},
 
 			MRS_draw_rerender: 0,
@@ -582,35 +588,43 @@ export default {
 
 			SLR_draw_data:[
 			{
-				flag: 'Peak intra-abdominal<br>pressure(baseline, Max)',
+				flag: 'Peak intra-abdominal<br>pressure<br>(baseline, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-abdominal<br>pressure(baseline, Mean)',
+				flag: 'Peak intra-abdominal<br>pressure<br>(baseline, Mean)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-abdominal<br>pressure(straight leg raise, Max)',
+				flag: 'Peak intra-abdominal<br>pressure<br>(straight leg raise, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-abdominal<br>pressure(straight leg raise, Mean)',
+				flag: 'Peak intra-abdominal<br>pressure<br>(straight leg raise, Mean)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(baseline, Max)',
+				flag: 'Peak intra-esophageal<br>pressure<br>(baseline, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(baseline, Mean)',
+				flag: 'Peak intra-esophageal<br>pressure<br>(baseline, Mean)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(straight leg raise, Max)',
+				flag: 'Peak intra-esophageal<br>pressure<br>(straight leg raise, Max)',
 				value: 0
 			},
 			{
-				flag: 'Peak intra-esophageal<br>pressure(straight leg raise, Mean)',
+				flag: 'Peak intra-esophageal<br>pressure<br>(straight leg raise, Mean)',
+				value: 0
+			},
+			{
+				flag: 'esophageal pressure ratio<br>(Max)',
+				value: 0
+			},
+			{
+				flag: 'esophageal pressure ratio<br>(Mean)',
 				value: 0
 			}],
 
@@ -642,6 +656,7 @@ export default {
 	created(){
 		// let loadingInstance = this.$loading(this.loading_options)
 		this.loading_instance = this.$loading(this.loading_options)
+		// this.fullscreenLoading = false
 		// load option data
 		this.ws_10_options = ws_10_options
 		this.mrs_options = mrs_options
@@ -697,16 +712,20 @@ export default {
 			console.log("Call get Catheter Type API successed!")
 			let retv = res.data
 			var catheter_type = retv['catheter_type'].toString()
-			if(catheter_type == "-1") {
-				catheter_type = "3"
-				console.log("this catheter type in not in DB")
-			}
+			// if(catheter_type == "-1") {
+			// 	catheter_type = "3"
+			// 	console.log("this catheter type in not in DB")
+			// }
 			
-			console.log(catheter_type)
+			console.log("catheter type : ", catheter_type)
 
 			this.MRS_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.HH_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.SLR_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+
+			this.MRS_draw_rerender+=1
+			this.HH_draw_rerender+=1
+			this.SLR_draw_rerender+=1
 
 		}).catch((err)=>{
 			console.log("Call get Catheter Type API failed")
@@ -747,19 +766,8 @@ export default {
 			let retv = res.data 
 			this.HH_draw_param['draw_obj_lst'] = retv['rawdata']
 			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
-
-			// [TODO] [for test SLR]
-			this.SLR_draw_param['draw_obj_lst'] = retv['rawdata']
-			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
-			this.init_slr()
-			this.set_backend_draw_param("SLR", {
-				"landmark": []
-			})
-
 			this.init_hh()
 			this.hh_rawdata_show = true
-			this.fullscreenLoading = false
-			this.loading_instance.close()
 		})
 		
 		// 把MRS圖的資料傳到前端
@@ -773,17 +781,6 @@ export default {
 			console.log(err)
 		})
 
-		// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-		// 	console.log("Call get MRS DrawInfo API successed!")
-		// 	let retv = res.data
-		// 	this.set_backend_draw_param('MRS', retv)
-		// 	this.mrs_drawinfo_show = true
-		// 	this.update_mrs_send_btn()
-		// }).catch((err)=>{
-		// 	console.log("Call get MRS DrawInfo API Failed!")
-		// 	console.log(err)
-		// })
-		
 		GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS Metrics API successed!")
 			let retv = res.data 
@@ -832,7 +829,11 @@ export default {
 		*/
 		GetSLRRawData(this.current_record_id).then((res)=>{	
 			let retv = res.data
-			console.log("retv", retv)
+			console.log("SLR rawdata", retv)
+			this.loading_instance.close()
+			if(retv['rawdata']=='[]') {
+				return
+			}
 			this.SLR_draw_param['draw_obj_lst'] = retv['rawdata']
 			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
 			let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
@@ -842,20 +843,40 @@ export default {
 			this.slr_rawdata_show = true
 			console.log("Call get SLR RawData API successed!")
 		}).then(()=> {
+			GetSLRDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+				console.log("Call get SLR DrawInfo API successed!")
+				let retv = res2.data
+				console.log(retv)
+				this.set_backend_draw_param('SLR', retv)
+				this.slr_drawinfo_show = true
+				this.update_SLR_send_btn()
+			}).catch((err)=>{
+				console.log("Call get SLR DrawInfo API Failed!")
+				console.log(err)
+			})
+		})
 
-			// [TODO]
-			// GET SLR drawInfo
+		GetSLRResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get SLR Result API successed!")
+			let retv = res.data
+			this.slr_result = retv['SLR_result']
+			this.slr_result_show = true
+			this.update_SLR_send_btn()
+		}).catch((err)=>{
+			console.log("Call get SLR Result API Failed!")
+			console.log(err)
+		})
 
-			// GetMRSDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
-			// 	console.log("Call get MRS DrawInfo API successed!")
-			// 	let retv = res2.data
-			// 	this.set_backend_draw_param('MRS', retv)
-			// 	this.mrs_drawinfo_show = true
-			// 	this.update_mrs_send_btn()
-			// }).catch((err)=>{
-			// 	console.log("Call get MRS DrawInfo API Failed!")
-			// 	console.log(err)
-			// })
+		GetSLRMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get SLR Metrics API successed!")
+			let retv = res.data 
+			console.log("SLR metrics1 ", retv)
+			this.set_backend_metrics('SLR', retv)
+			this.slr_metric_show = true
+			this.update_SLR_send_btn()
+		}).catch((err)=>{
+			console.log("Call get SLR Metrics API Failed!")
+			console.log(err)
 		})
 	},
 	methods: {
@@ -905,7 +926,9 @@ export default {
 			else if(test_type == 'rip') {
 				this.update_hh_send_btn()
 			}
-			// [TODO] update SLR send btn
+			else if(test_type=='slr') {
+				this.update_SLR_send_btn()
+			}
 			
 		},
 
@@ -964,10 +987,12 @@ export default {
 
 		// update hh send btn status
 		update_SLR_send_btn: function() {
-			if(this.SLR_draw_param['polys']['landmark'].length < Object.keys(this.SLR_draw_param['disable_dict']).length) {
-				console.log('polys', this.SLR_draw_param['polys'])
-				this.slr_send_disable = true
-				return
+			//this.slr_subtest_options.length
+			for(var i=0; i<1; i++) {
+				if(this.SLR_draw_param['polys']['SLR'+(i+1).toString()].length < this.SLR_metrics_table_data.length) {
+					this.slr_send_disable = true
+					return 0
+				}
 			}
 
 			if(this.slr_result=='') {
@@ -1088,6 +1113,7 @@ export default {
 					var mrs_result_obj = {
 						'mrs_result': this.mrs_result
 					}
+
 					UpdateMRSResult(mrs_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 						console.log("Call update MRS Result API successed!")
 						console.log(res)
@@ -1221,8 +1247,106 @@ export default {
 				ab_dic['ER'] = this.ER
 				console.log(ab_dic)
 			} else if(test_type=='slr') {
-				console.log("here is slr", this.SLR_draw_param['polys'])
-				console.log("here is slr", this.SLR_draw_param['metrics'])
+				if(this.send_doctor_num==1) {
+					// console.log(this.SLR_draw_param['polys'])
+					// 把SLR圖的資料傳到後端
+					UpdateSLRDrawInfo(this.SLR_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update SLRDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update SLRDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+
+					// 把MRS的數值傳到後端
+					UpdateSLRMetrics(this.SLR_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update SLRMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update SLRMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+
+					// 把SLR的結果傳到後端
+					var slr_result_obj = {
+						'SLR_result': this.slr_result
+					}
+					UpdateSLRResult(slr_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update SLR Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update SLR Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+
+				} else {
+					for(i=0; i<2;i++) {
+						// 把SLR圖的資料傳到後端
+						UpdateSLRDrawInfo(this.SLR_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update SLRDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update SLRDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+
+						// 把SLR的數值傳到後端
+						UpdateSLRMetrics(this.SLR_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update SLRMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update SLRMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+
+						// 把MRS的結果傳到後端
+						slr_result_obj = {
+							'SLR_result': this.slr_result
+						}
+						UpdateSLRResult(slr_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update SLR Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update SLR Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
+
+				}
+				/* 
+					var SLR_result_obj = {
+						'SLR_result': this.slr_result
+					}
+				*/
+				/*
+				SLR_draw_info = {
+					"SLR1": [{...(line1 object)}, {...(line2 object)}, ...], 
+					"SLR2": [{...(line1 object)}, {...(line2 object)}, ...],
+					...
+				}
+
+				SLR metrics = {
+					"SLR1": {
+						metrics_obj
+					},
+					"SLR2": {
+						metrics_obj
+					}, 
+					...
+				}
+				*/
 			}
 		},
 
@@ -1299,10 +1423,10 @@ export default {
 				}
 				else if(test=="SLR") {
 					for(j=0; j<polys[key].length; j++) {
-						this.SLR_draw_param['disable_dict'][polys[key][j]['flag']] = true
+						this.SLR_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
 					}
 					if(polys[key].length>0) {
-						this.SLR_draw_param['ini'] = false
+						this.SLR_draw_param['ini'][key] = false
 					}
 				}
 			}
@@ -1356,7 +1480,6 @@ export default {
 			else if(test=='HH') {
 				// 先預設拿0來繪製(因為HH只有一張圖)
 				this.HH_draw_param['raw_data'] = JSON.parse(obj_lst)[0]
-				console.log(this.HH_draw_param['raw_data'])
 				this.HH_draw_param['x_size'] = this.HH_draw_param['raw_data'][0].length
 				this.HH_draw_param['time_scale'] = [...Array(this.HH_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
@@ -1364,7 +1487,7 @@ export default {
 			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
-				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][idx].length
+				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][0].length
 				this.SLR_draw_param['time_scale'] = [...Array(this.SLR_draw_param['x_size']).keys()].map(function(val){
 					return val / 20
 				})
@@ -1384,7 +1507,7 @@ export default {
 				this.set_rip_result(poly_lst)
 			}
 			else if(test=="SLR") {
-				this.SLR_draw_param['polys']['landmark'] = poly_lst
+				this.SLR_draw_param['polys']['SLR'+this.slr_subtest.toString()] = poly_lst
 				this.update_SLR_send_btn()
 				this.set_slr_result(poly_lst)
 			}
@@ -1402,6 +1525,17 @@ export default {
 
 			this.set_DI()
 			this.set_DCI_ratio()
+		},
+
+		slr_subtest_selected_update() {
+			// -1 for mapping index
+			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], this.slr_subtest-1)
+			this.SLR_draw_rerender += 1
+
+			console.log("slr_subtest_selected_update", this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()])
+			for(var i=0; i<Object.keys(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()]).length; i++) {
+				this.SLR_draw_data[i]['value'] = Object.values(this.SLR_draw_param['metrics']['SLR'+this.slr_subtest.toString()])[i]
+			}
 		},
 
 		update_draw_btn(obj) {
@@ -1425,11 +1559,14 @@ export default {
 				this.HH_draw_param['disable_dict'][obj['flag']] = obj['status']
 			}
 			else if(obj['flag'].includes('SLR')) {
-				this.SLR_draw_param['disable_dict'][obj['flag']] = obj['status']
-				if(obj['flag'] == "SLR_h_upper" && !obj['rehorizontal']) {
-					this.SLR_draw_param['disable_dict']['SLR_v_left'] = false
-					this.SLR_draw_param['disable_dict']['SLR_v_middle'] = false
-					this.SLR_draw_param['disable_dict']['SLR_v_right'] = false
+				current_subtest = "SLR"+this.slr_subtest.toString()
+				this.SLR_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
+				if(Object.keys(this.SLR_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
+					if(!Object.values(this.SLR_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(false) && !obj['rehorizontal']) {
+						this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_left'] = false
+						this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_middle'] = false
+						this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_right'] = false
+					}
 				}
 			}
 			this.draw_btn_rerender += 1
@@ -1460,7 +1597,7 @@ export default {
 				this.$refs.HH_draw.set_draw_data(draw_type, metrics)
 			}
 			else if(test=='SLR') {
-				this.SLR_draw_param['ini'] = false
+				this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()] = false
 				horizontal_lst = [0, 1, 2]
 				vertical_lst = [3, 4, 5]
 
@@ -1471,7 +1608,7 @@ export default {
 					draw_type = 'vertical'
 				}
 				// 借用key而已
-				metrics = Object.keys(this.SLR_draw_param['disable_dict'])[idx]
+				metrics = Object.keys(this.SLR_draw_param['disable_dict']['SLR1'])[idx]
 				this.$refs.SLR_draw.set_draw_data(draw_type, metrics)
 			}
 		},
@@ -1529,11 +1666,12 @@ export default {
 
 			}
 			else if(test=="SLR") {
+				current_subtest = "SLR"+this.slr_subtest.toString()
 				if(idx == 0){
 					// force button update status
-					this.SLR_draw_param['disable_dict']['SLR_v_left'] = true
-					this.SLR_draw_param['disable_dict']['SLR_v_middle'] = true
-					this.SLR_draw_param['disable_dict']['SLR_v_right'] = true
+					this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_left'] = true
+					this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_middle'] = true
+					this.SLR_draw_param['disable_dict'][current_subtest]['SLR_v_right'] = true
 
 					idx_lst.push(3, 4, 5)
 				}
@@ -1545,7 +1683,8 @@ export default {
 
 				this.$refs.SLR_draw.clear_target(idx_lst)
 				// 借用key而已
-				this.$refs.SLR_draw.delete_line_title(Object.keys(this.SLR_draw_param['disable_dict'])[idx])
+				this.$refs.SLR_draw.delete_line_title(Object.keys(this.SLR_draw_param['disable_dict']['SLR1'])[idx])
+				this.set_SLR_esophageal_ratio()
 			}
 
 		},
@@ -1557,7 +1696,7 @@ export default {
 				return Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
 			else if(test=="SLR") {
-				return Object.values(this.SLR_draw_param['disable_dict'])[idx]
+				return Object.values(this.SLR_draw_param['disable_dict']["SLR"+this.slr_subtest.toString()])[idx]
 			}
 		},
 		delete_disable(test, idx) {
@@ -1584,14 +1723,14 @@ export default {
 				return !Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
 			else if(test=="SLR") {
-				if(this.SLR_draw_param['ini']) {
+				if(this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()]) {
 					return true
 				}
 				else {
 					//借用key而已
-					flags = Object.keys(this.SLR_draw_param['disable_dict'])
+					flags = Object.keys(this.SLR_draw_param['disable_dict']['SLR1'])
 					
-					exist_lines = this.SLR_draw_param['polys']["landmark"].map(function(obj) {
+					exist_lines = this.SLR_draw_param['polys']['SLR'+this.slr_subtest.toString()].map(function(obj) {
 						return obj['flag']
 					})
 					if(exist_lines.includes(flags[idx])) {
@@ -1680,7 +1819,7 @@ export default {
 				this.HH_draw_data[1]['value'] = 0
 			}
 			else if(test=="SLR") {
-				this.SLR_draw_param['ini'] = true
+				this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()] = true
 				// [TODO]
 			}
 		},
@@ -1730,20 +1869,9 @@ export default {
 
 		init_slr(slr_subtest_num){
 			for(var i=0; i<slr_subtest_num; i++) {
-				this.SLR_draw_param['metrics']['SLR'+(i+1).toString()] = {
-					'abdominal_basline_max': 0,
-					'abdominal_basline_mean': 0,
-					'abdominal_SLR_max': 0,
-					'abdominal_SLR_mean': 0,
-					'esophageal_baseline_max': 0,
-					'esophageal_baseline_mean': 0,
-					'esophageal_SLR_max':0,
-					'esophageal_SLR_mean':0,
-					'esophageal_pressure_ratio': 0,
-				}
 				this.SLR_draw_param['disable_dict']['SLR'+(i+1).toString()] = {
 					'SLR_h_upper': false,
-					'SLR_h_middle': false,
+					'SLR_h_middle':false,
 					'SLR_h_lower': false,
 					'SLR_v_left': true,
 					'SLR_v_middle': true,
@@ -1840,8 +1968,8 @@ export default {
 			}
 		},
 		set_slr_result() {
-			var base_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_baseline_max"]
-			var SLR_pressure = this.SLR_draw_param["metrics"]["landmark"]["abdominal_SLR_max"]
+			var base_pressure = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["abdominal_baseline_max"]
+			var SLR_pressure = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["abdominal_SLR_max"]
 			
 			// set SLR result
 			if(base_pressure>0 && SLR_pressure>0) {
@@ -1902,9 +2030,32 @@ export default {
 				this.SLR_draw_data[6]['value'] = obj["value"][0]
 				this.SLR_draw_data[7]['value'] = obj["value"][1]
 			}
-			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_max'] = obj["value"][0]
-			this.SLR_draw_param["metrics"]["landmark"][obj["type"] + '_mean'] = obj["value"][1]
+			this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()][obj["type"] + '_max'] = obj["value"][0]
+			this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()][obj["type"] + '_mean'] = obj["value"][1]
 			this.set_slr_result()
+			this.set_SLR_esophageal_ratio()
+		},
+		set_SLR_esophageal_ratio() {
+			var esophageal_baseline_mean = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["esophageal_baseline_mean"]
+			var esophageal_SLR_mean = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["esophageal_SLR_mean"]
+			var esophageal_baseline_max = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["esophageal_baseline_max"]
+			var esophageal_SLR_max = this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]["esophageal_SLR_max"]
+
+
+			// set esophageal ratio
+			var ratio = 0
+			if(esophageal_baseline_mean>0 && esophageal_SLR_mean>0) {
+				ratio = parseFloat((esophageal_SLR_mean / esophageal_baseline_mean).toFixed(2))
+			} 
+			this.SLR_draw_data[9]['value'] = ratio
+			this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]['esophageal_pressure_ratio_mean'] = ratio
+
+			ratio = 0
+			if(esophageal_baseline_max>0 && esophageal_SLR_max>0) {
+				ratio = parseFloat((esophageal_SLR_max/ esophageal_baseline_max).toFixed(2))
+			}
+			this.SLR_draw_data[8]['value'] = ratio
+			this.SLR_draw_param["metrics"]['SLR'+this.slr_subtest.toString()]['esophageal_pressure_ratio_max'] = ratio
 		}
 	}
 }
