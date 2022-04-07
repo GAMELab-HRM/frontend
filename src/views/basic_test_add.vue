@@ -722,6 +722,7 @@ export default {
 			this.MRS_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.HH_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.SLR_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+			console.log('this.MRS_draw_param["catheter_scale"]', this.MRS_draw_param["catheter_scale"])
 
 			this.MRS_draw_rerender+=1
 			this.HH_draw_rerender+=1
