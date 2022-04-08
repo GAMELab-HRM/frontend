@@ -2,7 +2,6 @@
 	<div id="add">
 		<div id="main_container">	
 			<p style="font-size: 30px; color: white; margin-bottom: 0px">Current patient ID : {{ current_patient_id }}</p>
-
 			<!-- section1 start -->
 			<el-row :gutter="1">
 				<el-col :span="6">
@@ -362,7 +361,7 @@ import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
 import {GetSLRDrawInfo, UpdateSLRDrawInfo, UpdateSLRMetrics, UpdateSLRResult, GetSLRRawData, GetSLRMetrics,  GetSLRResult} from "@/apis/slr.js"
-
+import {DecodeRawdata} from "@/utils/tools.js"
 // import { uploadFileDemo } from "@/apis/file.js" // demo
 // import { CallDemoAPI, CallDemo2API } from "@/apis/demo.js" // demo
 
@@ -653,7 +652,7 @@ export default {
 
 		}
 	},
-	created(){
+	async created(){
 		// let loadingInstance = this.$loading(this.loading_options)
 		this.loading_instance = this.$loading(this.loading_options)
 		// this.fullscreenLoading = false
@@ -667,7 +666,7 @@ export default {
 		this.ab_table = ab_table_data_format
 		console.log(this.current_record_id)
 		
-		GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetWetSwallow(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get swallow API successed!")
 			let retv = res.data
 			let eptmetric_order = ['vigors', 'patterns', 'swallow_types', 'irp4s', 'dcis', 'dls', 'breaks']
@@ -708,7 +707,7 @@ export default {
 		})
 			
 			
-		GetCatheterType(this.current_record_id).then((res)=>{
+		await GetCatheterType(this.current_record_id).then((res)=>{
 			console.log("Call get Catheter Type API successed!")
 			let retv = res.data
 			var catheter_type = retv['catheter_type'].toString()
@@ -736,12 +735,13 @@ export default {
 		/*
 			[MRS] Raw Data 
 		*/
-		GetMRSRawData(this.current_record_id).then((res)=>{
+		await GetMRSRawData(this.current_record_id).then((res)=>{
 			console.log("Call get MRS RawData API successed!")
 			let retv = res.data
-			this.MRS_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.MRS_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
 			this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
 			let mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
+			console.log("mrs subtest num", mrs_subtest_num)
 			mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
 			this.mrs_subtest_options = mrs_subtest_options
 			this.init_mrs(mrs_subtest_num)
@@ -762,17 +762,17 @@ export default {
 		/*
 			[Hiatal Hernia] Raw Data 
 		*/
-		GetHHRawData(this.current_record_id).then((res)=>{
+		await GetHHRawData(this.current_record_id).then((res)=>{
 			console.log("Call get HH RawData API successed!")
 			let retv = res.data 
-			this.HH_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.HH_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
 			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 			this.init_hh()
 			this.hh_rawdata_show = true
 		})
 		
 		// 把MRS圖的資料傳到前端
-		GetMRSResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetMRSResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS Result API successed!")
 			let retv = res.data
 			this.mrs_result = retv['mrs_result']
@@ -782,7 +782,7 @@ export default {
 			console.log(err)
 		})
 
-		GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetMRSMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get MRS Metrics API successed!")
 			let retv = res.data 
 			this.set_backend_metrics('MRS', retv)
@@ -793,7 +793,7 @@ export default {
 			console.log(err)
 		})
 
-		GetHHResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetHHResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get HH Result API successed!")
 			let retv = res.data
 			this.hh_result = retv['hh_result']
@@ -806,7 +806,7 @@ export default {
 		})
 
 		// 把HH圖的資料傳到前端
-		GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetHHDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get HH DrawInfo API successed!")
 			let retv = res.data
 			this.set_backend_draw_param('HH', retv)
@@ -815,7 +815,7 @@ export default {
             console.log("Call get HH DrawInfo API Failed!")
 			console.log(err)
 		})
-		GetHHMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetHHMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
             console.log("Call get HH Metrics API successed!")
 			let retv = res.data
 			this.set_backend_metrics('HH', retv)
@@ -828,14 +828,14 @@ export default {
 		/*
 			[SLR] Raw Data 
 		*/
-		GetSLRRawData(this.current_record_id).then((res)=>{	
+		await GetSLRRawData(this.current_record_id).then((res)=>{	
 			let retv = res.data
 			console.log("SLR rawdata", retv)
 			this.loading_instance.close()
 			if(retv['rawdata']=='[]') {
 				return
 			}
-			this.SLR_draw_param['draw_obj_lst'] = retv['rawdata']
+			this.SLR_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
 			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
 			let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
 			slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
@@ -857,7 +857,7 @@ export default {
 			})
 		})
 
-		GetSLRResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetSLRResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get SLR Result API successed!")
 			let retv = res.data
 			this.slr_result = retv['SLR_result']
@@ -868,7 +868,7 @@ export default {
 			console.log(err)
 		})
 
-		GetSLRMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+		await GetSLRMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
 			console.log("Call get SLR Metrics API successed!")
 			let retv = res.data 
 			console.log("SLR metrics1 ", retv)
@@ -1519,6 +1519,8 @@ export default {
 			this.MRS_draw_rerender += 1
 
 			// rerender draw table data 
+			console.log("debug...................")
+			console.log(this.MRS_draw_data)
 			this.MRS_draw_data[0]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']
 			this.MRS_draw_data[1]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI2']
 			this.MRS_draw_data[6]['value'] = this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_IRP1']
@@ -1911,10 +1913,10 @@ export default {
 
 		set_DI() {
 			if(this.MRS_draw_param['metrics']['MRS'+this.mrs_subtest.toString()]['MRS_DCI1']<100) {
-				this.MRS_draw_data[8]['value'] = 'complete'
+				this.MRS_draw_data[7]['value'] = 'complete'
 			}
 			else {
-				this.MRS_draw_data[8]['value'] = 'incomplete'
+				this.MRS_draw_data[7]['value'] = 'incomplete'
 			}
 		},
 		set_DCI_ratio() {
