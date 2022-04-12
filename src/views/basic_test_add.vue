@@ -71,7 +71,7 @@
 					</el-row>
 					<el-row type="flex" class="row-bg" justify="space-between">
 						<el-col :span="14">
-							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" plotType=MRS :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
 						</el-col>
 					</el-row>
 				</el-col>
@@ -160,7 +160,7 @@
 				</el-row>
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
-						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
+						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' plotType=HH ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
 					</el-col>
 					<el-col :span="7" >
 						<div style="margin-top: 50px">
@@ -288,7 +288,7 @@
 
 					<el-row>
 					<el-col :span="14">
-						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
+						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' plotType=SLR :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
 					</el-col>
 					</el-row>
 				</el-col>
@@ -510,10 +510,6 @@ export default {
 			],
 
 			HH_metrics_table_data:[{
-				'metrics': 'UES upper'
-			},{
-				'metrics': 'UES lower'
-			}, {
 				'metrics': 'LES upper'
 			}, {
 				'metrics': 'LES lower'
@@ -1861,8 +1857,6 @@ export default {
 				'seperate': false
 			}
 			this.HH_draw_param['disable_dict'] = {
-				'HH_UES_upper': false,
-				'HH_UES_lower': false,
 				'HH_LES_upper': false,
 				'HH_LES_lower': false,
 				'HH_RIP': false,
