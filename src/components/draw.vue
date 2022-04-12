@@ -27,7 +27,7 @@ var vue_instance = {
 	components: {
 		VuePlotly,
 	},
-	props:['raw_data', 'time_scale', 'catheter_scale', 'polys'],
+	props:['raw_data', 'time_scale', 'catheter_scale', 'polys', 'plotType'],
 	data() {
 		return {
 			drawing: false,
@@ -277,12 +277,30 @@ var vue_instance = {
 		}	
 	},
 	created() {
+		if(this.plotType == 'HH') {
+			let new_colorscale = [
+				[0, 'rgb(15, 23, 255)'], // -15
+				[0.05, 'rgb(10, 124, 253)'], // 0
+				[0.1, 'rgb(6, 252, 236)'], // 20
+				[0.15, 'rgb(67, 251, 3)'], // 40
+				[0.2, 'rgb(191, 241, 3)'], // 60
+				[0.25, 'rgb(253, 165, 2)'], // 80
+				[0.3, 'rgb(255, 30, 0)'], // 100
+				[0.35, 'rgb(198, 2, 45)'], // 120
+				[0.4, 'rgb(131, 4, 99)'], // 140
+				[1, 'rgb(92, 3, 131)'], // 150
+			]
+			this.data[0]['colorscale'] = new_colorscale
+			this.$refs.plotly.update_trace(this.data[0])
+		}
+
 		// initial update
 
 		// 暫刪
 		// window.layout = this.layout
 	},
 	mounted() {
+
 		var update_layout = {
 			width: window.innerWidth * 0.5,
 			// 0.658
@@ -403,7 +421,7 @@ var vue_instance = {
 		},
 
 		contour_size_change(val) {
-			this.data[1]['contours']['value'] = val
+			this.data[0]['contours']['value'] = val
 			// this.data[0]['colorbar']['dtick'] = val
 			this.$refs.plotly.redraw(this.data)
 		},
