@@ -627,7 +627,7 @@ export default {
 
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
-			mrs_subtest_options: 3,
+			//mrs_subtest_options: 3,
 
 			loading_options: {
 				lock: true,
@@ -737,9 +737,8 @@ export default {
 			this.MRS_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
 			this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
 			let mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
-			console.log("mrs subtest num", mrs_subtest_num)
-			mrs_subtest_options.splice(mrs_subtest_num, mrs_subtest_options.length)
-			this.mrs_subtest_options = mrs_subtest_options
+			console.log("mrs subtest num", mrs_subtest_num, mrs_subtest_options.length)
+			this.mrs_subtest_options = this.create_mrs_options_data(mrs_subtest_num)
 			this.init_mrs(mrs_subtest_num)
 			this.mrs_rawdata_show = true
 		}).then(()=> {
@@ -1035,8 +1034,19 @@ export default {
 			return dic
 		},
 		
-		
-
+		//create mrs option data 
+		create_mrs_options_data:function(number){
+			let res = []
+			for(let i=1;i<=number;i++){
+				res.push(
+					{
+						value: i,
+						label: 'MRS'+ i.toString()
+					},
+				)
+			}
+			return res 
+		},
 		send_backend: function(test_type) {
 			// call api here
 			// ws_10_object is ready send to backend
