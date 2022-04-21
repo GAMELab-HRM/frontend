@@ -291,7 +291,7 @@ var vue_instance = {
 				[1, 'rgb(92, 3, 131)'], // 150
 			]
 			this.data[0]['colorscale'] = new_colorscale
-			this.$refs.plotly.update_trace(this.data[0])
+			// this.$refs.plotly.update_trace(this.data[0])
 		}
 
 		// initial update
