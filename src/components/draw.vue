@@ -421,9 +421,9 @@ var vue_instance = {
 		},
 
 		contour_size_change(val) {
-			this.data[0]['contours']['value'] = val
+			this.data[1]['contours']['value'] = val
 			// this.data[0]['colorbar']['dtick'] = val
-			this.$refs.plotly.redraw(this.data)
+			// this.$refs.plotly.redraw(this.data)
 		},
 		click_handler() {
 			// for vertical line (DCI1 left、right, DCI2 left、right, IRP1 left、right, IRP2 left、right)
