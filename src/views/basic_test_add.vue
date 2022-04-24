@@ -1012,49 +1012,54 @@ export default {
 				return
 			}
 			this.SLR_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
-			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
-			let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
-			slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
-			this.slr_subtest_options = slr_subtest_options
-			this.init_slr(slr_subtest_num)
-			this.slr_rawdata_show = true
-			console.log("Call get SLR RawData API successed!")
+			if(this.SLR_draw_param['draw_obj_lst'].length>2) {
+				this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], 0)
+				let slr_subtest_num = JSON.parse(this.SLR_draw_param['draw_obj_lst']).length
+				slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
+				this.slr_subtest_options = slr_subtest_options
+				this.init_slr(slr_subtest_num)
+				this.slr_rawdata_show = true
+				console.log("Call get SLR RawData API successed!")
+			}
 		}).then(()=> {
-			GetSLRDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
-				console.log("Call get SLR DrawInfo API successed!")
-				let retv = res2.data
-				console.log(retv)
-				this.set_backend_draw_param('SLR', retv)
-				this.slr_drawinfo_show = true
+			if(this.SLR_draw_param['draw_obj_lst'].length>2) {
+				GetSLRDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+					console.log("Call get SLR DrawInfo API successed!")
+					let retv = res2.data
+					console.log(retv)
+					this.set_backend_draw_param('SLR', retv)
+					this.slr_drawinfo_show = true
+					this.update_SLR_send_btn()
+				}).catch((err)=>{
+					console.log("Call get SLR DrawInfo API Failed!")
+					console.log(err)
+				})
+			}
+		})
+		if(this.SLR_draw_param['draw_obj_lst'].length>2) {
+			await GetSLRResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+				console.log("Call get SLR Result API successed!")
+				let retv = res.data
+				this.slr_result = retv['SLR_result']
+				this.slr_result_show = true
 				this.update_SLR_send_btn()
 			}).catch((err)=>{
-				console.log("Call get SLR DrawInfo API Failed!")
+				console.log("Call get SLR Result API Failed!")
 				console.log(err)
 			})
-		})
 
-		await GetSLRResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-			console.log("Call get SLR Result API successed!")
-			let retv = res.data
-			this.slr_result = retv['SLR_result']
-			this.slr_result_show = true
-			this.update_SLR_send_btn()
-		}).catch((err)=>{
-			console.log("Call get SLR Result API Failed!")
-			console.log(err)
-		})
-
-		await GetSLRMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
-			console.log("Call get SLR Metrics API successed!")
-			let retv = res.data 
-			console.log("SLR metrics1 ", retv)
-			this.set_backend_metrics('SLR', retv)
-			this.slr_metric_show = true
-			this.update_SLR_send_btn()
-		}).catch((err)=>{
-			console.log("Call get SLR Metrics API Failed!")
-			console.log(err)
-		})
+			await GetSLRMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+				console.log("Call get SLR Metrics API successed!")
+				let retv = res.data 
+				console.log("SLR metrics1 ", retv)
+				this.set_backend_metrics('SLR', retv)
+				this.slr_metric_show = true
+				this.update_SLR_send_btn()
+			}).catch((err)=>{
+				console.log("Call get SLR Metrics API Failed!")
+				console.log(err)
+			})
+		}
 	},
 	methods: {
 		// click send data (trigger confirm dialog)
