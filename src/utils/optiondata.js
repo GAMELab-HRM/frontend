@@ -237,6 +237,49 @@ export let slr_subtest_options = [
     }
 ]
 
+export let resting_subtest_options = [
+    {
+        value: 1,
+        label: 'Resting1'
+    },
+    {
+        value: 2,
+        label: 'Resting2'
+    },
+    {
+        value: 3,
+        label: 'Resting3'
+    },
+    {
+        value: 4,
+        label: 'Resting4'
+    },
+    {
+        value: 5,
+        label: 'Resting5'
+    },
+    {
+        value: 6,
+        label: 'Resting6'
+    },
+    {
+        value: 7,
+        label: 'Resting7'
+    },
+    {
+        value: 8,
+        label: 'Resting8'
+    },
+    {
+        value: 9,
+        label: 'Resting9'
+    },
+    {
+        value: 10,
+        label: 'Resting10'
+    }
+]
+
 
 export let ab_table_data_format = [
     {
