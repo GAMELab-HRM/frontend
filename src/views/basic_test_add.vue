@@ -71,7 +71,7 @@
 					</el-row>
 					<el-row type="flex" class="row-bg" justify="space-between">
 						<el-col :span="14">
-							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" plotType=MRS :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" plotType=MRS :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn_=>update_draw_btn("MRS", update_draw_btn_)' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
 						</el-col>
 					</el-row>
 				</el-col>
@@ -160,7 +160,7 @@
 				</el-row>
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
-						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' plotType=HH ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
+						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' plotType=HH ref="HH_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("HH", update_draw_btn_)' @get_LES_CD='get_LES_CD_=>get_LES_CD("HH", get_LES_CD_)' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
 					</el-col>
 					<el-col :span="7" >
 						<div style="margin-top: 50px">
@@ -216,7 +216,7 @@
 			<!-- section4 start -->
 			<div v-if="resting_drawinfo_show & resting_result_show & resting_rip_result_show & resting_metric_show & resting_rawdata_show">
 				<el-row>
-					<el-col :span="16">
+					<el-col :span="24">
 					<el-row>
 						<el-col :md="{span: 7}" :xl="{span:5}">
 							<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result<br>
@@ -253,46 +253,50 @@
 					</el-row>
 					<el-row type="flex" class="row-bg" justify="space-between">
 						<el-col :span="14">
-							<draw :raw_data='resting_draw_param["raw_data"]' :time_scale='resting_draw_param["time_scale"]' :catheter_scale='resting_draw_param["catheter_scale"]' :polys='resting_draw_param["polys"]["Resting"+resting_subtest.toString()]' :key='resting_draw_rerender' plotType=HH ref="resting_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("resting", get_poly)'/>
+							<draw :raw_data='Resting_draw_param["raw_data"]' :time_scale='Resting_draw_param["time_scale"]' :catheter_scale='Resting_draw_param["catheter_scale"]' :polys='Resting_draw_param["polys"]["Resting"+resting_subtest.toString()]' :key='Resting_draw_rerender' plotType=HH ref="resting_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("resting", update_draw_btn_)' @get_LES_CD='get_LES_CD_=>get_LES_CD("resting", get_LES_CD_)' @get_polys='get_poly=>get_polys("resting", get_poly)'/>
+						</el-col>
+						<el-col :span="7">
+							<div style="margin-top: 50px">
+							<h2 style="padding-right: 100px">繪圖工具</h2>
+							<br>
+							<el-slider v-model="Resting_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('resting', changed)" style="padding-right: 100px"/>
+							<br>
+							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
+								<el-table-column prop="metrics" label='Metrics'/>
+								<el-table-column label='Operation'>
+									<template slot-scope="scope">
+										<el-row>
+											<el-col :md="{span: 3}" :xl="{span: 8}">
+												<el-button type="primary" @click="draw_handler('resting', scope.$index)" :disabled="draw_disable('resting', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+											</el-col>
+											<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+											<el-col :md="{span: 1}" :xl="{span: 8}">
+												<el-button type="danger" @click="delete_handler('resting', scope.$index)" :disabled="delete_disable('resting', scope.$index)">刪除</el-button>
+											</el-col>
+										</el-row>
+									</template>
+								</el-table-column>
+							</el-table>
+						</div>
+						<el-table :data='Resting_draw_data' style="width: 80%; margin-top:30px">
+							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="value"  label="值"/>
+						</el-table>
+						<el-row>
+							<el-col :md="{span: 3}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 1)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+							</el-col>
+							<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
+							<el-col :md="{span: 1}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 2)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+							</el-col>
+						</el-row>
 						</el-col>
 					</el-row>
 				</el-col>
 				<el-col :offset="1" :span="7" >
-					<div style="margin-top: 50px">
-						<h2 style="padding-right: 100px">繪圖工具</h2>
-						<br>
-						<el-slider v-model="resting_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('resting', changed)" style="padding-right: 100px"/>
-						<br>
-						<el-table :data='resting_metrics_table_data' style="width: 80%" height="400">
-							<el-table-column prop="metrics" label='Metrics'/>
-							<el-table-column label='Operation'>
-								<template slot-scope="scope">
-									<el-row>
-										<el-col :md="{span: 3}" :xl="{span: 8}">
-											<el-button type="primary" @click="draw_handler('resting', scope.$index)" :disabled="draw_disable('resting', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
-										</el-col>
-										<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
-										<el-col :md="{span: 1}" :xl="{span: 8}">
-											<el-button type="danger" @click="delete_handler('resting', scope.$index)" :disabled="delete_disable('resting', scope.$index)">刪除</el-button>
-										</el-col>
-									</el-row>
-								</template>
-							</el-table-column>
-						</el-table>
-					</div>
-					<el-table :data='Resting_draw_data' style="width: 80%; margin-top:30px">
-						<el-table-column prop="flag" label="參數"/>
-						<el-table-column prop="value"  label="值"/>
-					</el-table>
-					<el-row>
-						<el-col :md="{span: 3}" :xl="{span: 8}">
-							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 1)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
-						</el-col>
-						<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
-						<el-col :md="{span: 1}" :xl="{span: 8}">
-							<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 2)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
-						</el-col>
-					</el-row>
+					
+					
 				</el-col>
 				</el-row>
 
@@ -383,7 +387,7 @@
 
 					<el-row>
 					<el-col :span="14">
-						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' plotType=SLR :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
+						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' plotType=SLR :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("SLR", update_draw_btn_)'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
 					</el-col>
 					</el-row>
 				</el-col>
@@ -984,7 +988,8 @@ export default {
 				this.resting_result["Resting" + (i+1).toString()] = retv['resting_result'][i]
 				this.resting_rip_result["Resting" + (i+1).toString()] = retv['rip_result'][i]
 			}
-			this.resting_result_show = true 
+			this.resting_result_show = true
+			this.resting_rip_result_show = true
 		}).catch((err)=>{
 			console.log("Call get Resting Result API Failed!")
 			console.log(err)
@@ -1789,7 +1794,10 @@ export default {
 		},
 
 		resting_subtest_selected_update() {
-
+			this.set_contour_data('Resting', this.Resting_draw_param['draw_obj_lst'], this.resting_subtest-1)
+			this.Resting_draw_rerender+=1
+			this.Resting_draw_data[0]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['LES-CD']
+			this.Resting_draw_data[1]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['seperate']
 		},
 
 		slr_subtest_selected_update() {
@@ -1803,8 +1811,8 @@ export default {
 			}
 		},
 
-		update_draw_btn(obj) {
-			if(obj['flag'].includes('MRS')) {
+		update_draw_btn(test, obj) {
+			if(test=='MRS') {
 				var current_subtest = "MRS"+this.mrs_subtest.toString()
 				this.MRS_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
 				if(Object.keys(this.MRS_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
@@ -1820,10 +1828,13 @@ export default {
 					}
 				}
 			}
-			else if(obj['flag'].includes('HH')) {
+			else if(test=='HH') {
 				this.HH_draw_param['disable_dict'][obj['flag']] = obj['status']
 			}
-			else if(obj['flag'].includes('SLR')) {
+			else if(test=='resting') {
+				this.Resting_draw_param['disable_dict'][obj['flag']] = obj['status']
+			}
+			else if(test=="SLR") {
 				current_subtest = "SLR"+this.slr_subtest.toString()
 				this.SLR_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
 				if(Object.keys(this.SLR_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
@@ -2005,7 +2016,7 @@ export default {
 				return !Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
 			else if(test=='resting') {
-				return !Object.values(this.Resting_draw_param['disable_dict'])[idx]
+				return !Object.values(this.Resting_draw_param['disable_dict']['Resting'+this.resting_subtest.toString()])[idx]
 			}
 			else if(test=="SLR") {
 				if(this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()]) {
@@ -2060,13 +2071,23 @@ export default {
 			}
 
 		},
-		get_LES_CD(obj) {
-			this.HH_draw_data[0]['value'] = obj['LES_CD']
-			this.HH_draw_param['metrics']['landmark']['LES-CD'] = obj['LES_CD']
+		get_LES_CD(test, obj) {
+			if(test=='HH') {
+				this.HH_draw_data[0]['value'] = obj['LES_CD']
+				this.HH_draw_param['metrics']['landmark']['LES-CD'] = obj['LES_CD']
 
-			// table 需要String才能顯示
-			this.HH_draw_data[1]['value'] = obj['seperate'].toString()
-			this.HH_draw_param['metrics']['landmark']['seperate'] = obj['seperate']
+				// table 需要String才能顯示
+				this.HH_draw_data[1]['value'] = obj['seperate'].toString()
+				this.HH_draw_param['metrics']['landmark']['seperate'] = obj['seperate']
+			}
+			else if(test=='resting') {
+				this.Resting_draw_data[0]['value'] = obj['LES_CD']
+				this.Resting_draw_param['metrics']['Resting' + this.resting_subtest.toString()]['LES-CD'] = obj['LES_CD']
+
+				// table 需要String才能顯示
+				this.Resting_draw_data[1]['value'] = obj['seperate'].toString()
+				this.Resting_draw_param['metrics']['Resting' + this.resting_subtest.toString()]['seperate'] = obj['seperate']
+			}
 		},
 		clear_all(test) {
 			if(test == 'MRS') {
@@ -2114,6 +2135,9 @@ export default {
 			}
 			else if(test=='HH') {
 				this.$refs.HH_draw.contour_size_change(val)
+			}
+			else if(test=='resting') {
+				this.$refs.resting_draw.contour_size_change(val)
 			}
 			else if(test=="SLR") {
 				this.$refs.SLR_draw.contour_size_change(val)
