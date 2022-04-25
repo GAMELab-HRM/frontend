@@ -71,7 +71,7 @@
 					</el-row>
 					<el-row type="flex" class="row-bg" justify="space-between">
 						<el-col :span="14">
-							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" plotType=MRS :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
+							<draw :raw_data='MRS_draw_param["raw_data"]' :time_scale='MRS_draw_param["time_scale"]' :catheter_scale='MRS_draw_param["catheter_scale"]' :polys="MRS_draw_param['polys']['MRS'+mrs_subtest.toString()]" plotType=MRS :key='MRS_draw_rerender' ref="MRS_draw"  @update_draw_btn_status='update_draw_btn_=>update_draw_btn("MRS", update_draw_btn_)' @get_polys='get_poly=>get_polys("MRS", get_poly)' @get_DCI='get_DCI' @get_IRP='get_IRP'/>
 						</el-col>
 					</el-row>
 				</el-col>
@@ -160,7 +160,7 @@
 				</el-row>
 				<el-row type="flex" class="row-bg" justify="space-between">
 					<el-col :span="14">
-						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' plotType=HH ref="HH_draw" @update_draw_btn_status='update_draw_btn' @get_LES_CD='get_LES_CD' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
+						<draw :raw_data='HH_draw_param["raw_data"]' :time_scale='HH_draw_param["time_scale"]' :catheter_scale='HH_draw_param["catheter_scale"]' :polys='HH_draw_param["polys"]["landmark"]' :key='HH_draw_rerender' plotType=HH ref="HH_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("HH", update_draw_btn_)' @get_LES_CD='get_LES_CD_=>get_LES_CD("HH", get_LES_CD_)' @get_polys='get_poly=>get_polys("HH", get_poly)'/>
 					</el-col>
 					<el-col :span="7" >
 						<div style="margin-top: 50px">
@@ -214,6 +214,105 @@
 			</div>
 
 			<!-- section4 start -->
+			<div v-if="resting_drawinfo_show & resting_result_show & resting_rip_result_show & resting_metric_show & resting_rawdata_show">
+				<el-row>
+					<el-col :span="24">
+					<el-row>
+						<el-col :md="{span: 7}" :xl="{span:5}">
+							<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result<br>
+								<el-select v-model="resting_result['Resting' + resting_subtest.toString()]" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('resting')">
+									<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<el-col :md="{span: 7}" :xl="{span:5}">
+							<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result<br>
+								<el-select v-model="resting_rip_result['Resting' + resting_subtest.toString()]" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('resting_rip')">
+									<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<!-- <el-col :md="{span: 3}" :xl="{span:3}">
+							<el-button type="primary" @click="HH_draw_rerender+=1,clear_all('HH'),HH_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+						</el-col> -->
+					</el-row>
+					<el-row>
+						<el-col :span="6">
+							<h1 style="text-align:left; color: white; padding-top: 20px">Resting<br>
+								<el-select v-model="resting_subtest" placeholder="Resting" style="margin-top: 15px" @change="resting_subtest_selected_update">
+									<el-option v-for="item in resting_subtest_options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</h1>
+						</el-col>
+						<!-- <el-col :offset="2" :span="2">
+							<el-button type="primary" @click="MRS_draw_rerender+=1,clear_all('MRS'),MRS_draw_param['contour_size']=30" icon='el-icon-refresh' style="margin-top: 83px">Refresh Contour plots</el-button>
+						</el-col> -->
+					</el-row>
+					<el-row type="flex" class="row-bg" justify="space-between">
+						<el-col :span="14">
+							<draw :raw_data='Resting_draw_param["raw_data"]' :time_scale='Resting_draw_param["time_scale"]' :catheter_scale='Resting_draw_param["catheter_scale"]' :polys='Resting_draw_param["polys"]["Resting"+resting_subtest.toString()]' :key='Resting_draw_rerender' plotType=HH ref="resting_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("resting", update_draw_btn_)' @get_LES_CD='get_LES_CD_=>get_LES_CD("resting", get_LES_CD_)' @get_polys='get_poly=>get_polys("resting", get_poly)'/>
+						</el-col>
+						<el-col :span="7">
+							<div style="margin-top: 50px">
+							<h2 style="padding-right: 100px">繪圖工具</h2>
+							<br>
+							<el-slider v-model="Resting_draw_param['contour_size']" :step="1" :min='5' @change="changed=>contour_size_change('resting', changed)" style="padding-right: 100px"/>
+							<br>
+							<el-table :data='HH_metrics_table_data' style="width: 80%" height="400">
+								<el-table-column prop="metrics" label='Metrics'/>
+								<el-table-column label='Operation'>
+									<template slot-scope="scope">
+										<el-row>
+											<el-col :md="{span: 3}" :xl="{span: 8}">
+												<el-button type="primary" @click="draw_handler('resting', scope.$index)" :disabled="draw_disable('resting', scope.$index)" :key='draw_btn_rerender'>標記</el-button>
+											</el-col>
+											<el-col :md="{span: 24}" :xl="{span: 3}">&nbsp;</el-col>
+											<el-col :md="{span: 1}" :xl="{span: 8}">
+												<el-button type="danger" @click="delete_handler('resting', scope.$index)" :disabled="delete_disable('resting', scope.$index)">刪除</el-button>
+											</el-col>
+										</el-row>
+									</template>
+								</el-table-column>
+							</el-table>
+						</div>
+						<el-table :data='Resting_draw_data' style="width: 80%; margin-top:30px">
+							<el-table-column prop="flag" label="參數"/>
+							<el-table-column prop="value"  label="值"/>
+						</el-table>
+						<el-row>
+							<el-col :md="{span: 3}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 1)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出 </el-button>
+							</el-col>
+							<el-col :md="{span: 5}" :xl="{span: 0}">&nbsp;</el-col>
+							<el-col :md="{span: 1}" :xl="{span: 8}">
+								<el-button type="primary" icon="el-icon-check" @click="basic_test_send('resting', 2)" :disabled="resting_send_disable" style="margin-top: 30px; margin-bottom: 50px"> 送出兩位醫師的診斷 </el-button>
+							</el-col>
+						</el-row>
+						</el-col>
+					</el-row>
+				</el-col>
+				<el-col :offset="1" :span="7" >
+					
+					
+				</el-col>
+				</el-row>
+
+				<!-- section4 dialog start -->
+				<el-dialog title="提示" :visible.sync="resting_confirm" width="30%" center>
+					<span><h2> 確認送出? </h2></span>
+					<span slot="footer" class="dialog-footer">
+						<el-button type="primary" @click="confirm_send({status: true, test_type: 'mrs'})"> 確認 </el-button>
+						<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
+					</span>
+				</el-dialog>
+			</div>
+			<!-- section4 dialog end -->
+			<!-- section4 end -->
+
+			<!-- section5 start -->
 			<el-row :gutter="1">
 				<el-col :span="24">
 					<h1 style="text-align:left; color: white; padding-top: 20px;font-size:35px" >二度收縮
@@ -244,7 +343,7 @@
 				<el-button class='send_btn' type="primary" icon="el-icon-check" @click="basic_test_send('ab', 2)" :disabled="ab_send_disable"> 送出兩位醫師的診斷 </el-button>
 			</div>
 			
-			<!-- section4 dialog start -->
+			<!-- section5 dialog start -->
 			<el-dialog title="提示" :visible.sync="ab_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
 				<span slot="footer" class="dialog-footer">
@@ -252,12 +351,12 @@
 					<el-button type="danger" @click="confirm_send({status: false, test_type: 'ab'})"> 返回 </el-button>
 				</span>
 			</el-dialog>
-			<!-- section4 dialog end -->
-			<!-- section4 end -->
+			<!-- section5 dialog end -->
+			<!-- section5 end -->
 
 
 			
-			<!-- section5 start -->
+			<!-- section6 start -->
 			<div v-if="slr_rawdata_show & slr_drawinfo_show">
 			<el-row>
 				<el-col :span="16">
@@ -288,7 +387,7 @@
 
 					<el-row>
 					<el-col :span="14">
-						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' plotType=SLR :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
+						<draw :raw_data='SLR_draw_param["raw_data"]' :time_scale='SLR_draw_param["time_scale"]' :catheter_scale='SLR_draw_param["catheter_scale"]' :polys='SLR_draw_param["polys"]["SLR"+slr_subtest.toString()]' plotType=SLR :key='SLR_draw_rerender' ref="SLR_draw" @update_draw_btn_status='update_draw_btn_=>update_draw_btn("SLR", update_draw_btn_)'  @get_polys='get_poly=>get_polys("SLR", get_poly)' @get_SLR_metrics='get_SLR_metrics'/>
 					</el-col>
 					</el-row>
 				</el-col>
@@ -335,7 +434,7 @@
 				</el-col>
 			</el-row>
 
-			<!-- section5 dialog start -->
+			<!-- section6 dialog start -->
 			<el-dialog title="提示" :visible.sync="slr_confirm" width="30%" center>
 				<span><h2> 確認送出? </h2></span>
 				<span slot="footer" class="dialog-footer">
@@ -343,8 +442,8 @@
 					<el-button type="danger" @click="confirm_send({status: false, test_type: 'slr'})"> 返回 </el-button>
 				</span>
 			</el-dialog>
-			<!-- section5 dialog end -->
-			<!-- section5 end -->
+			<!-- section6 dialog end -->
+			<!-- section6 end -->
 			</div>
 		</div>
 	</div>
@@ -352,11 +451,13 @@
 </template>
 <script>
 import ws_10_add_table from "../components/basic_test_add_table.vue"
-import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, slr_subtest_options, ab_table_data_format } from "@/utils/optiondata.js"
+import { ws_10_options, mrs_options, hh_options, rip_options, slr_options ,table_data_format, mrs_subtest_options, slr_subtest_options, ab_table_data_format, resting_subtest_options } from "@/utils/optiondata.js"
 import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
+// UpdateRestingDrawInfo, UpdateRestingMetrics, UpdateRestingResult, 
+import {GetRestingDrawInfo, GetRestingMetrics, GetRestingRawData, GetRestingResult} from "@/apis/resting.js"
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
@@ -384,6 +485,11 @@ export default {
 			hh_drawinfo_show: false,
 			hh_metric_show: false,
 			hh_rawdata_show: false,
+			resting_result_show: false,
+			resting_rip_result_show: false,
+			resting_drawinfo_show: false,
+			resting_metric_show: false,
+			resting_rawdata_show: false,
 			slr_rawdata_show:false,
 			slr_drawinfo_show: false,
 
@@ -392,6 +498,8 @@ export default {
 			ws_10_result:'',
 			mrs_result: 'CR',
 			hh_result: '',
+			resting_result: {},
+			resting_rip_result: {},
 			rip_result: '',
 			slr_result:'',
 
@@ -399,6 +507,7 @@ export default {
 			ws_10_send_disable: true,
 			mrs_send_disable: true,
 			hh_send_disable: true,
+			resting_send_disable: true,
 			ab_send_disable: true,
 			slr_send_disable: true,
 
@@ -434,6 +543,7 @@ export default {
 			ws_10_confirm: false,
 			mrs_confirm: false,
 			hh_confirm: false,
+			resting_confirm: false,
 			ab_confirm: false,
 			slr_confirm: false,
 
@@ -466,6 +576,18 @@ export default {
 				contour_size: 30,
 			},
 
+			Resting_draw_param: {
+				raw_data: [],
+				x_size: 0,
+				draw_obj_lst: [],
+				catheter_scale: catheter_dict["3"],
+				time_scale: [],
+				disable_dict: {},
+				metrics: {},
+				polys: {},
+				contour_size: 30,
+			},
+
 			SLR_draw_param: {
 				raw_data: [],
 				x_size: 0,
@@ -481,6 +603,7 @@ export default {
 
 			MRS_draw_rerender: 0,
 			HH_draw_rerender: 0,
+			Resting_draw_rerender: 0,
 			SLR_draw_rerender:0,
 
 			MRS_metrics_table_data:[{
@@ -581,6 +704,16 @@ export default {
 				value: false.toString()
 			}],
 
+			Resting_draw_data:[
+			{
+				flag: 'LES-CD',
+				value: 0
+			},
+			{
+				flag: 'seperate',
+				value: false.toString()
+			}],
+
 			SLR_draw_data:[
 			{
 				flag: 'Peak intra-abdominal<br>pressure<br>(baseline, Max)',
@@ -628,6 +761,7 @@ export default {
 			//不同次 mrs test 相關的變數
 			mrs_subtest: 1,
 			//mrs_subtest_options: 3,
+			resting_subtest:1,
 
 			loading_options: {
 				lock: true,
@@ -717,11 +851,13 @@ export default {
 			this.MRS_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.HH_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			this.SLR_draw_param["catheter_scale"] = catheter_dict[catheter_type]
+			this.Resting_draw_param["catheter_scale"] = catheter_dict[catheter_type]
 			console.log('this.MRS_draw_param["catheter_scale"]', this.MRS_draw_param["catheter_scale"])
 
 			this.MRS_draw_rerender+=1
 			this.HH_draw_rerender+=1
 			this.SLR_draw_rerender+=1
+			this.Resting_draw_rerender+=1
 
 		}).catch((err)=>{
 			console.log("Call get Catheter Type API failed")
@@ -738,7 +874,7 @@ export default {
 			this.set_contour_data('MRS', this.MRS_draw_param['draw_obj_lst'], 0)
 			let mrs_subtest_num = JSON.parse(this.MRS_draw_param['draw_obj_lst']).length
 			console.log("mrs subtest num", mrs_subtest_num, mrs_subtest_options.length)
-			this.mrs_subtest_options = this.create_mrs_options_data(mrs_subtest_num)
+			this.mrs_subtest_options = this.create_subtest_options_data('MRS', mrs_subtest_num)
 			this.init_mrs(mrs_subtest_num)
 			this.mrs_rawdata_show = true
 		}).then(()=> {
@@ -764,6 +900,29 @@ export default {
 			this.set_contour_data('HH', this.HH_draw_param['draw_obj_lst'], 0)
 			this.init_hh()
 			this.hh_rawdata_show = true
+		})
+
+		await GetRestingRawData(this.current_record_id).then((res)=>{
+			console.log("Call get Resting RawData API successed!")
+			let retv = res.data
+			this.Resting_draw_param['draw_obj_lst'] = DecodeRawdata(retv['rawdata'])
+			this.set_contour_data('Resting', this.Resting_draw_param['draw_obj_lst'], 0)
+			let resting_subtest_num = JSON.parse(this.Resting_draw_param['draw_obj_lst']).length
+			console.log("resting subtest num", resting_subtest_num, resting_subtest_options.length)
+			this.resting_subtest_options = this.create_subtest_options_data('resting', resting_subtest_num)
+			this.init_resting(resting_subtest_num)
+			this.resting_rawdata_show = true
+		}).then(()=> {
+			GetRestingDrawInfo(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res2)=>{
+				console.log("Call get Resting DrawInfo API successed!")
+				let retv = res2.data
+				this.set_backend_draw_param('resting', retv)
+				this.resting_drawinfo_show = true
+				this.update_resting_send_btn()
+			}).catch((err)=>{
+				console.log("Call get Resting DrawInfo API Failed!")
+				console.log(err)
+			})
 		})
 		
 		// 把MRS圖的資料傳到前端
@@ -817,6 +976,33 @@ export default {
 			this.hh_metric_show = true
 		}).catch((err)=>{
             console.log("Call get HH Metrics API Failed!")
+			console.log(err)
+		})
+
+		// 把Resting圖的資料傳到前端
+		await GetRestingResult(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get Resting Result API successed!")
+			let retv = res.data
+
+			for(var i=0; i<retv['resting_result'].length; i++) {
+				this.resting_result["Resting" + (i+1).toString()] = retv['resting_result'][i]
+				this.resting_rip_result["Resting" + (i+1).toString()] = retv['rip_result'][i]
+			}
+			this.resting_result_show = true
+			this.resting_rip_result_show = true
+		}).catch((err)=>{
+			console.log("Call get Resting Result API Failed!")
+			console.log(err)
+		})
+
+		await GetRestingMetrics(this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+			console.log("Call get Resting Metrics API successed!")
+			let retv = res.data 
+			this.set_backend_metrics('resting', retv)
+			this.resting_metric_show = true
+			this.update_resting_send_btn()
+		}).catch((err)=>{
+			console.log("Call get Resting Metrics API Failed!")
 			console.log(err)
 		})
 
@@ -927,6 +1113,12 @@ export default {
 			else if(test_type == 'rip') {
 				this.update_hh_send_btn()
 			}
+			else if(test_type=='resting') {
+				this.update_resting_send_btn()
+			}
+			else if(test_type=='resting_rip') {
+				this.update_resting_send_btn()
+			}
 			else if(test_type=='slr') {
 				this.update_SLR_send_btn()
 			}
@@ -965,17 +1157,33 @@ export default {
 		update_hh_send_btn: function() {
 			if(this.HH_draw_param['polys']['landmark'].length < Object.keys(this.HH_draw_param['disable_dict']).length) {
 				this.hh_send_disable = true
-				return
+				return 0
 			}
 
 			if(this.hh_result=='' && this.rip_result=='') {
 				this.hh_send_disable = true
-				return
+				return 0
 			}
 
 			this.hh_send_disable = false
 		},
 		
+		update_resting_send_btn: function() {
+			for(var i=0; i<this.resting_subtest_options.length; i++) {
+				if(this.Resting_draw_param['polys']['Resting'+(i+1).toString()].length < this.HH_metrics_table_data.length) {
+					this.resting_send_disable = true
+					return 0
+				}
+				if(this.resting_result['Resting'+(i+1).toString()]=='' || this.resting_rip_result['Resting'+(i+1).toString()]=='') {
+					this.resting_send_disable = true
+					return 0
+				}
+			}
+
+			this.resting_send_disable = false
+		},
+
+
 		// update ab send btn status
 		update_ab_send_btn: function() {
 			if(!this.ab_table_send_disable) {
@@ -1040,18 +1248,29 @@ export default {
 		},
 		
 		//create mrs option data 
-		create_mrs_options_data:function(number){
+		create_subtest_options_data:function(test, number){
 			let res = []
 			for(let i=1;i<=number;i++){
-				res.push(
-					{
-						value: i,
-						label: 'MRS'+ i.toString()
-					},
-				)
+				if(test=='MRS') {
+					res.push(
+						{
+							value: i,
+							label: 'MRS'+ i.toString()
+						},
+					)
+				} else if(test=='resting') {
+					res.push(
+						{
+							value: i,
+							label: 'Resting'+ i.toString()
+						},
+					)
+				}
+				
 			}
 			return res 
 		},
+
 		send_backend: function(test_type) {
 			// call api here
 			// ws_10_object is ready send to backend
@@ -1412,6 +1631,9 @@ export default {
 			else if(test=='HH') {
 				this.HH_draw_param['polys'] = polys
 			}
+			else if(test=='resting') {
+				this.Resting_draw_param['polys'] = polys
+			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['polys'] = polys
 			}
@@ -1433,6 +1655,14 @@ export default {
 						this.HH_draw_param['disable_dict'][polys[key][j]['flag']] = true
 					}
 				}
+				if(test=="resting") {
+					for(j=0; j<polys[key].length; j++) {
+						this.Resting_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
+					}
+					if(polys[key].length>0) {
+						this.Resting_draw_param['ini'][key] = false
+					}
+				}
 				else if(test=="SLR") {
 					for(j=0; j<polys[key].length; j++) {
 						this.SLR_draw_param['disable_dict'][key][polys[key][j]['flag']] = true
@@ -1444,6 +1674,7 @@ export default {
 			}
 			this.draw_btn_rerender += 1
 			this.MRS_draw_rerender += 1
+			this.Resting_draw_rerender+=1
 		},
 
 		// [TODO]
@@ -1471,6 +1702,15 @@ export default {
 				this.HH_draw_data[0]['value'] = this.HH_draw_param['metrics']['landmark']['LES-CD']
 				this.HH_draw_data[1]['value'] = this.HH_draw_param['metrics']['landmark']['seperate'].toString()
 			}
+
+			else if(test=='resting') {
+				this.Resting_draw_param['metrics'] = metrics
+
+				// rerender draw table data 
+				this.Resting_draw_data[0]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['LES-CD']
+				this.Resting_draw_data[1]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['seperate'].toString()
+			}
+
 			else if(test=='SLR') {
 				this.SLR_draw_param['metrics'] = metrics
 
@@ -1497,6 +1737,13 @@ export default {
 					return val / 20
 				})
 			}
+			else if(test=="Resting") {
+				this.Resting_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
+				this.Resting_draw_param['x_size'] = this.Resting_draw_param['raw_data'][0].length
+				this.Resting_draw_param['time_scale'] = [...Array(this.Resting_draw_param['x_size']).keys()].map(function(val){
+					return val / 20
+				})
+			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['raw_data'] = JSON.parse(obj_lst)[idx]
 				this.SLR_draw_param['x_size'] = this.SLR_draw_param['raw_data'][0].length
@@ -1516,7 +1763,12 @@ export default {
 			else if(test=='HH') {
 				this.HH_draw_param['polys']['landmark'] = poly_lst
 				this.update_hh_send_btn()
-				this.set_rip_result(poly_lst)
+				this.rip_result = this.get_rip_result(poly_lst)
+			}
+			else if(test=='resting') {
+				this.Resting_draw_param['polys']['Resting'+this.resting_subtest.toString()] = poly_lst
+				this.update_resting_send_btn()
+				this.resting_rip_result_show = this.get_rip_result(poly_lst)
 			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['polys']['SLR'+this.slr_subtest.toString()] = poly_lst
@@ -1541,6 +1793,13 @@ export default {
 			this.set_DCI_ratio()
 		},
 
+		resting_subtest_selected_update() {
+			this.set_contour_data('Resting', this.Resting_draw_param['draw_obj_lst'], this.resting_subtest-1)
+			this.Resting_draw_rerender+=1
+			this.Resting_draw_data[0]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['LES-CD']
+			this.Resting_draw_data[1]['value'] = this.Resting_draw_param['metrics']['Resting'+this.resting_subtest.toString()]['seperate']
+		},
+
 		slr_subtest_selected_update() {
 			// -1 for mapping index
 			this.set_contour_data('SLR', this.SLR_draw_param['draw_obj_lst'], this.slr_subtest-1)
@@ -1552,8 +1811,8 @@ export default {
 			}
 		},
 
-		update_draw_btn(obj) {
-			if(obj['flag'].includes('MRS')) {
+		update_draw_btn(test, obj) {
+			if(test=='MRS') {
 				var current_subtest = "MRS"+this.mrs_subtest.toString()
 				this.MRS_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
 				if(Object.keys(this.MRS_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
@@ -1569,10 +1828,13 @@ export default {
 					}
 				}
 			}
-			else if(obj['flag'].includes('HH')) {
+			else if(test=='HH') {
 				this.HH_draw_param['disable_dict'][obj['flag']] = obj['status']
 			}
-			else if(obj['flag'].includes('SLR')) {
+			else if(test=='resting') {
+				this.Resting_draw_param['disable_dict'][obj['flag']] = obj['status']
+			}
+			else if(test=="SLR") {
 				current_subtest = "SLR"+this.slr_subtest.toString()
 				this.SLR_draw_param['disable_dict'][current_subtest][obj['flag']] = obj['status']
 				if(Object.keys(this.SLR_draw_param['disable_dict'][current_subtest]).slice(0, 3).includes(obj['flag'])) {
@@ -1609,6 +1871,12 @@ export default {
 				draw_type = 'horizontal'
 				metrics = Object.keys(this.HH_draw_param['disable_dict'])[idx]
 				this.$refs.HH_draw.set_draw_data(draw_type, metrics)
+			}
+			else if(test=='resting') {
+				// HH 都是水平線
+				draw_type = 'horizontal'
+				metrics = Object.keys(this.Resting_draw_param['disable_dict'])[idx]
+				this.$refs.resting_draw.set_draw_data(draw_type, metrics)
 			}
 			else if(test=='SLR') {
 				this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()] = false
@@ -1677,7 +1945,15 @@ export default {
 				this.$refs.HH_draw.clear_target(idx_lst)
 				// 借用key而已
 				this.$refs.HH_draw.delete_line_title(Object.keys(this.HH_draw_param['disable_dict'])[idx])
-
+			}
+			else if(test=='resting') {
+				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
+				idx_lst = idx_lst.map(function(val) {
+					return val + 14
+				})
+				this.$refs.resting_draw.clear_target(idx_lst)
+				// 借用key而已
+				this.$refs.resting_draw.delete_line_title(Object.keys(this.Resting_draw_param['disable_dict'])[idx])
 			}
 			else if(test=="SLR") {
 				current_subtest = "SLR"+this.slr_subtest.toString()
@@ -1709,6 +1985,9 @@ export default {
 			else if(test=='HH') {
 				return Object.values(this.HH_draw_param['disable_dict'])[idx]
 			}
+			else if(test=='resting') {
+				return Object.values(this.Resting_draw_param['disable_dict']["Resting"+this.resting_subtest.toString()])[idx]
+			}
 			else if(test=="SLR") {
 				return Object.values(this.SLR_draw_param['disable_dict']["SLR"+this.slr_subtest.toString()])[idx]
 			}
@@ -1735,6 +2014,9 @@ export default {
 			}
 			else if(test=='HH') {
 				return !Object.values(this.HH_draw_param['disable_dict'])[idx]
+			}
+			else if(test=='resting') {
+				return !Object.values(this.Resting_draw_param['disable_dict']['Resting'+this.resting_subtest.toString()])[idx]
 			}
 			else if(test=="SLR") {
 				if(this.SLR_draw_param['ini']["SLR"+this.slr_subtest.toString()]) {
@@ -1789,13 +2071,23 @@ export default {
 			}
 
 		},
-		get_LES_CD(obj) {
-			this.HH_draw_data[0]['value'] = obj['LES_CD']
-			this.HH_draw_param['metrics']['landmark']['LES-CD'] = obj['LES_CD']
+		get_LES_CD(test, obj) {
+			if(test=='HH') {
+				this.HH_draw_data[0]['value'] = obj['LES_CD']
+				this.HH_draw_param['metrics']['landmark']['LES-CD'] = obj['LES_CD']
 
-			// table 需要String才能顯示
-			this.HH_draw_data[1]['value'] = obj['seperate'].toString()
-			this.HH_draw_param['metrics']['landmark']['seperate'] = obj['seperate']
+				// table 需要String才能顯示
+				this.HH_draw_data[1]['value'] = obj['seperate'].toString()
+				this.HH_draw_param['metrics']['landmark']['seperate'] = obj['seperate']
+			}
+			else if(test=='resting') {
+				this.Resting_draw_data[0]['value'] = obj['LES_CD']
+				this.Resting_draw_param['metrics']['Resting' + this.resting_subtest.toString()]['LES-CD'] = obj['LES_CD']
+
+				// table 需要String才能顯示
+				this.Resting_draw_data[1]['value'] = obj['seperate'].toString()
+				this.Resting_draw_param['metrics']['Resting' + this.resting_subtest.toString()]['seperate'] = obj['seperate']
+			}
 		},
 		clear_all(test) {
 			if(test == 'MRS') {
@@ -1844,6 +2136,9 @@ export default {
 			else if(test=='HH') {
 				this.$refs.HH_draw.contour_size_change(val)
 			}
+			else if(test=='resting') {
+				this.$refs.resting_draw.contour_size_change(val)
+			}
 			else if(test=="SLR") {
 				this.$refs.SLR_draw.contour_size_change(val)
 			}
@@ -1876,6 +2171,22 @@ export default {
 				'HH_LES_lower': false,
 				'HH_RIP': false,
 				'HH_CD': false,
+			}
+		},
+
+		init_resting(resting_subtest_num){
+			for(var i=0; i<resting_subtest_num; i++) {
+				// for deep copy
+				this.Resting_draw_param['disable_dict']['Resting'+(i+1).toString()] = {
+					'HH_LES_upper': false,
+					'HH_LES_lower': false,
+					'HH_RIP': false,
+					'HH_CD': false,
+				}
+				// this.Resting_draw_param['metrics']['Resting'+(i+1).toString()] = {
+				// 	'LES-CD': 0,
+				// 	'seperate': false
+				// }
 			}
 		},
 
@@ -1950,7 +2261,7 @@ export default {
 		// show_loading() {
 		// 	let loadingInstance = this.$loading(this.loading_options)
 		// }
-		set_rip_result(poly_lst) {
+		get_rip_result(poly_lst) {
 			var upper = -1
 			var lower = -1
 			var rip = -1
@@ -1970,13 +2281,13 @@ export default {
 			}
 
 			if(upper >= 0 && rip >= 0 && rip < upper) {
-				this.rip_result = 'proximal'
+				return 'proximal'
 			}
 			else if(lower >= 0 && rip >= 0 && rip > lower) {
-				this.rip_result = 'distal'
+				return 'distal'
 			}
 			else {
-				this.rip_result = 'no_result'
+				return 'no_result'
 			}
 		},
 		set_slr_result() {
