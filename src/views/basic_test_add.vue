@@ -837,7 +837,7 @@ export default {
 				slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
 				this.slr_subtest_options = slr_subtest_options
 				this.init_slr(slr_subtest_num)
-				this.slr_rawdata_show = true
+				this.slr_rawdata_show = truew
 				console.log("Call get SLR RawData API successed!")
 			}
 		}).then(()=> {
