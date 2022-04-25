@@ -219,8 +219,8 @@
 					<el-col :span="24">
 					<el-row>
 						<el-col :md="{span: 7}" :xl="{span:5}">
-							<h1 style="text-align:left; color: white; padding-top: 20px">Hiatal hernia Result<br>
-								<el-select v-model="resting_result['Resting' + resting_subtest.toString()]" placeholder="Hiatal hernia Result" style="margin-top: 15px" @change="basic_test_selected_update('resting')">
+							<h1 style="text-align:left; color: white; padding-top: 20px">Resting Result<br>
+								<el-select v-model="resting_result['Resting' + resting_subtest.toString()]" placeholder="Resting Result" style="margin-top: 15px" @change="basic_test_selected_update('resting')" :key="resting_result_rerender">
 									<el-option v-for="item in hh_options" :key="item.value" :label="item.label" :value="item.value">
 									</el-option>
 								</el-select>
@@ -228,7 +228,7 @@
 						</el-col>
 						<el-col :md="{span: 7}" :xl="{span:5}">
 							<h1 style="text-align:left; color: white; padding-top: 20px">RIP Result<br>
-								<el-select v-model="resting_rip_result['Resting' + resting_subtest.toString()]" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('resting_rip')">
+								<el-select v-model="resting_rip_result['Resting' + resting_subtest.toString()]" placeholder="RIP Result" style="margin-top: 15px" @change="basic_test_selected_update('resting_rip')" :key="resting_rip_result_rerender">
 									<el-option v-for="item in rip_options" :key="item.value" :label="item.label" :value="item.value">
 									</el-option>
 								</el-select>
@@ -304,8 +304,8 @@
 				<el-dialog title="提示" :visible.sync="resting_confirm" width="30%" center>
 					<span><h2> 確認送出? </h2></span>
 					<span slot="footer" class="dialog-footer">
-						<el-button type="primary" @click="confirm_send({status: true, test_type: 'mrs'})"> 確認 </el-button>
-						<el-button type="danger" @click="confirm_send({status: false, test_type: 'mrs'})"> 返回 </el-button>
+						<el-button type="primary" @click="confirm_send({status: true, test_type: 'resting'})"> 確認 </el-button>
+						<el-button type="danger" @click="confirm_send({status: false, test_type: 'resting'})"> 返回 </el-button>
 					</span>
 				</el-dialog>
 			</div>
@@ -456,8 +456,7 @@ import draw from '@/components/draw'
 import {UpdateWetSwallow, GetWetSwallow} from "@/apis/ws.js"
 import {UpdateMRSDrawInfo, UpdateMRSMetrics, UpdateMRSResult, GetMRSDrawInfo, GetMRSMetrics, GetMRSRawData, GetMRSResult} from "@/apis/mrs.js"
 import {UpdateHHDrawInfo, UpdateHHMetrics, UpdateHHResult, GetHHDrawInfo, GetHHMetrics, GetHHRawData, GetHHResult} from "@/apis/hh.js"
-// UpdateRestingDrawInfo, UpdateRestingMetrics, UpdateRestingResult, 
-import {GetRestingDrawInfo, GetRestingMetrics, GetRestingRawData, GetRestingResult} from "@/apis/resting.js"
+import {UpdateRestingDrawInfo, UpdateRestingMetrics, UpdateRestingResult, GetRestingDrawInfo, GetRestingMetrics, GetRestingRawData, GetRestingResult} from "@/apis/resting.js"
 import ab_add_table from "@/components/ab_add_table.vue"
 import { catheter_dict } from "@/utils/catheter.js"
 import { GetCatheterType } from "@/apis/catheter.js"
@@ -778,7 +777,10 @@ export default {
 
 			// SLR的參數
 			slr_subtest: 1,
-			slr_subtest_options: 0
+			slr_subtest_options: 0,
+
+			resting_result_rerender:0,
+			resting_rip_result_rerender:0,
 
 		}
 	},
@@ -1023,7 +1025,7 @@ export default {
 				slr_subtest_options.splice(slr_subtest_num, slr_subtest_options.length)
 				this.slr_subtest_options = slr_subtest_options
 				this.init_slr(slr_subtest_num)
-				this.slr_rawdata_show = truew
+				this.slr_rawdata_show = true
 				console.log("Call get SLR RawData API successed!")
 			}
 		}).then(()=> {
@@ -1079,6 +1081,9 @@ export default {
 			else if(test_type == 'hh') {
 				this.hh_confirm = true
 			} 
+			else if(test_type == 'resting') {
+				this.resting_confirm = true
+			}
 			else if(test_type=='ab') {
 				this.ab_confirm = true
 			} 
@@ -1114,9 +1119,11 @@ export default {
 				this.update_hh_send_btn()
 			}
 			else if(test_type=='resting') {
+				this.resting_result_rerender+=1
 				this.update_resting_send_btn()
 			}
 			else if(test_type=='resting_rip') {
+				this.resting_rip_result_rerender+=1
 				this.update_resting_send_btn()
 			}
 			else if(test_type=='slr') {
@@ -1472,7 +1479,86 @@ export default {
 						})
 					}
 				}
-			} else if(test_type=='ab') {
+			} 
+			else if(test_type=='resting') {
+				if(this.send_doctor_num==1) {
+					// 把HH圖的資料傳到後端
+					UpdateRestingDrawInfo(this.Resting_draw_param['polys'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update RestingDrawInfo API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update RestingDrawInfo API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+
+					// 把HH的數值傳到後端
+					UpdateRestingMetrics(this.Resting_draw_param['metrics'], this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update RestingMetrics API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update RestingMetrics API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+
+					var resting_result_obj = {
+						"resting_result": Object.values(this.resting_result),
+						"rip_result": Object.values(this.resting_rip_result)
+					}
+
+					UpdateRestingResult(resting_result_obj, this.current_record_id, parseInt(this.$store.state.auth_app.login_name)).then((res)=>{
+						console.log("Call update Resting Result API successed!")
+						console.log(res)
+						this.$message({message: '更新成功!',type: 'success'});
+					}).catch((err)=>{
+						console.log("Call update Resting Result API successed!")
+						console.log(err)
+						this.$message.error('更新失敗!');
+					})
+				} else {
+					for(i=0; i<2;i++) {
+						// 把HH圖的資料傳到後端
+						UpdateRestingDrawInfo(this.Resting_draw_param['polys'], this.current_record_id, i).then((res)=>{
+							console.log("Call update RestingDrawInfo API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update RestingDrawInfo API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+
+						// 把HH的數值傳到後端
+						UpdateRestingMetrics(this.Resting_draw_param['metrics'], this.current_record_id, i).then((res)=>{
+							console.log("Call update RestingMetrics API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update RestingMetrics API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+
+						resting_result_obj = {
+							"resting_result": Object.values(this.resting_result),
+							"rip_result": Object.values(this.resting_rip_result)
+						}
+						UpdateRestingResult(resting_result_obj, this.current_record_id, i).then((res)=>{
+							console.log("Call update Resting Result API successed!")
+							console.log(res)
+							this.$message({message: '更新成功!',type: 'success'});
+						}).catch((err)=>{
+							console.log("Call update Resting Result API successed!")
+							console.log(err)
+							this.$message.error('更新失敗!');
+						})
+					}
+				}
+			}
+			else if(test_type=='ab') {
 				var ab_dic = this.preprocess_ab_table_data(this.ab_table_data)
 				ab_dic['SPR'] = this.SPR
 				ab_dic['ER'] = this.ER
@@ -1602,6 +1688,12 @@ export default {
 				this.hh_confirm = false
 				if(confirm_result) {
 					this.send_backend('HH')
+				}
+			}
+			if(type == 'resting'){
+				this.resting_confirm = false
+				if(confirm_result) {
+					this.send_backend('resting')
 				}
 			}
 			if(type=='ab') {
@@ -1768,7 +1860,7 @@ export default {
 			else if(test=='resting') {
 				this.Resting_draw_param['polys']['Resting'+this.resting_subtest.toString()] = poly_lst
 				this.update_resting_send_btn()
-				this.resting_rip_result_show = this.get_rip_result(poly_lst)
+				this.resting_rip_result['Resting'+this.resting_subtest.toString()] = this.get_rip_result(poly_lst)
 			}
 			else if(test=="SLR") {
 				this.SLR_draw_param['polys']['SLR'+this.slr_subtest.toString()] = poly_lst
@@ -1832,7 +1924,7 @@ export default {
 				this.HH_draw_param['disable_dict'][obj['flag']] = obj['status']
 			}
 			else if(test=='resting') {
-				this.Resting_draw_param['disable_dict'][obj['flag']] = obj['status']
+				this.Resting_draw_param['disable_dict']["Resting"+this.resting_subtest.toString()][obj['flag']] = obj['status']
 			}
 			else if(test=="SLR") {
 				current_subtest = "SLR"+this.slr_subtest.toString()
@@ -1875,7 +1967,8 @@ export default {
 			else if(test=='resting') {
 				// HH 都是水平線
 				draw_type = 'horizontal'
-				metrics = Object.keys(this.Resting_draw_param['disable_dict'])[idx]
+				metrics = Object.keys(this.HH_draw_param['disable_dict'])[idx]
+				console.log("metrics", metrics)
 				this.$refs.resting_draw.set_draw_data(draw_type, metrics)
 			}
 			else if(test=='SLR') {
@@ -1938,22 +2031,22 @@ export default {
 			
 			}
 			else if(test=='HH') {
-				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
+				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines // 14、15 for deprecate UES
 				idx_lst = idx_lst.map(function(val) {
-					return val + 14
+					return val + 16
 				})
 				this.$refs.HH_draw.clear_target(idx_lst)
 				// 借用key而已
 				this.$refs.HH_draw.delete_line_title(Object.keys(this.HH_draw_param['disable_dict'])[idx])
 			}
 			else if(test=='resting') {
-				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines
+				// 0, 1, 2 for hover lines // 3 ~ 13 for MRS lines // 14、15 for deprecate UES
 				idx_lst = idx_lst.map(function(val) {
-					return val + 14
+					return val + 16
 				})
 				this.$refs.resting_draw.clear_target(idx_lst)
 				// 借用key而已
-				this.$refs.resting_draw.delete_line_title(Object.keys(this.Resting_draw_param['disable_dict'])[idx])
+				this.$refs.resting_draw.delete_line_title(Object.keys(this.HH_draw_param['disable_dict'])[idx])
 			}
 			else if(test=="SLR") {
 				current_subtest = "SLR"+this.slr_subtest.toString()
