@@ -1143,7 +1143,7 @@ var vue_instance = {
 			var cd = param_lst[2]
 
 			// *10 /10 for 取到小數點第一位
-			var val = Math.round((cd - (les_upper + les_lower)/2) * 10) / 10
+			var val = Math.abs(Math.round((cd - (les_upper + les_lower)/2) * 10) / 10)
 			var seperate = true
 
 			if(val>1) {
